@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VoxCPM 2 效果体验区</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #fff; color: #1E293B; line-height: 1.8;
+  max-width: 860px; margin: 0 auto; padding: 40px 24px;
+}
+h1 { font-size: 2rem; font-weight: 800; text-align: center; color: #1A56DB; margin-bottom: 6px; }
+.subtitle { text-align: center; color: #64748B; font-size: 0.92rem; margin-bottom: 8px; }
+.meta { text-align: center; color: #94A3B8; font-size: 0.82rem; margin-bottom: 36px; }
+.section { margin-bottom: 40px; }
+.section-title {
+  font-size: 1.25rem; font-weight: 700; color: #1A56DB;
+  padding-bottom: 8px; border-bottom: 2px solid #E8EFFC; margin-bottom: 16px;
+}
+.section-desc { font-size: 0.88rem; color: #64748B; margin-bottom: 16px; }
+table {
+  width: 100%; border-collapse: collapse; margin: 12px 0;
+  background: #fff; border-radius: 8px; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+th {
+  background: #1A56DB; color: white; padding: 10px 14px;
+  text-align: left; font-weight: 600; font-size: 0.85rem;
+}
+td { padding: 10px 14px; border-bottom: 1px solid #E2E8F0; font-size: 0.88rem; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #F8FAFC; }
+audio { height: 32px; border-radius: 6px; max-width: 200px; }
+.ph { display: inline-flex; align-items: center; gap: 4px; background: #E8EFFC; color: #1A56DB; font-size: 0.8rem; font-weight: 500; padding: 4px 12px; border-radius: 6px; white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 500; }
+.tag-d { background: #DBEAFE; color: #1E40AF; }
+.tag-v { background: #F0E7FF; color: #7C3AED; }
+.tag-e { background: #D1FAE5; color: #065F46; }
+.tag-c { background: #FEF3C7; color: #92400E; }
+.tag-b { background: #FEE2E2; color: #991B1B; }
+.tag-l { background: #E0E7FF; color: #3730A3; }
+.lang-icon { font-size: 1.2rem; margin-right: 4px; }
+.note { background: #FFFBEB; border-left: 3px solid #F59E0B; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 0.88rem; color: #92400E; margin: 24px 0; }
+.stats { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+.stat { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 140px; text-align: center; }
+.stat-num { font-size: 1.8rem; font-weight: 800; color: #1A56DB; }
+.stat-label { font-size: 0.82rem; color: #64748B; }
+.divider { height: 1px; background: #E2E8F0; margin: 36px 0; }
+.text-block { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 14px 18px; font-size: 0.88rem; line-height: 1.9; color: #334155; margin: 8px 0; }
+@media (max-width: 640px) {
+  table { font-size: 0.78rem; }
+  th, td { padding: 6px 8px; }
+  audio { max-width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<h1>🎧 VoxCPM 2 效果体验区</h1>
+<p class="subtitle">面壁智能 × 清华大学 | 实测音频样本展示</p>
+<p class="meta">56 个样本 · WAV 48kHz 16-bit · 生成时间 2026-04-08</p>
+
+
+
+<!-- 核心能力总览 -->
+<style>
+.core-capabilities {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f3e8ff 100%);
+  border-radius: 16px;
+  padding: 32px 36px;
+  margin: 30px 0 40px;
+  border: 1px solid #d4e0f7;
+  position: relative;
+  overflow: hidden;
+}
+.core-capabilities::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.core-capabilities::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.core-title {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.core-subtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 1;
+}
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+.cap-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 22px 20px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cap-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.12);
+}
+.cap-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  display: block;
+}
+.cap-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+.cap-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+.cap-tag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.tag-new { background: #dcfce7; color: #166534; }
+.tag-up { background: #fef3c7; color: #92400e; }
+.tag-core { background: #ede9fe; color: #5b21b6; }
+
+
+</style>
+
+<div class="core-capabilities">
+  <div class="core-title">⚡ VoxCPM 2 核心能力总览</div>
+  <div class="core-subtitle">端到端语音合成 · 原生 Control Token 架构 · 非 Pipeline 拼接</div>
+
+  <div class="cap-grid">
+    <div class="cap-card">
+      <span class="cap-icon">🌏</span>
+      <div class="cap-name">多方言 · 多语言</div>
+      <div class="cap-desc">6 种中文方言 + 6 门外语<br>原生多语言建模，非翻译拼接</div>
+      <span class="cap-tag tag-core">核心能力</span>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🎨</span>
+      <div class="cap-name">Voice Design</div>
+      <div class="cap-desc">自然语言描述 → 音色生成<br>年龄/性别/音色/情感自由控制</div>
+      <span class="cap-tag tag-new">新特性</span>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🎭</span>
+      <div class="cap-name">高表现力</div>
+      <div class="cap-desc">极端情绪、特殊语速、风格化<br>rap/朗读/新闻/客服多场景</div>
+      <span class="cap-tag tag-up">增强</span>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">🔗</span>
+      <div class="cap-name">跨语言音色一致性</div>
+      <div class="cap-desc">同一音色在中/英/日/韩间<br>保持音色基频与质感一致</div>
+      <span class="cap-tag tag-core">核心能力</span>
+    </div>
+    <div class="cap-card">
+      <span class="cap-icon">📖</span>
+      <div class="cap-name">长文本连贯性</div>
+      <div class="cap-desc">30 秒+ 长段落韵律自然<br>气息控制 + 长距离依赖建模</div>
+      <span class="cap-tag tag-up">增强</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- 0. 对比基线 -->
+<div class="section">
+  <div class="section-title">📊 零、对比基线（默认音色）</div>
+  <div class="section-desc">不使用 control_instruction，默认音色生成，作为其他效果的对照组</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  每次生成效果不一样，但基本效果可用，播报样本效果最佳，其他会略有瑕疵，对于副语言情感方面，效果不稳定，有一定几率生成较好样本。偶尔会生成音质很差的不可用样本
+</div>
+  <table>
+    <tr><th>#</th><th>类型</th><th>文案</th><th>音频</th></tr>
+    <tr><td>1</td><td>🇨🇳 普通话默认 <span class="tag tag-b">基线</span></td><td>大家好，欢迎收看今天的节目，我是你们的主持人。</td><td><audio controls preload="none"><source src="audio/sample_000.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>2</td><td>闲聊</td><td>闲聊场景，默认音色基线</td><td><audio controls preload="none"><source src="audio/sample_001.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- 1. 多语言 + 方言 -->
+<div class="section">
+  <div class="section-title">📍 一、多语言 & 方言（13 个样本）</div>
+  <div class="section-desc">覆盖 6 种中文方言 + 6 门外语，验证 VoxCPM 2 的多语言合成能力</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  方言基本较为地道，音色均为自动生成，后续如有需要可以进行控制；<br>
+  外语初步体验基本语流自然，效果应该是可用的，详细待后续体验确认
+</div>
+  <table>
+    <tr><th>#</th><th>语言/方言</th><th>场景文案</th><th>音频</th></tr>
+    <tr><td>1</td><td><span class="lang-icon">🇨🇳</span>普通话 <span class="tag tag-d">方言</span></td><td>新闻联播开场白</td><td><audio controls preload="none"><source src="audio/sample_002.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>2</td><td><span class="lang-icon">🌶️</span>四川话 <span class="tag tag-d">方言</span></td><td>约朋友吃火锅</td><td><audio controls preload="none"><source src="audio/sample_003.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>3</td><td><span class="lang-icon">🥟</span>粤语 <span class="tag tag-d">方言</span></td><td>约朋友行山</td><td><audio controls preload="none"><source src="audio/sample_004.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>4</td><td><span class="lang-icon">❄️</span>东北话 <span class="tag tag-d">方言</span></td><td>天冷唠嗑</td><td><audio controls preload="none"><source src="audio/sample_005.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>5</td><td><span class="lang-icon">🏙️</span>上海话 <span class="tag tag-d">方言</span></td><td>去外滩白相</td><td><audio controls preload="none"><source src="audio/sample_006.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>6</td><td>🌿 闽南话怀旧 <span class="tag tag-d">方言+情感</span></td><td>日常对话</td><td><audio controls preload="none"><source src="audio/sample_007.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>7</td><td><span class="lang-icon">🇬🇧</span>English <span class="tag tag-d">外语</span></td><td>AI advancement</td><td><audio controls preload="none"><source src="audio/sample_008.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>8</td><td><span class="lang-icon">🇯🇵</span>日本語 <span class="tag tag-d">外语</span></td><td>お花見の誘い</td><td><audio controls preload="none"><source src="audio/sample_009.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>9</td><td><span class="lang-icon">🇹🇭</span>ภาษาไทย <span class="tag tag-d">外语</span></td><td>欢迎致辞</td><td><audio controls preload="none"><source src="audio/sample_010.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>10</td><td><span class="lang-icon">🇻🇳</span>Tiếng Việt <span class="tag tag-d">外语</span></td><td>邀请喝咖啡</td><td><audio controls preload="none"><source src="audio/sample_011.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>11</td><td><span class="lang-icon">🇰🇷</span>한국어 <span class="tag tag-d">外语</span></td><td>赏樱花</td><td><audio controls preload="none"><source src="audio/sample_012.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>12</td><td><span class="lang-icon">🇫🇷</span>Français <span class="tag tag-d">外语</span></td><td>Luxembourg garden</td><td><audio controls preload="none"><source src="audio/sample_013.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>13</td><td><span class="lang-icon">🇪🇸</span>Español <span class="tag tag-d">外语</span></td><td>Paella on the beach</td><td><audio controls preload="none"><source src="audio/sample_014.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- 2. Voice Design 音色设计 -->
+<div class="section">
+  <div class="section-title">🎨 二、Voice Design 音色设计（8 个样本）</div>
+  <div class="section-desc">同一段童话（小兔子）经不同 voice design 描述生成不同音色，验证"自然语言创造声音"能力</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  整体人设匹配，效果尚可，无明显问题，与当前top竞品效果对比稍后进行；<br>
+  个别效果会存在略有人设偏差，比如demo6，女声听起来像的
+</div>
+  <table>
+    <tr><th>#</th><th>音色描述</th><th>文案场景</th><th>音频</th></tr>
+    <tr><td>1</td><td>👩 20s 温柔女生，睡前故事风格</td><td>小兔子童话</td><td><audio controls preload="none"><source src="audio/sample_015.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>2</td><td>👴 70s 沙哑深沉爷爷，壁炉旁讲故事</td><td>小兔子童话</td><td><audio controls preload="none"><source src="audio/sample_016.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>3</td><td>🎙️ 热血体育解说员，激情澎湃</td><td>总决赛开场白</td><td><audio controls preload="none"><source src="audio/sample_017.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>4</td><td>🎬 中年男纪录片旁白，BBC 风格</td><td>宇宙纪录片</td><td><audio controls preload="none"><source src="audio/sample_018.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>5</td><td>🧒 6岁小孩，兴奋高音</td><td>看到蜻蜓</td><td><audio controls preload="none"><source src="audio/sample_019.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>6</td><td>🖤 低沉神秘女声，noir 风格</td><td>悬疑独白</td><td><audio controls preload="none"><source src="audio/sample_020.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>7</td><td>🤖 机器人 AI 声音，略带金属感</td><td>系统启动播报</td><td><audio controls preload="none"><source src="audio/sample_021.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>8</td><td>🎭 戏剧反派，深沉威胁</td><td>反派宣言</td><td><audio controls preload="none"><source src="audio/sample_022.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- 3. 高表现力 -->
+<div class="section">
+  <div class="section-title">🎭 三、高音质 & 高表现力（8 个样本）</div>
+  <div class="section-desc">验证极端情绪、特殊语速、风格化场景的表现力</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  整体风格情绪控制效果较好，后续情感压测，验证效果是否可用到数据WZ；<br>
+  控制维度叠加，会导致效果变差，比如demo8-方言+情绪
+</div>
+  <table>
+    <tr><th>#</th><th>场景</th><th>文案描述</th><th>音频</th></tr>
+    <tr><td>1</td><td>😡 愤怒爆发 <span class="tag tag-e">情绪</span></td><td>争吵场景，情绪激烈</td><td><audio controls preload="none"><source src="audio/sample_023.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>2</td><td>😢 悲伤哽咽 <span class="tag tag-e">情绪</span></td><td>道歉独白，快哭了</td><td><audio controls preload="none"><source src="audio/sample_024.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>3</td><td>🤫 耳语 ASMR <span class="tag tag-e">风格</span></td><td>雨夜情话，亲密氛围</td><td><audio controls preload="none"><source src="audio/sample_025.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>4</td><td>📢 极速叫卖 <span class="tag tag-e">语速</span></td><td>印度脆球饼叫卖</td><td><audio controls preload="none"><source src="audio/sample_026.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>5</td><td>📖 诗歌朗诵 <span class="tag tag-e">风格</span></td><td>《将进酒》，大气磅礴</td><td><audio controls preload="none"><source src="audio/sample_027.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>6</td><td>🦁 自然纪录片 <span class="tag tag-e">风格</span></td><td>非洲狮群狩猎，悬念感</td><td><audio controls preload="none"><source src="audio/sample_028.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>7</td><td>📺 新闻联播 <span class="tag tag-e">风格</span></td><td>嫦娥九号着陆播报</td><td><audio controls preload="none"><source src="audio/sample_029.mp3" type="audio/mpeg"></audio></td></tr>
+    
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- 4. 跨语言一致性 -->
+<div class="section">
+  <div class="section-title">🌍 四、跨语言音色一致性（4 个样本）</div>
+  <div class="section-desc">
+    统一音色描述 <strong>"A warm male voice in his 30s, gentle and friendly"</strong>，用不同语言文本生成，验证音色跨语言保持度
+  </div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  不限定参考demo，同control_instruction提示词+内容不同语种的文本转音频，风格一致，音色略有差异，但效果均尚可
+</div>
+  <table>
+    <tr><th>#</th><th>语言</th><th>文本内容</th><th>音频</th></tr>
+    <tr><td>1</td><td>🇨🇳 中文</td><td>今天天气真好，我想出去走走，看看春天的花开了没有。</td><td><audio controls preload="none"><source src="audio/sample_030.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>2</td><td>🇬🇧 English</td><td>The weather is beautiful today. I want to go for a walk and see if the spring flowers have bloomed.</td><td><audio controls preload="none"><source src="audio/sample_031.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>3</td><td>🇯🇵 日本語</td><td>今日はいい天気ですね。散歩に出かけて、春の花が咲いたかどうか見てみたい。</td><td><audio controls preload="none"><source src="audio/sample_032.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>4</td><td>🇰🇷 한국어</td><td>오늘 날씨가 정말 좋네요. 나가서 산책하면서 봄꽃이 피었는지 보고 싶어요.</td><td><audio controls preload="none"><source src="audio/sample_033.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+  <div class="note">
+    🔍 <strong>评估要点：</strong>对比 4 个音频的音色基频、音色质感、说话节奏是否一致。跨语言音色保持度是 VoxCPM 2 原生能力还是需要额外适配？<br>
+    ⚠️ <strong>测试参数：</strong>control_instruction = <code>"A warm male voice in his 30s, gentle and friendly"</code>，仅 text 不同
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 5. 长文本连贯性 -->
+<div class="section">
+  <div class="section-title">📖 五、长文本连贯性（1 个样本）</div>
+  <div class="section-desc">30 秒+ 长段落，验证韵律连贯性、气息控制、长距离依赖建模能力</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  未限定参考demo和control_instruction提示词，仅根据文本自动生成，效果整体符合文本所需风格，韵律节奏自然、音色一致、但无情感递进、音质略有瑕疵
+</div>
+  <table>
+    <tr><th>#</th><th>类型</th><th>目标时长</th><th>音频</th></tr>
+    <tr><td>1</td><td>📖 叙事长文 <span class="tag tag-l">长文本</span></td><td>30s+</td><td><audio controls preload="none"><source src="audio/sample_034.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+  <div class="text-block">
+    <strong>文本内容：</strong><br>
+    在一个遥远的山村里，住着一位老木匠。他一生都在用双手雕刻着精美的木偶。每一个木偶都有自己的故事，有的是英勇的将军，有的是温柔的公主，还有的是调皮的小猴子。有一天，一个小女孩来到了他的工坊，请求他雕刻一个会飞的木偶。老木匠从没做过这样的木偶，但他决定试试。他花了整整三个月，终于完成了那个木偶。当小女孩看到它的时候，眼睛里闪烁着星星般的光芒。老木匠微笑着把木偶递给她，说："记住，只要有梦想，什么都能飞起来。"
+  </div>
+  <div class="note">
+    🔍 <strong>评估要点：</strong><br>
+    • 韵律节奏：长句之间停顿是否自然？<br>
+    • 情感递进：从平铺叙事到情感高潮（小女孩出场）是否有变化？<br>
+    • 尾句处理：最后的台词"记住，只要有梦想"是否有收束感？<br>
+    • 音质一致性：30 秒内音质是否稳定，有无突变或衰减？
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- 6. 声音克隆 -->
+<div class="section">
+  <div class="section-title">🔬 六、声音克隆（7 组 × 每组3个 = 21 个样本）</div>
+  <div class="section-desc">通过七个原声综合体验音色、风格、情感等的合成效果</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+  📋 <strong>效果评价</strong><br>
+  声音克隆音色相似度高，整体合成效果自然，同时支持属性控制，但是高情感效果会造成一定的音色偏移。
+</div>
+  <table>
+    <tr><th>#</th><th>类型</th><th>描述</th><th>音频</th></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_001</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_035.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-原风格 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_036.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-快乐 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_037.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_018</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_038.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-原风格 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_039.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-温柔 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_040.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_022</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_041.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-紧急 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_042.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-悲伤 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_043.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_023</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_044.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-悲伤 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_045.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-快乐 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_046.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_029</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_047.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-原风格 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_048.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-温柔 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_049.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_037</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_050.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-原风格 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_051.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-紧急 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_052.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td rowspan="3" style="font-weight:600;vertical-align:middle;">Demo_040</td><td>🎤 参考原声 <span class="tag tag-c">Reference</span></td><td>原始声音</td><td><audio controls preload="none"><source src="audio/sample_053.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-原风格 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_054.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>🔄 克隆-快乐 <span class="tag tag-c">Cloned</span></td><td>克隆合成</td><td><audio controls preload="none"><source src="audio/sample_055.mp3" type="audio/mpeg"></audio></td></tr>
+
+</table>
+</div>
+<div class="divider"></div>
+
+<!-- 7. 跨语种声音克隆 -->
+<div class="section">
+  <div class="section-title">🌍 七、跨语种声音克隆（7 个样本）</div>
+  <div class="section-desc">以 Demo_18 为参考音色，验证跨语种音色一致性克隆能力</div>
+  <div class="note" style="background:#f0f7ff;border-left:4px solid #1890ff;margin:15px 0;">
+    📋 <strong>效果评价</strong><br>
+    跨语种复刻效果也较好，基本与同语种复刻效果一致。
+  </div>
+  <table>
+    <tr><th>语种</th><th>描述</th><th>音频</th></tr><tr><td>Demo_18 原声</td><td>参考音色样本</td><td><audio controls preload="none"><source src="audio/sample_056.mp3" type="audio/mpeg"></audio></td></tr>
+    <tr><td>中→英</td><td>中文输入，英文输出，验证跨语种音色克隆</td><td><audio controls preload="none"><source src="audio/sample_057.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→越</td><td>中文输入，越南语输出</td><td><audio controls preload="none"><source src="audio/sample_058.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→泰</td><td>中文输入，泰语输出</td><td><audio controls preload="none"><source src="audio/sample_059.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→西</td><td>中文输入，西班牙语输出</td><td><audio controls preload="none"><source src="audio/sample_060.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→法</td><td>中文输入，法语输出</td><td><audio controls preload="none"><source src="audio/sample_061.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→韩</td><td>中文输入，韩语输出</td><td><audio controls preload="none"><source src="audio/sample_062.mp3" type="audio/mpeg"></audio></td></tr><tr><td>中→日</td><td>中文输入，日语输出</td><td><audio controls preload="none"><source src="audio/sample_063.mp3" type="audio/mpeg"></audio></td></tr>
+  </table>
+</div>
+
+<div class="note">
+  💡 <strong>使用说明：</strong><br>
+  • HTML 版本：将 wav 文件转为 base64 内联后可单文件离线播放<br>
+  • 所有音频由 VoxCPM 2 在线 Demo API 生成（2026-04-08）<br>
+  • 总计 63 个样本 = 12 多语言 + 8 Voice Design + 8 高表现力 + 4 跨语言 + 1 长文本 + 1 基线（另有 2 个待测克隆）
+</div>
+
+</body>
+</html>
