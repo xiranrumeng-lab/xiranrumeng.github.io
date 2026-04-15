@@ -22,7 +22,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
-  background: var(--bg);
+  background: #f5f7fa;
   color: var(--text);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -30,8 +30,12 @@ body {
 
 .report {
   max-width: 860px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem 4rem;
+  background: var(--bg);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 /* ── 封面 ── */
@@ -48,8 +52,34 @@ body {
   display: block;
 }
 .cover-text {
-  padding: 2rem 0;
+  position: relative;
+  padding: 3rem 2rem 2.5rem;
+  margin: 0 -1.5rem 2.5rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1e40af 100%);
+  color: #fff;
+  overflow: hidden;
 }
+.cover-text::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cover-text::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cover-text > * { position: relative; z-index: 1; }
 .cover-text.overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -60,35 +90,67 @@ body {
 .cover-text.overlay .report-subtitle,
 .cover-text.overlay .report-meta { color: rgba(255,255,255,0.85); }
 
+.report-badge {
+  display: inline-block;
+  padding: 0.3rem 0.9rem;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 1.2rem;
+}
 .report-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.3rem;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.8rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 30%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .report-subtitle {
-  font-size: 1.15rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 1rem;
+  font-weight: 400;
 }
 .report-meta {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.report-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 /* ── 目录 ── */
 .toc {
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #f0f4ff 0%, #f8f9fa 100%);
+  border: 1px solid #dbeafe;
   border-radius: var(--radius);
-  padding: 1.2rem 1.5rem;
+  padding: 1.4rem 1.5rem;
   margin-bottom: 2rem;
 }
 .toc-title {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  margin-bottom: 0.6rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 .toc ul { list-style: none; }
 .toc li { margin: 0.3rem 0; }
@@ -104,12 +166,15 @@ body {
   scroll-margin-top: 1rem;
 }
 .section-title {
-  font-size: 1.4rem;
-  font-weight: 600;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--accent);
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 3px solid var(--accent);
   color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
 }
 .section-content {
   margin-bottom: 1.2rem;
@@ -236,10 +301,15 @@ tr:hover td { background: var(--accent-light); }
 /* ── 页脚 ── */
 .report-footer {
   text-align: center;
-  padding-top: 2rem;
+  padding: 2rem 0;
+  margin-top: 2rem;
   border-top: 1px solid var(--border);
   font-size: 0.8rem;
   color: var(--text-secondary);
+}
+.report-footer a {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 /* ── 表格+内嵌播放器 ── */
@@ -309,9 +379,11 @@ tr:hover td { background: var(--accent-light); }
 
 /* ── 响应式 ── */
 @media (max-width: 600px) {
-  .report { padding: 1rem; }
+  .report { margin: 0; border-radius: 0; }
+  .cover-text { padding: 2rem 1.2rem 1.8rem; }
   .cover-img { height: 200px; }
-  .report-title { font-size: 1.5rem; }
+  .report-title { font-size: 1.6rem; }
+  .report-meta { flex-direction: column; gap: 0.5rem; }
   .gallery.cols-2, .gallery.cols-3, .compare-grid {
     grid-template-columns: 1fr;
   }
@@ -393,9 +465,14 @@ tr:hover td { background: var(--accent-light); }
 
 <div class="report">
 <div class="cover-text">
-<h1 class="report-title">VoxCPM-2 副语言·情感·指令控制 体验报告</h1>
+<div class="report-badge">VoxCPM-2 Evaluation Report</div>
+<h1 class="report-title">副语言 · 情感 · 指令控制<br>体验报告</h1>
 <p class="report-subtitle">专业测试集 · 生成效果评估</p>
-<p class="report-meta">作者: 语音合成测试组 · 日期: 2026-04-14</p>
+<div class="report-meta">
+<span>👤 语音合成测试组</span>
+<span>📅 2026-04-14</span>
+<span>🔊 160 用例</span>
+</div>
 </div>
 <nav class="toc">
 <div class="toc-title">目录</div>
