@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoxCPM-2 副语言·情感·指令控制 体验报告</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f8f9fa;
+  --text: #1a1a2e;
+  --text-secondary: #555;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --border: #e5e7eb;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+.report {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── 封面 ── */
+.cover {
+  position: relative;
+  margin: -2rem -1.5rem 2rem;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.cover-img {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  display: block;
+}
+.cover-text {
+  padding: 2rem 0;
+}
+.cover-text.overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: #fff;
+}
+.cover-text.overlay .report-subtitle,
+.cover-text.overlay .report-meta { color: rgba(255,255,255,0.85); }
+
+.report-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.report-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+.report-meta {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* ── 目录 ── */
+.toc {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.toc-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+.toc ul { list-style: none; }
+.toc li { margin: 0.3rem 0; }
+.toc a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.toc a:hover { text-decoration: underline; }
+
+/* ── 章节 ── */
+.report-section {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 1rem;
+}
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--accent);
+  color: var(--text);
+}
+.section-content {
+  margin-bottom: 1.2rem;
+}
+.section-content p { margin-bottom: 0.8rem; }
+.section-content ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+.section-content li { margin-bottom: 0.3rem; }
+.section-content code {
+  background: var(--bg-alt);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* ── 图片 ── */
+.single-image {
+  margin: 1rem 0;
+  text-align: center;
+}
+.single-image img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+figcaption {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* 画廊 */
+.gallery {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.gallery.cols-1 { grid-template-columns: 1fr; }
+.gallery.cols-2 { grid-template-columns: 1fr 1fr; }
+.gallery.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.gallery figure { margin: 0; }
+.gallery img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+
+/* 对比 */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.compare-grid img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+
+/* ── 视频 & 音频 ── */
+.video-container {
+  margin: 1rem 0;
+  text-align: center;
+}
+.video-container video {
+  max-width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+}
+
+.audio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.audio-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-alt);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.audio-label {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  min-width: 120px;
+}
+.audio-item audio {
+  flex: 1;
+  height: 36px;
+}
+
+/* ── 表格 ── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+th {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  padding: 0.7rem 1rem;
+}
+td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+tr:nth-child(even) td { background: var(--bg-alt); }
+tr:hover td { background: var(--accent-light); }
+
+/* ── 页脚 ── */
+.report-footer {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* ── 表格+内嵌播放器 ── */
+.table-audio .audio-cell {
+  min-width: 180px;
+  white-space: nowrap;
+}
+.table-audio audio {
+  width: 160px;
+  height: 32px;
+}
+.table-audio .empty-cell {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* ── 强度对比表格 ── */
+.table-compare .audio-cell {
+  min-width: 140px;
+  white-space: nowrap;
+}
+.table-compare audio {
+  width: 130px;
+  height: 30px;
+}
+.table-compare .empty-cell {
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ── 评价总结 ── */
+.eval-summary {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0 1.5rem;
+}
+.eval-summary-text {
+  margin-bottom: 1rem;
+}
+.eval-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+.eval-item {
+  padding: 0.7rem 1rem;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border-left: 3px solid var(--accent);
+}
+.eval-key {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+.eval-placeholder {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 600px) {
+  .report { padding: 1rem; }
+  .cover-img { height: 200px; }
+  .report-title { font-size: 1.5rem; }
+  .gallery.cols-2, .gallery.cols-3, .compare-grid {
+    grid-template-columns: 1fr;
+  }
+  .audio-item { flex-direction: column; align-items: stretch; }
+}
+
+/* ── 控制维度标签 ── */
+.dim-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+.dim-tag {
+  padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem;
+  font-weight: 600; color: #fff;
+}
+.dim-speed { background: #2563eb; }
+.dim-pitch { background: #7c3aed; }
+.dim-volume { background: #059669; }
+.dim-rhythm { background: #d97706; }
+.dim-accent { background: #dc2626; }
+
+/* ── 类型徽章 ── */
+.type-badge {
+  display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px;
+  font-size: 0.78rem; font-weight: 600; background: var(--accent-light); color: var(--accent);
+}
+
+/* ── 对比展示卡片 ── */
+.compare-showcase { display: flex; flex-direction: column; gap: 1.5rem; margin: 1rem 0; }
+.compare-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--card-shadow);
+}
+.compare-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.8rem 1.2rem; background: var(--bg-alt); border-bottom: 1px solid var(--border);
+}
+.compare-id { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+.compare-emotion { font-size: 1rem; }
+.compare-text {
+  padding: 0.8rem 1.2rem; font-size: 0.95rem; color: var(--text-secondary);
+  border-bottom: 1px solid var(--border); font-style: italic;
+}
+.compare-levels { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.level-item {
+  padding: 0.8rem 1rem; border-right: 1px solid var(--border); min-width: 0; overflow: hidden;
+}
+.level-item:last-child { border-right: none; }
+.level-item audio { width: 100%; max-width: 100%; display: block; }
+.level-label { font-size: 0.78rem; font-weight: 600; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.4rem; }
+.level-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.level-3 { background: #93c5fd; }
+.level-6 { background: #3b82f6; }
+.level-9 { background: #1d4ed8; }
+.level-desc { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+.audio-placeholder {
+  font-size: 0.8rem; color: #9ca3af; padding: 0.5rem; text-align: center;
+  background: var(--bg-alt); border-radius: 6px; border: 1px dashed var(--border);
+}
+
+/* ── 评分表格 ── */
+.table-score .score-cell {
+  text-align: center; min-width: 80px; background: #fffde7; cursor: text;
+}
+.table-score .score-cell:focus { background: #fff9c4; outline: 2px solid var(--accent); }
+.table-score .note-cell { min-width: 120px; cursor: text; }
+.table-score .note-cell:focus { outline: 2px solid var(--accent); }
+
+/* ── 可编辑占位 ── */
+.eval-placeholder { cursor: text; }
+.eval-placeholder:focus { background: #fff; outline: 2px solid var(--accent); border-radius: 4px; }
+
+/* ── 提示 ── */
+.hint { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+/* ── 文本单元格 ── */
+.text-cell { max-width: 240px; font-size: 0.88rem; }
+
+</style>
+</head>
+<body>
+
+<div class="report">
+<div class="cover-text">
+<h1 class="report-title">VoxCPM-2 副语言·情感·指令控制 体验报告</h1>
+<p class="report-subtitle">专业测试集 · 生成效果评估</p>
+<p class="report-meta">作者: 语音合成测试组 · 日期: 2026-04-14</p>
+</div>
+<nav class="toc">
+<div class="toc-title">目录</div>
+<ul>
+<li><a href="#section-0">📋 概述</a></li>
+<li><a href="#section-method">📊 评分依据与方法</a></li>
+<li><a href="#section-moda">Module A · 情感 × 强度矩阵（14×3）</a></li>
+<li><a href="#section-moda-eval">Module A · 评价总结</a></li>
+<li><a href="#section-moda-score">Module A · 逐条评分</a></li>
+<li><a href="#section-1">Module B · 副语言现象</a></li>
+<li><a href="#section-modb-eval">Module B · 评价总结</a></li>
+<li><a href="#section-modc">Module C · 指令控制（10条）</a></li>
+<li><a href="#section-modc-eval">Module C · 评价总结</a></li>
+<li><a href="#section-modc-score">Module C · 逐条评分</a></li>
+<li><a href="#section-modd">Module D · 复合场景（12条）</a></li>
+<li><a href="#section-modd-eval">Module D · 评价总结</a></li>
+<li><a href="#section-modd-score">Module D · 逐条评分</a></li>
+<li><a href="#section-9">📝 评分标准</a></li>
+<li><a href="#section-overall">🔧 总评</a></li>
+</ul></nav>
+<section class="report-section" id="section-0">
+<h2 class="section-title">📋 概述</h2>
+<div class="section-content"><p>本报告评估 VoxCPM-2 在<strong>副语言现象、情感表达、指令控制、复合场景</strong>四个维度的语音生成能力。</p>
+
+<div class="table-wrap"><table>
+<thead><tr>
+<th>模块</th>
+<th>内容</th>
+<th>用例数</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Module A</td>
+<td>情感 × 强度矩阵（14情感 × 3文本 × 3强度）</td>
+<td>126</td>
+</tr>
+<tr>
+<td>Module B</td>
+<td>副语言现象</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Module C</td>
+<td>指令控制（语速/音调/音量/韵律/口音）</td>
+<td>10</td>
+</tr>
+<tr>
+<td>Module D</td>
+<td>复合场景</td>
+<td>12</td>
+</tr>
+</tbody>
+</table></div></div>
+</section>
+<section class="report-section" id="section-method">
+<h2 class="section-title">📊 评分依据与方法</h2>
+<div class="section-content">
+<p>本报告采用 <b>mimo-omni 多模态音频理解模型</b> 对嵌入音频进行逐条分析，结合三套评分参考体系（自然度、共情度、拟人度 MOS）进行综合评估。</p>
+
+<div class="eval-summary">
+<div class="eval-grid">
+<div class="eval-item"><div class="eval-key">Module A 评分依据</div><div class="eval-placeholder">基于已有评价结论 + mimo-omni 抽样验证（42条音频中部分成功分析）。评分基于整体评价推断，非逐条独立打分。</div></div>
+<div class="eval-item"><div class="eval-key">Module B/C/D 评分依据</div><div class="eval-placeholder">基于 mimo-omni 音频模型逐条分析（34条全部完成）。模型对短音频（<20KB）处理不稳定，部分条目回退为文本推理。</div></div>
+<div class="eval-item"><div class="eval-key">评分标准</div><div class="eval-placeholder">自然度（韵律/节奏/音色稳定性）、共情度（情绪适配/语音舒适度）、拟人度MOS（整体效果/副语言/是否可分辨为合成），三套体系综合评估。</div></div>
+</div>
+</div>
+
+<div class="eval-summary" style="margin-top:1rem;">
+<div class="eval-item" style="border-left-color:#d97706;">
+  <div class="eval-key" style="color:#d97706;">⚠️ 重要备注</div>
+  <div class="eval-placeholder" contenteditable="true">
+    <ol style="margin:0;padding-left:1.2rem;font-size:0.9rem;line-height:2;">
+    <li><b>Module A 非全量分析</b>：HTML 嵌入 42 条（14情感 × 3强度），评分基于整体评价结论推断，未逐条独立评估</li>
+    <li><b>模型音频理解不稳定</b>：mimo-omni 对部分音频（特别是短音频 <20KB mp3）处理不稳定，CTRL-07/09/10、COMP-07 等条目回退为文本推理而非真正音频理解</li>
+    <li><b>COMP-10 严重噪音</b：该条目存在高频电子啸叫声，音质严重受损，建议技术排查生成管线</li>
+    <li><b>全局背景音问题</b>：几乎所有音频存在背景音乐或背景音，建议排查音频混合/后处理环节</li>
+    <li><b>评分粒度说明</b>：采用 1-5 分制（含 0.5 分档），5 分为最佳。总评分数为各模块加权平均</li>
+    </ol>
+  </div>
+</div>
+</div>
+</section>
+
+<section class="report-section" id="section-moda">
+<h2 class="section-title">Module A · 情感 × 强度矩阵</h2>
+<div class="section-desc"><p>14 种情感 × 3 个强度等级（3/6/9），每种情感并排对比轻度→中度→强烈。<br>注：每种情感有 3 个文本变体，当前展示第 1 个文本。</p>
+<div class="dim-tags"><span class="dim-tag" style="background:#93c5fd;color:#1e3a5f;">轻度 I3</span><span class="dim-tag" style="background:#3b82f6;">中度 I6</span><span class="dim-tag" style="background:#1d4ed8;">强烈 I9</span></div></div>
+<div class="compare-showcase"><div class="compare-card"><div class="compare-header"><span class="compare-id">JOY-01</span><span class="compare-emotion">😊 喜悦</span></div><div class="compare-text">今天天气真不错，阳光特别好，咱们出去走走吧。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">淡淡愉悦→兴奋雀跃</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_01.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_02.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_03.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">SAD-01</span><span class="compare-emotion">😢 悲伤</span></div><div class="compare-text">他走了，再也不会回来了，我们以后再也见不到他了。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">轻微失落→悲痛欲绝</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_04.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_05.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_06.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">ANG-01</span><span class="compare-emotion">😡 愤怒</span></div><div class="compare-text">你能不能别这样？我已经说过很多次了，你为什么就是不听？</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">轻微不悦→暴怒咆哮</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_07.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_08.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_09.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">FEA-01</span><span class="compare-emotion">😨 恐惧</span></div><div class="compare-text">外面好像有人来了，这么晚了会是谁啊？我有点害怕。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">微微紧张→惊恐尖叫</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_10.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_11.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_12.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">SUR-01</span><span class="compare-emotion">😲 惊讶</span></div><div class="compare-text">真的假的？你不是在开玩笑吧？这消息也太突然了，我都不敢相信。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">微微意外→目瞪口呆</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_13.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_14.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_15.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">DIS-01</span><span class="compare-emotion">🤢 厌恶</span></div><div class="compare-text">这是什么啊？看起来就不太对劲，我劝你还是别吃了吧。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">有点嫌弃→恶心作呕</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_16.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_17.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_18.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">CON-01</span><span class="compare-emotion">😏 轻蔑</span></div><div class="compare-text">就这？你花了那么长时间就做出这种东西？我还以为有多厉害呢。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">淡淡不屑→极度嘲讽</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_19.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_20.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_21.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">SHA-01</span><span class="compare-emotion">😳 羞耻</span></div><div class="compare-text">我怎么会做出这种事？真的太丢人了，我现在都不知道怎么面对大家。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">轻微尴尬→无地自容</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_22.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_23.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_24.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">JEA-01</span><span class="compare-emotion">😒 嫉妒</span></div><div class="compare-text">凭什么是他？我觉得我一点都不比他差，这不公平，我真的不服气。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">微微酸楚→嫉恨咬牙</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_25.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_26.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_27.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">LOV-01</span><span class="compare-emotion">🥰 爱/柔情</span></div><div class="compare-text">有你在真好，每天醒来能看到你，我就觉得这一天都充满了希望。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">淡淡温暖→炽热浓烈</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_28.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_29.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_30.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">HOP-01</span><span class="compare-emotion">🌟 希望</span></div><div class="compare-text">会好起来的，一切都会好起来的，只要我们坚持下去，总会有转机的。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">微弱期待→坚定信念</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_31.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_32.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_33.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">BOR-01</span><span class="compare-emotion">😴 无聊</span></div><div class="compare-text">哦，知道了，你说完了吗？说完了我就先走了，还有别的事吗？</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">心不在焉→极度无聊</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_34.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_35.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_36.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">CONF-01</span><span class="compare-emotion">😕 困惑</span></div><div class="compare-text">我不明白，这到底是怎么回事？我明明记得不是这样的，难道我记错了？</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">有点懵→彻底困惑</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_37.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_38.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_39.mp3"></audio></div></div></div>
+<div class="compare-card"><div class="compare-header"><span class="compare-id">DET-01</span><span class="compare-emotion">💪 勇气/决心</span></div><div class="compare-text">我试试看，虽然有点害怕，但我还是想试一试，不想以后后悔。</div><div class="compare-sub" style="font-size:0.75rem;color:#888;padding:0 1.2rem 0.5rem;">犹豫但鼓起勇气→视死如归</div><div class="compare-levels"><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#93c5fd;"></span>强度 3（轻度）</div><audio controls preload="none" src="audio_files/audio_40.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#3b82f6;"></span>强度 6（中度）</div><audio controls preload="none" src="audio_files/audio_41.mp3"></audio></div><div class="level-item"><div class="level-label"><span class="level-dot" style="background:#1d4ed8;"></span>强度 9（强烈）</div><audio controls preload="none" src="audio_files/audio_42.mp3"></audio></div></div></div>
+</div></section>
+<section class="report-section" id="section-moda-eval">
+<h2 class="section-title">Module A · 评价总结</h2>
+<div class="eval-summary">
+<div class="eval-grid">
+<div class="eval-item"><div class="eval-key">整体评价</div><div class="eval-placeholder">一般</div></div>
+<div class="eval-item"><div class="eval-key">强度区分度</div><div class="eval-placeholder">较差，多档位区分不明显</div></div>
+<div class="eval-item"><div class="eval-key">最佳情感</div><div class="eval-placeholder">CONF-02、DET-02、JOY-02（但中低档无区别）、SAD-02、SHA-03 表现较好</div></div>
+<div class="eval-item"><div class="eval-key">明显问题</div><div class="eval-placeholder">愤怒/惊讶：档位强烈程度区分不明显。爱/恐惧/轻蔑/无聊/希望/嫉妒：仅低档效果好，其他档音质差、韵律不自然、情感过于夸张或与低档无区别。厌恶：情感匹配不当，更像生气/害怕。几乎所有音频有背景音乐/背景音。</div></div>
+<div class="eval-item"><div class="eval-key">备注</div><div class="eval-placeholder">⚠️ 几乎每句都有背景音乐或背景音，建议排查生成管线</div></div>
+</div></div></section>
+<section class="report-section" id="section-moda-score">
+<h2 class="section-title">Module A · 逐条评分</h2>
+<div class="table-wrap"><table class="table-score"><thead><tr><th>ID</th><th>情感</th><th>强度3 (1-5)</th><th>强度6 (1-5)</th><th>强度9 (1-5)</th><th>备注</th></tr></thead><tbody>
+<tr><td>JOY-01</td><td>😊 喜悦</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">低档自然，中高档情感过于夸张，且有背景音</td></tr>
+<tr><td>SAD-01</td><td>😢 悲伤</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">低档悲伤表达精准到位，高档位情感过度</td></tr>
+<tr><td>ANG-01</td><td>😡 愤怒</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">三档区分不明显，情感方向一致但强度差异小</td></tr>
+<tr><td>FEA-01</td><td>😨 恐惧</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">仅低档尚可，中高档音质差/韵律失真</td></tr>
+<tr><td>SUR-01</td><td>😲 惊讶</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">三档区分不明显，高档位过于夸张</td></tr>
+<tr><td>DIS-01</td><td>🤢 厌恶</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">情感匹配不当，更像生气/害怕而非厌恶</td></tr>
+<tr><td>CON-01</td><td>😏 轻蔑</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">低档尚可，中高档情感不自然</td></tr>
+<tr><td>SHA-01</td><td>😳 羞耻</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">低档羞耻感到位，中高档逐渐失真</td></tr>
+<tr><td>JEA-01</td><td>😒 嫉妒</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">仅低档效果好，中高档韵律不自然</td></tr>
+<tr><td>LOV-01</td><td>🥰 爱/柔情</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">低档温柔感好，中高档过于夸张</td></tr>
+<tr><td>HOP-01</td><td>🌟 希望</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">情感方向一致但强度变化不明显</td></tr>
+<tr><td>BOR-01</td><td>😴 无聊</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">低档无聊感到位，中高档失真</td></tr>
+<tr><td>CONF-01</td><td>😕 困惑</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">困惑表现较好，各档位有一定区分</td></tr>
+<tr><td>DET-01</td><td>💪 勇气/决心</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">决心/勇气表达精准，低档最佳</td></tr>
+</tbody></table></div>
+<p class="hint">💡 表格可直接编辑打分</p></section>
+<section class="report-section" id="section-1">
+<h2 class="section-title">Module B · 副语言现象</h2>
+<div class="section-content"><p>点击每行的 ▶ 播放按钮试听，评估副语言特征是否自然到位。</p></div>
+</section>
+<section class="report-section" id="section-3">
+<h2 class="section-title">逐条试听</h2>
+<div class="table-wrap"><table class="table-audio">
+<thead><tr>
+<th>ID</th>
+<th>类型</th>
+<th>指令</th>
+<th>测试文本</th>
+<th>试听</th>
+</tr></thead><tbody>
+<tr id="PARA-01">
+<td>PARA-01</td>
+<td>笑声（自然）</td>
+<td>说话时带着忍不住的笑意</td>
+<td>我跟你说，他当时那个表情真的太搞笑了，哈哈哈，我现在想起来还想笑。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_43.wav"></audio></td>
+</tr>
+<tr id="PARA-02">
+<td>PARA-02</td>
+<td>笑声（尴尬）</td>
+<td>尴尬的呵呵笑，语速变快</td>
+<td>哈哈……那个……其实是我弄错了，不好意思啊，真的对不起。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_44.wav"></audio></td>
+</tr>
+<tr id="PARA-03">
+<td>PARA-03</td>
+<td>叹气</td>
+<td>先说一声叹息，再说后面的内容</td>
+<td>唉……算了算了，就这样吧，反正也说不过你，我懒得争了。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_45.wav"></audio></td>
+</tr>
+<tr id="PARA-04">
+<td>PARA-04</td>
+<td>停顿（思考）</td>
+<td>表现出正在思考、组织语言的样子</td>
+<td>嗯……我想想啊……应该是上周三吧，不对，好像是周四，我有点记不清了。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_46.wav"></audio></td>
+</tr>
+<tr id="PARA-05">
+<td>PARA-05</td>
+<td>停顿（犹豫）</td>
+<td>断断续续，反复修正自己的说法</td>
+<td>我觉得……也许……呃……还是先别去了吧，感觉今天不太合适。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_47.wav"></audio></td>
+</tr>
+<tr id="PARA-06">
+<td>PARA-06</td>
+<td>气声/耳语</td>
+<td>用说悄悄话的方式，只有对方能听到</td>
+<td>我跟你说个秘密，你别告诉别人啊，真的不能说出去，你答应我。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_48.wav"></audio></td>
+</tr>
+<tr id="PARA-07">
+<td>PARA-07</td>
+<td>拖长音</td>
+<td>刻意拉长某个字，表现不情愿</td>
+<td>好……吧，那就听你的吧，虽然我其实不太想这样，但算了。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_49.wav"></audio></td>
+</tr>
+<tr id="PARA-08">
+<td>PARA-08</td>
+<td>口吃/重复</td>
+<td>表现出紧张导致的轻微口吃</td>
+<td>我、我、我不是那个意思，你听我解释，我真的不是故意的。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_50.wav"></audio></td>
+</tr>
+<tr id="PARA-09">
+<td>PARA-09</td>
+<td>清嗓子</td>
+<td>说话前轻轻清一下嗓子</td>
+<td>嗯哼……大家好，我开始说了啊，今天要讲的内容还挺多的。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_51.wav"></audio></td>
+</tr>
+<tr id="PARA-10">
+<td>PARA-10</td>
+<td>吞咽/口水</td>
+<td>说话前有轻微吞咽的声音</td>
+<td>那个……我想问一下……就是……你能帮我一个忙吗？不太大的忙。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_52.wav"></audio></td>
+</tr>
+<tr id="PARA-11">
+<td>PARA-11</td>
+<td>倒吸气</td>
+<td>说话前倒吸一口气</td>
+<td>嘶……这也太贵了吧，我一个月工资都不够买的，算了吧算了吧。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_53.wav"></audio></td>
+</tr>
+<tr id="PARA-12">
+<td>PARA-12</td>
+<td>咂嘴/咋舌</td>
+<td>不满或无奈时咂嘴</td>
+<td>啧……这都什么事儿啊，怎么每次到我这里就出问题，真倒霉。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_54.wav"></audio></td>
+</tr>
+</tbody></table></div>
+</section>
+<section class="report-section" id="section-modb-eval">
+<h2 class="section-title">Module B · 评价总结</h2>
+<div class="eval-summary">
+<div class="eval-grid">
+<div class="eval-item"><div class="eval-key">整体评价</div><div class="eval-placeholder">一般偏下</div></div>
+<div class="eval-item"><div class="eval-key">最佳表现</div><div class="eval-placeholder">PARA-05（停顿/犹豫）、PARA-08（口吃/重复）效果较好</div></div>
+<div class="eval-item"><div class="eval-key">明显问题</div><div class="eval-placeholder">其他副语言效果较差。PARA-06~12 的副语言特征不支持/未实现。</div></div>
+<div class="eval-item"><div class="eval-key">备注</div><div class="eval-placeholder">副语言覆盖能力有限，仅停顿类特征表现尚可</div></div>
+</div></div>
+</section>
+<section class="report-section" id="section-modc">
+<h2 class="section-title">Module C · 指令控制</h2>
+<div class="section-desc">
+<p>语速、音调、音量、韵律、口音 5 个维度的量化控制测试。每条音频点击 ▶ 试听后，在下方评价区打分。</p>
+<div class="dim-tags">
+  <span class="dim-tag dim-speed">语速</span>
+  <span class="dim-tag dim-pitch">音调</span>
+  <span class="dim-tag dim-volume">音量</span>
+  <span class="dim-tag dim-rhythm">韵律</span>
+  <span class="dim-tag dim-accent">口音</span>
+</div>
+</div>
+<div class="table-wrap"><table class="table-audio">
+<thead><tr>
+<th>ID</th>
+<th>控制维度</th>
+<th>指令</th>
+<th>测试文本</th>
+<th>试听</th>
+</tr></thead><tbody>
+<tr id="CTRL-01">
+<td>CTRL-01</td>
+<td>语速·极慢</td>
+<td>非常慢，逐字清晰，像在播重要通知</td>
+<td class="text-cell">请注意，前方路段正在施工，请所有车辆减速慢行，注意安全。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_55.mp3"></audio></td>
+</tr>
+<tr id="CTRL-02">
+<td>CTRL-02</td>
+<td>语速·极快</td>
+<td>极快，像在播免责声明或法律条款</td>
+<td class="text-cell">本产品效果因人而异请仔细阅读产品说明书并在药师指导下购买和使用。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_56.mp3"></audio></td>
+</tr>
+<tr id="CTRL-03">
+<td>CTRL-03</td>
+<td>音调·低沉</td>
+<td>刻意压低声音，深沉，有压迫感</td>
+<td class="text-cell">这件事情你最好烂在肚子里，不要跟任何人提起，否则后果自负。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_57.mp3"></audio></td>
+</tr>
+<tr id="CTRL-04">
+<td>CTRL-04</td>
+<td>音调·尖锐</td>
+<td>刻意提高音调，刺耳，像受到惊吓</td>
+<td class="text-cell">啊！有老鼠！快来人啊！救命啊！它跑过来了，快点快点！</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_58.mp3"></audio></td>
+</tr>
+<tr id="CTRL-05">
+<td>CTRL-05</td>
+<td>音量·极轻</td>
+<td>自言自语，几乎听不见，像在嘀咕</td>
+<td class="text-cell">我真笨，这么简单的事情都能忘，我怎么就这么不长记性呢。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_59.mp3"></audio></td>
+</tr>
+<tr id="CTRL-06">
+<td>CTRL-06</td>
+<td>音量·极大</td>
+<td>像在喊远处的人，声音很大很用力</td>
+<td class="text-cell">小——明——！快——回——来——！要——吃——饭——了——！</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_60.mp3"></audio></td>
+</tr>
+<tr id="CTRL-07">
+<td>CTRL-07</td>
+<td>韵律·一字一顿</td>
+<td>非常刻意，每个字之间有明显停顿</td>
+<td class="text-cell">我。不。同。意。这。个。方。案。请。你。重。新。考。虑。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_61.mp3"></audio></td>
+</tr>
+<tr id="CTRL-08">
+<td>CTRL-08</td>
+<td>韵律·连读吞音</td>
+<td>随意、快速，口语化，吞掉一些字</td>
+<td class="text-cell">不知道啊，我哪知道怎么回事，反正就这样吧，你看着办就行。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_62.mp3"></audio></td>
+</tr>
+<tr id="CTRL-09">
+<td>CTRL-09</td>
+<td>口音·东北</td>
+<td>带有轻微的东北口音</td>
+<td class="text-cell">哎呀妈呀，这事儿整的，老闹心了，你说咋整吧，我都无语了。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_63.mp3"></audio></td>
+</tr>
+<tr id="CTRL-10">
+<td>CTRL-10</td>
+<td>口音·台湾</td>
+<td>带有轻微的台湾国语口音</td>
+<td class="text-cell">我跟你讲喔，这样子真的很奇怪捏，你不觉得吗？我觉得不行啦。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_64.mp3"></audio></td>
+</tr>
+
+</tbody></table></div>
+</section>
+<section class="report-section" id="section-modc-eval">
+<h2 class="section-title">Module C · 评价总结</h2>
+<div class="eval-summary">
+<div class="eval-grid">
+<div class="eval-item"><div class="eval-key">整体评价</div><div class="eval-placeholder">一般</div></div>
+<div class="eval-item"><div class="eval-key">语速控制</div><div class="eval-placeholder">达不到量化目标，整体仍较正常语速，但能感觉到有快慢变化</div></div>
+<div class="eval-item"><div class="eval-key">音调控制</div><div class="eval-placeholder">较准确 ✓</div></div>
+<div class="eval-item"><div class="eval-key">音量控制</div><div class="eval-placeholder">达不到量化目标，有声音高低变化但语音效果较差</div></div>
+<div class="eval-item"><div class="eval-key">韵律控制</div><div class="eval-placeholder">语音效果较差，连读吞音未体现</div></div>
+<div class="eval-item"><div class="eval-key">口音控制</div><div class="eval-placeholder">较准确。东北话较好 ✓，台湾腔较为不自然</div></div>
+</div></div>
+</section>
+<section class="report-section" id="section-modc-score">
+<h2 class="section-title">Module C · 逐条评分</h2>
+<div class="table-wrap"><table class="table-score">
+<thead><tr>
+<th>ID</th>
+<th>控制维度</th>
+<th>指令匹配度 (1-5)</th>
+<th>自然度 (1-5)</th>
+<th>备注</th>
+</tr></thead><tbody>
+<tr><td>CTRL-01</td><td>语速·慢速</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">语速均匀稳定，符合安全提示播报风格，音质清晰</td></tr>
+<tr><td>CTRL-02</td><td>语速·快速</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">语速适中偏慢，清晰但略带机械感，非极快速度</td></tr>
+<tr><td>CTRL-03</td><td>音调·低沉</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">低沉严肃，威胁感强，音调/语速/韵律控制精准</td></tr>
+<tr><td>CTRL-04</td><td>音调·高亢</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">4.5</td><td class="note-cell" contenteditable="true">音调显著升高，惊慌感强，情绪真实但略夸张</td></tr>
+<tr><td>CTRL-05</td><td>音量·轻柔</td><td class="score-cell" contenteditable="true">4.5</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">音量适中偏弱，符合自责语气，但非极轻</td></tr>
+<tr><td>CTRL-06</td><td>音量·响亮</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">语速极慢一字一顿，指令执行度高但牺牲自然度</td></tr>
+<tr><td>CTRL-07</td><td>韵律·抑扬顿挫</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">一字一顿效果有但不够明显，模型推理非纯音频</td></tr>
+<tr><td>CTRL-08</td><td>韵律·平淡单调</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">语调自然随意，高度接近真人，但连读吞音不明显</td></tr>
+<tr><td>CTRL-09</td><td>口音·东北话</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">东北口音还原度高，口语化表达自然</td></tr>
+<tr><td>CTRL-10</td><td>口音·粤语腔</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">台湾腔有一定体现但不够自然</td></tr>
+</tbody></table></div>
+<p class="hint">💡 表格可直接编辑打分，修改后截图或导出即可</p>
+</section>
+<section class="report-section" id="section-modd">
+<h2 class="section-title">Module D · 复合场景</h2>
+<div class="section-desc">
+<p>情感 + 副语言 + 指令控制的多维度叠加测试，检验模型在复杂场景下的综合生成能力。</p>
+<div class="dim-tags">
+  <span class="dim-tag" style="background:#e11d48;">情感+副语言</span>
+  <span class="dim-tag" style="background:#2563eb;">情感+语速</span>
+  <span class="dim-tag" style="background:#d97706;">情感+韵律</span>
+  <span class="dim-tag" style="background:#7c3aed;">情感+口音</span>
+  <span class="dim-tag" style="background:#059669;">多重叠加</span>
+</div>
+</div>
+<div class="table-wrap"><table class="table-audio">
+<thead><tr>
+<th>ID</th>
+<th>组合类型</th>
+<th>场景描述</th>
+<th>测试文本</th>
+<th>试听</th>
+</tr></thead><tbody>
+<tr id="COMP-01">
+<td>COMP-01</td>
+<td>惊喜+笑声</td>
+<td>愣半秒→爆发出惊喜的笑声→语速越来越快</td>
+<td class="text-cell">什么？！我被录取了？哈哈哈……天哪，我真的不敢相信，太棒了太棒了！</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_65.mp3"></audio></td>
+</tr>
+<tr id="COMP-02">
+<td>COMP-02</td>
+<td>悲伤+哽咽</td>
+<td>声音明显低落→说到一半哽咽→最后几乎听不见</td>
+<td class="text-cell">他走了……真的走了……（深吸气）……再也不会回来了，永远都不会了。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_66.mp3"></audio></td>
+</tr>
+<tr id="COMP-03">
+<td>COMP-03</td>
+<td>愤怒+压低</td>
+<td>刻意压低声音，但每个字都带着压抑的怒火</td>
+<td class="text-cell">你最好给我一个合理的解释，否则今天这事，我们没完，你听清楚了吗。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_67.mp3"></audio></td>
+</tr>
+<tr id="COMP-04">
+<td>COMP-04</td>
+<td>紧张+耳语</td>
+<td>用说悄悄话的音量，语句中频繁停顿</td>
+<td class="text-cell">他们……好像发现我们了……别出声……快走……从后面走……快。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_68.mp3"></audio></td>
+</tr>
+<tr id="COMP-05">
+<td>COMP-05</td>
+<td>疲惫+叹气</td>
+<td>先叹一口长气，然后非常缓慢、有气无力地说</td>
+<td class="text-cell">唉……我今天真的太累了……不想动了……让我一个人待一会儿吧。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_69.mp3"></audio></td>
+</tr>
+<tr id="COMP-06">
+<td>COMP-06</td>
+<td>讽刺+假笑</td>
+<td>用假笑开头，刻意拖长某些字，表现嘲讽</td>
+<td class="text-cell">呵呵……你做得可真……好……啊，真是让我刮目相看呢，厉害厉害。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_70.mp3"></audio></td>
+</tr>
+<tr id="COMP-07">
+<td>COMP-07</td>
+<td>恐惧+尖叫</td>
+<td>从紧张→恐惧→最后失控尖叫，层层递进</td>
+<td class="text-cell">啊——！别、别过来！你走开！救命啊！有没有人啊，快来救救我！</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_71.mp3"></audio></td>
+</tr>
+<tr id="COMP-08">
+<td>COMP-08</td>
+<td>羞耻+耳语</td>
+<td>非常小声、急促，不想让第三个人听到</td>
+<td class="text-cell">（极小声）我跟你说……我……我把那个花瓶打碎了……怎么办啊……</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_72.mp3"></audio></td>
+</tr>
+<tr id="COMP-09">
+<td>COMP-09</td>
+<td>嫉妒+咬牙切齿</td>
+<td>压低声音，充满恨意地一个字一个字慢慢说</td>
+<td class="text-cell">她凭什么……凭什么就能那么轻松……我那么努力却什么都得不到……凭什么。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_73.mp3"></audio></td>
+</tr>
+<tr id="COMP-10">
+<td>COMP-10</td>
+<td>爱意+耳语</td>
+<td>轻柔、缓慢，充满深情，像在耳边低语</td>
+<td class="text-cell">你知道吗……我真的……真的好喜欢你……从第一次见到你的时候就是。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_74.mp3"></audio></td>
+</tr>
+<tr id="COMP-11">
+<td>COMP-11</td>
+<td>愤怒+哭泣</td>
+<td>边哭边骂，情绪崩溃，声音时高时低</td>
+<td class="text-cell">你到底有没有心……（哭腔）……我为你做了那么多……你就这样对我……我恨你！</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_75.mp3"></audio></td>
+</tr>
+<tr id="COMP-12">
+<td>COMP-12</td>
+<td>困惑+自言自语</td>
+<td>低声自问，反复嘀咕，像在跟自己说话</td>
+<td class="text-cell">奇怪……我记得明明放在这里的啊……怎么找不到了……到底哪去了呢……奇怪。</td>
+<td class="audio-cell"><audio controls preload="none" src="audio_files/audio_76.mp3"></audio></td>
+</tr>
+
+</tbody></table></div>
+</section>
+<section class="report-section" id="section-modd-eval">
+<h2 class="section-title">Module D · 评价总结</h2>
+<div class="eval-summary">
+<div class="eval-grid">
+<div class="eval-item"><div class="eval-key">整体评价</div><div class="eval-placeholder">一般偏下</div></div>
+<div class="eval-item"><div class="eval-key">最佳组合</div><div class="eval-placeholder">COMP-04（紧张+耳语）效果较好</div></div>
+<div class="eval-item"><div class="eval-key">明显问题</div><div class="eval-placeholder">其他通常只能体现其中一种指令，且整体音质和韵律表达较差</div></div>
+<div class="eval-item"><div class="eval-key">备注</div><div class="eval-placeholder">多维度指令的融合能力有待提升</div></div>
+</div></div>
+</section>
+<section class="report-section" id="section-modd-score">
+<h2 class="section-title">Module D · 逐条评分</h2>
+<div class="table-wrap"><table class="table-score">
+<thead><tr>
+<th>ID</th>
+<th>组合类型</th>
+<th>维度融合度 (1-5)</th>
+<th>自然度 (1-5)</th>
+<th>备注</th>
+</tr></thead><tbody>
+<tr><td>COMP-01</td><td>喜悦+自然笑声</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">惊喜情感表达饱满，笑声自然，但开头停顿感不够</td></tr>
+<tr><td>COMP-02</td><td>悲伤+慢速低沉</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">2</td><td class="note-cell" contenteditable="true">悲伤情感浓郁，但存在背景噪音，音质下降明显</td></tr>
+<tr><td>COMP-03</td><td>愤怒+抑扬顿挫</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">威胁/质问情感饱满，语速/重音/停顿配合协调</td></tr>
+<tr><td>COMP-04</td><td>惊喜+东北口音</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">紧张+耳语场景效果好，多维度协同良好</td></tr>
+<tr><td>COMP-05</td><td>叹气+平淡语气</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">自然度最高，叹气+疲惫感真实，气息细节自然</td></tr>
+<tr><td>COMP-06</td><td>恐惧+气声耳语</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">笑声/调侃语气自然，情感戏剧张力强，配音级质量</td></tr>
+<tr><td>COMP-07</td><td>兴奋+快速</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">恐惧/慌张表达清晰，但文本推理非纯音频分析</td></tr>
+<tr><td>COMP-08</td><td>口吃+粤语腔</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">口吃+焦虑情绪到位，停顿和颤抖自然</td></tr>
+<tr><td>COMP-09</td><td>温柔+轻柔</td><td class="score-cell" contenteditable="true">5</td><td class="score-cell" contenteditable="true">5</td><td class="note-cell" contenteditable="true">愤怒/不甘情感层次分明，单维度表达完美</td></tr>
+<tr><td>COMP-10</td><td>多重叠加</td><td class="score-cell" contenteditable="true">3</td><td class="score-cell" contenteditable="true">3</td><td class="note-cell" contenteditable="true">告白耳语人声好但存在严重电子啸叫噪音</td></tr>
+<tr><td>COMP-11</td><td>尴尬+笑声+停顿</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">尴尬+笑声+停顿融合尚可</td></tr>
+<tr><td>COMP-12</td><td>紧张+快速+低声</td><td class="score-cell" contenteditable="true">4</td><td class="score-cell" contenteditable="true">4</td><td class="note-cell" contenteditable="true">紧张+快速+低声协同效果较好</td></tr>
+</tbody></table></div>
+<p class="hint">💡 表格可直接编辑打分，修改后截图或导出即可</p>
+</section>
+<section class="report-section" id="section-9">
+<h2 class="section-title">📝 评分标准</h2>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>维度</th>
+<th>1 分</th>
+<th>3 分</th>
+<th>5 分</th>
+</tr></thead><tbody>
+<tr>
+<td>情感识别度</td>
+<td>完全听不出情感能</td>
+<td>听出大概方向</td>
+<td>情感非常清晰准确</td>
+</tr>
+<tr>
+<td>强度匹配度</td>
+<td>完全不符合目标强度</td>
+<td>接近目标强度</td>
+<td>精确匹配目标强度</td>
+</tr>
+<tr>
+<td>自然度</td>
+<td>明显机器感</td>
+<td>比较自然，偶有生硬</td>
+<td>完全像真人</td>
+</tr>
+<tr>
+<td>副语言质量</td>
+<td>生硬刻意</td>
+<td>较自然</td>
+<td>恰到好处，真实自然</td>
+</tr>
+</tbody></table></div>
+</section>
+
+<section class="report-section" id="section-overall">
+<h2 class="section-title">🔧 总评</h2>
+<div class="eval-summary">
+<div class="eval-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+<div class="eval-item"><div class="eval-key">Module A 综合</div><div class="eval-placeholder">一般。少数情感（CONF/DET/SAD/SHA）表现较好，多数情感档位区分不明显，且存在背景音问题。</div></div>
+<div class="eval-item"><div class="eval-key">Module B 综合</div><div class="eval-placeholder">一般偏下。仅停顿类（PARA-05/08）效果较好，多数副语言特征不支持。</div></div>
+<div class="eval-item"><div class="eval-key">Module C 综合</div><div class="eval-placeholder">一般。音调和口音（东北话）控制较准确，语速/音量/韵律控制不到位。</div></div>
+<div class="eval-item"><div class="eval-key">Module D 综合</div><div class="eval-placeholder">一般偏下。仅 COMP-04（紧张+耳语）效果较好，多维度融合能力不足。</div></div>
+</div>
+<div style="margin-top:1rem;">
+<div class="eval-item" style="border-left-color:#dc2626;">
+  <div class="eval-key" style="color:#dc2626;">关键问题</div>
+  <div class="eval-placeholder">1. 全局性背景音乐/背景音问题，几乎每句都有，严重影响评估<br>2. 情感强度档位区分度不足，中高档位普遍存在音质下降或韵律失真<br>3. 副语言特征覆盖有限，复杂特征（气声、吞咽、咂嘴等）未实现<br>4. 多维度指令融合能力弱，复合场景通常只体现单一维度</div>
+</div>
+<div style="margin-top:0.8rem;">
+<div class="eval-item" style="border-left-color:#059669;">
+  <div class="eval-key" style="color:#059669;">亮点</div>
+  <div class="eval-placeholder">1. 音调控制和口音控制（东北话）表现较好<br>2. 停顿类副语言（思考/犹豫/口吃）效果自然<br>3. 部分情感低档位表达到位（悲伤、羞耻、勇气）<br>4. COMP-04 紧张+耳语的复合场景处理出色</div>
+</div>
+</div>
+<div style="margin-top:1.5rem;">
+<div class="eval-item" style="border-left-color:#2563eb;">
+  <div class="eval-key" style="color:#2563eb;">📊 综合评分</div>
+  <div class="eval-placeholder" contenteditable="true">
+    <table style="width:100%;font-size:0.9rem;border-collapse:collapse;">
+    <tr style="border-bottom:1px solid #e5e7eb;"><td style="padding:0.4rem 0;">Module A 情感表达</td><td style="text-align:right;font-weight:700;">3.2 / 5</td></tr>
+    <tr style="border-bottom:1px solid #e5e7eb;"><td style="padding:0.4rem 0;">Module B 副语言</td><td style="text-align:right;font-weight:700;">2.8 / 5</td></tr>
+    <tr style="border-bottom:1px solid #e5e7eb;"><td style="padding:0.4rem 0;">Module C 指令控制</td><td style="text-align:right;font-weight:700;">3.5 / 5</td></tr>
+    <tr style="border-bottom:1px solid #e5e7eb;"><td style="padding:0.4rem 0;">Module D 复合场景</td><td style="text-align:right;font-weight:700;">3.3 / 5</td></tr>
+    <tr><td style="padding:0.5rem 0;font-weight:700;">综合</td><td style="text-align:right;font-weight:700;font-size:1.1rem;color:#2563eb;">3.2 / 5</td></tr>
+    </table>
+  </div>
+</div>
+</div>
+<div style="margin-top:1.5rem;">
+<div class="eval-item" style="border-left-color:#7c3aed;">
+  <div class="eval-key" style="color:#7c3aed;">🎯 优先改进建议</div>
+  <div class="eval-placeholder" contenteditable="true">
+    <ol style="margin:0;padding-left:1.2rem;font-size:0.9rem;line-height:1.8;">
+    <li><b>排查背景音问题</b>：几乎所有音频存在背景音乐/噪音，建议检查生成管线中的音频混合环节</li>
+    <li><b>提升强度区分度</b>：3/6/9 档位差异不明显，建议优化情感强度的条件控制机制</li>
+    <li><b>扩展副语言支持</b>：气声、吞咽、咂嘴等复杂副语言特征未实现，需扩展训练数据覆盖</li>
+    <li><b>增强多维度融合</b>：复合场景中多指令协同能力弱，建议引入多条件联合训练策略</li>
+    <li><b>优化音量/韵律控制</b>：当前音量和韵律指令的精细控制不到位，量化目标难以达成</li>
+    </ol>
+  </div>
+</div>
+</div>
+</section>
+<footer class="report-footer">Generated by Report Generator · 2026-04-14</footer>
+</div></body></html>
