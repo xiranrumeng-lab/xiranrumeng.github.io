@@ -6,18 +6,94 @@
 <title>MiMo-V2.5-TTS 效果体验报告</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: #fff; color: #1E293B; line-height: 1.8;
-  max-width: 1100px; margin: 0 auto; padding: 40px 24px;
+  max-width: 1100px; margin: 0 auto; padding: 0 24px 60px;
 }
-h1 { font-size: 2rem; font-weight: 800; text-align: center; color: #1A56DB; margin-bottom: 6px; }
-.subtitle { text-align: center; color: #64748B; font-size: 0.92rem; margin-bottom: 8px; }
-.meta { text-align: center; color: #94A3B8; font-size: 0.82rem; margin-bottom: 36px; }
+
+/* ── Header ── */
+.report-header {
+  padding: 40px 0 24px; text-align: center;
+  border-bottom: 2px solid #E8EFFC; margin-bottom: 8px;
+}
+h1 { font-size: 2rem; font-weight: 800; color: #1A56DB; margin-bottom: 6px; }
+.subtitle { color: #64748B; font-size: 0.92rem; margin-bottom: 4px; }
+.meta { color: #94A3B8; font-size: 0.82rem; }
+
+/* ── Save Bar (低调) ── */
+.save-bar {
+  position: sticky; top: 0; z-index: 999;
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+  border-bottom: 1px solid #F1F5F9;
+  display: flex; gap: 6px; align-items: center; justify-content: center;
+  padding: 6px 16px; flex-wrap: wrap;
+}
+.save-bar button {
+  padding: 4px 12px; border-radius: 6px; border: 1px solid #E2E8F0; cursor: pointer;
+  font-size: 0.75rem; font-weight: 500; transition: all 0.2s;
+  background: #F8FAFC; color: #64748B;
+}
+.save-bar button:hover { background: #F1F5F9; color: #475569; border-color: #CBD5E1; }
+.save-bar .status { font-size: 0.72rem; color: #94A3B8; margin-left: 6px; }
+.save-bar input[type=file] { display: none; }
+
+/* ── Nav Bar ── */
+.module-nav {
+  position: sticky; top: 32px; z-index: 998;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid #F1F5F9;
+  padding: 6px 16px; display: flex; gap: 2px; flex-wrap: wrap;
+  justify-content: center; overflow-x: auto;
+}
+.nav-link {
+  font-size: 0.72rem; color: #94A3B8; text-decoration: none;
+  padding: 3px 10px; border-radius: 6px; white-space: nowrap;
+  transition: all 0.2s;
+}
+.nav-link:hover { background: #F1F5F9; color: #475569; }
+
+/* ── Stats ── */
+.stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 28px; }
+.stat {
+  background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;
+  padding: 14px 16px; flex: 1; min-width: 120px; text-align: center;
+}
+.stat-num { font-size: 1.6rem; font-weight: 800; color: #1A56DB; }
+.stat-label { font-size: 0.78rem; color: #64748B; }
+
+/* ── Model Caps ── */
+.model-caps {
+  background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px;
+  padding: 24px 28px; margin: 0 0 28px;
+}
+.model-caps h2 { font-size: 1.2rem; color: #1A56DB; margin-bottom: 16px; }
+.model-caps .cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.model-caps .cap-card {
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px;
+}
+.model-caps .cap-card h3 { font-size: 0.95rem; color: #1A56DB; margin-bottom: 8px; }
+.model-caps .cap-card p { font-size: 0.82rem; color: #475569; line-height: 1.6; }
+.model-caps .cap-card a { color: #1A56DB; text-decoration: underline; }
+.model-caps .cap-card.full { grid-column: 1 / -1; }
+@media (max-width: 640px) { .model-caps .cap-grid { grid-template-columns: 1fr; } }
+
+/* ── Summary Grid ── */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 28px; }
+@media (max-width: 640px) { .summary-grid { grid-template-columns: 1fr; } }
+.summary-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 20px; }
+.summary-card h3 { font-size: 0.95rem; color: #1A56DB; margin-bottom: 12px; }
+.summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.88rem; }
+.summary-row .label { color: #64748B; }
+.summary-row .value { font-weight: 700; }
+
+/* ── Sections ── */
 .section { margin-bottom: 40px; }
 .section-title {
   font-size: 1.25rem; font-weight: 700; color: #1A56DB;
   padding-bottom: 8px; border-bottom: 2px solid #E8EFFC; margin-bottom: 16px;
+  scroll-margin-top: 80px;
 }
 table {
   width: 100%; border-collapse: collapse; margin: 12px 0;
@@ -34,161 +110,63 @@ td:nth-child(3) { text-align: left; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #F8FAFC; }
 audio { height: 28px; border-radius: 6px; max-width: 160px; }
-.stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
-.stat { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px 16px; flex: 1; min-width: 120px; text-align: center; }
-.stat-num { font-size: 1.6rem; font-weight: 800; color: #1A56DB; }
-.stat-label { font-size: 0.78rem; color: #64748B; }
-.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
-.summary-card { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 20px; }
-.summary-card h3 { font-size: 0.95rem; color: #1A56DB; margin-bottom: 12px; }
-.summary-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.88rem; }
-.summary-row .label { color: #64748B; }
-.summary-row .value { font-weight: 700; }
 .comment { font-size: 0.75rem; color: #94A3B8; max-width: 180px; text-align: left; }
 @media (max-width: 640px) {
   table { font-size: 0.72rem; }
   th, td { padding: 4px 5px; }
   audio { max-width: 110px; }
-  .summary-grid { grid-template-columns: 1fr; }
 }
 
+/* ── Eval / Manual Review ── */
 .eval-box {
   background: linear-gradient(135deg, #F0F4FF 0%, #F8FAFC 100%);
-  border-left: 4px solid #1A56DB;
-  border-radius: 0 8px 8px 0;
-  padding: 14px 18px;
-  margin: 12px 0 16px 0;
-  font-size: 0.85rem;
-  line-height: 1.7;
-  color: #334155;
+  border-left: 4px solid #1A56DB; border-radius: 0 8px 8px 0;
+  padding: 14px 18px; margin: 12px 0 16px 0;
+  font-size: 0.85rem; line-height: 1.7; color: #334155;
 }
-.eval-box .eval-title {
-  font-weight: 700;
-  color: #1A56DB;
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-}
+.eval-box .eval-title { font-weight: 700; color: #1A56DB; font-size: 0.9rem; margin-bottom: 6px; }
 .eval-box .eval-highlights { color: #059669; font-weight: 600; }
 .eval-box .eval-issues { color: #DC2626; font-weight: 600; }
 
-
 .manual-review {
-  background: #ECFDF5;
-  border-left: 4px solid #10B981;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 16px;
-  margin: 0 0 16px 0;
-  font-size: 0.85rem;
+  background: #ECFDF5; border-left: 4px solid #10B981;
+  border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 0 0 16px 0; font-size: 0.85rem;
 }
 .manual-review .manual-title {
-  font-weight: 700;
-  color: #065F46;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-weight: 700; color: #065F46; font-size: 0.85rem; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
 }
 .manual-review textarea {
-  width: 100%;
-  min-height: 60px;
-  border: 1px dashed #10B981;
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 0.82rem;
-  font-family: inherit;
-  resize: vertical;
-  background: #F0FFF4;
-  color: #334155;
-  line-height: 1.6;
-  outline: none;
+  width: 100%; min-height: 60px; border: 1px dashed #10B981; border-radius: 6px;
+  padding: 8px 10px; font-size: 0.82rem; font-family: inherit; resize: vertical;
+  background: #F0FFF4; color: #334155; line-height: 1.6; outline: none;
 }
-.manual-review textarea:focus {
-  border-color: #10B981;
-  box-shadow: 0 0 0 2px rgba(16,185,129,0.15);
-}
-.other-review {
-  background: #F3F4F6;
-  border-left: 4px solid #9CA3AF;
-}
-.other-review .manual-title {
-  color: #6B7280;
-}
-.other-review textarea {
-  border: 1px dashed #9CA3AF;
-  background: #F9FAFB;
-  color: #334155;
-}
-.other-review textarea:focus {
-  border-color: #9CA3AF;
-  box-shadow: 0 0 0 2px rgba(156,163,175,0.15);
-}
+.manual-review textarea:focus { border-color: #10B981; box-shadow: 0 0 0 2px rgba(16,185,129,0.15); }
+.other-review { background: #F3F4F6; border-left: 4px solid #9CA3AF; }
+.other-review .manual-title { color: #6B7280; }
+.other-review textarea { border: 1px dashed #9CA3AF; background: #F9FAFB; color: #334155; }
+.other-review textarea:focus { border-color: #9CA3AF; box-shadow: 0 0 0 2px rgba(156,163,175,0.15); }
+.manual-review textarea::placeholder { color: #A8A29E; }
 
-.manual-review textarea::placeholder {
-  color: #A8A29E;
-}
-
-
+/* ── Score Inputs ── */
 .score-input {
-  width: 38px;
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #1A56DB;
-  border: 1px solid #CBD5E1;
-  border-radius: 4px;
-  padding: 2px 4px;
-  background: #F8FAFC;
-  outline: none;
-  font-family: inherit;
+  width: 38px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #1A56DB;
+  border: 1px solid #CBD5E1; border-radius: 4px; padding: 2px 4px;
+  background: #F8FAFC; outline: none; font-family: inherit;
 }
-.score-input:focus {
-  border-color: #1A56DB;
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(26,86,219,0.12);
-}
-
-
+.score-input:focus { border-color: #1A56DB; background: #fff; box-shadow: 0 0 0 2px rgba(26,86,219,0.12); }
 .score-input-orange {
-  width: 38px;
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #92400E;
-  border: 1px solid #FDE68A;
-  border-radius: 4px;
-  padding: 2px 4px;
-  background: #FFFBEB;
-  outline: none;
-  font-family: inherit;
+  width: 38px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #92400E;
+  border: 1px solid #FDE68A; border-radius: 4px; padding: 2px 4px;
+  background: #FFFBEB; outline: none; font-family: inherit;
 }
-.score-input-orange:focus {
-  border-color: #F59E0B;
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(245,158,11,0.12);
-}
-
-
+.score-input-orange:focus { border-color: #F59E0B; background: #fff; box-shadow: 0 0 0 2px rgba(245,158,11,0.12); }
 .score-input-green {
-  width: 38px;
-  text-align: center;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #059669;
-  border: 1px solid #A7F3D0;
-  border-radius: 4px;
-  padding: 2px 4px;
-  background: #ECFDF5;
-  outline: none;
-  font-family: inherit;
+  width: 38px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #059669;
+  border: 1px solid #A7F3D0; border-radius: 4px; padding: 2px 4px;
+  background: #ECFDF5; outline: none; font-family: inherit;
 }
-.score-input-green:focus {
-  border-color: #10B981;
-  background: #fff;
-  box-shadow: 0 0 0 2px rgba(16,185,129,0.12);
-}
-
-
+.score-input-green:focus { border-color: #10B981; background: #fff; box-shadow: 0 0 0 2px rgba(16,185,129,0.12); }
 .score-input-darkgreen {
   width: 38px; text-align: center; font-size: 0.82rem; font-weight: 700;
   color: #065F46; border: 1px solid #6EE7B7; border-radius: 4px;
@@ -202,63 +180,134 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
 }
 .score-input-darkred:focus { border-color: #EF4444; background: #fff; box-shadow: 0 0 0 2px rgba(239,68,68,0.12); }
 
+/* ── Divider ── */
+.divider { height: 1px; background: #E2E8F0; margin: 36px 0; }
 
-/* ── Patch: save bar ── */
-.save-bar {
-  position: sticky; top: 0; z-index: 999;
-  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-  border-bottom: 1px solid #E2E8F0;
-  display: flex; gap: 8px; align-items: center; justify-content: center;
-  padding: 10px 16px; flex-wrap: wrap;
+/* ── Hero ── */
+.hero {
+  text-align: center; padding: 28px 0 20px;
 }
-.save-bar button {
-  padding: 6px 16px; border-radius: 6px; border: none; cursor: pointer;
-  font-size: 0.82rem; font-weight: 600; transition: all 0.2s;
-}
-.btn-save { background: #1A56DB; color: #fff; }
-.btn-save:hover { background: #1544B0; }
-.btn-export { background: #059669; color: #fff; }
-.btn-export:hover { background: #047857; }
-.btn-import { background: #7C3AED; color: #fff; }
-.btn-import:hover { background: #6D28D9; }
-.btn-reset { background: #DC2626; color: #fff; }
-.btn-reset:hover { background: #B91C1C; }
-.save-bar .status { font-size: 0.78rem; color: #64748B; margin-left: 8px; }
-.save-bar input[type=file] { display: none; }
-/* ── Patch: model caps ── */
-.model-caps {
-  background: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%);
-  border: 1px solid #C7D2FE; border-radius: 12px;
-  padding: 24px 28px; margin: 24px 0 32px 0;
-}
-.model-caps h2 { font-size: 1.3rem; color: #1A56DB; margin-bottom: 16px; }
-.model-caps .cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.model-caps .cap-card {
-  background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px;
-}
-.model-caps .cap-card h3 { font-size: 0.95rem; color: #1A56DB; margin-bottom: 8px; }
-.model-caps .cap-card p { font-size: 0.82rem; color: #475569; line-height: 1.6; }
-.model-caps .cap-card a { color: #1A56DB; text-decoration: underline; }
-.model-caps .cap-card.full { grid-column: 1 / -1; }
-@media (max-width: 640px) { .model-caps .cap-grid { grid-template-columns: 1fr; } }
+.hero h1 { font-size: 2rem; font-weight: 800; color: #1A56DB; margin-bottom: 6px; }
 
+/* ── Stats Bar ── */
+.stats-bar {
+  display: flex; gap: 12px; flex-wrap: wrap; margin: 20px 0 28px;
+}
+.stat-card {
+  background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px;
+  padding: 14px 16px; flex: 1; min-width: 120px; text-align: center;
+}
+.stat-card .stat-num { font-size: 1.6rem; font-weight: 800; color: #1A56DB; }
+.stat-card .stat-label { font-size: 0.78rem; color: #64748B; }
+
+/* ── Dashboard ── */
+.dashboard-title {
+  font-size: 1.25rem; font-weight: 700; color: #1A56DB;
+  padding-bottom: 8px; border-bottom: 2px solid #E8EFFC; margin-bottom: 16px;
+}
+
+/* ── Filter Bar ── */
+.filter-bar {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;
+  justify-content: center;
+}
+.filter-btn {
+  padding: 5px 14px; border-radius: 6px; border: 1px solid #E2E8F0;
+  cursor: pointer; font-size: 0.78rem; font-weight: 500;
+  transition: all 0.2s; background: #F8FAFC; color: #64748B;
+}
+.filter-btn:hover { background: #F1F5F9; color: #475569; border-color: #CBD5E1; }
+.filter-btn.active { background: #1A56DB; color: #fff; border-color: #1A56DB; }
+
+/* ── Dashboard Grid ── */
+.dashboard-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px; margin: 0 0 28px;
+}
+@media (max-width: 640px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+/* ── Dash Card ── */
+.dash-card {
+  display: block; text-decoration: none; color: inherit;
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 12px;
+  padding: 18px 16px; transition: all 0.2s; position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.dash-card:hover {
+  border-color: #CBD5E1; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+.dash-rating {
+  position: absolute; top: 12px; right: 12px;
+  font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; letter-spacing: 0.02em;
+}
+.rating-excellent { background: #ECFDF5; color: #059669; }
+.rating-good { background: #EFF6FF; color: #1A56DB; }
+.rating-avg { background: #FFFBEB; color: #D97706; }
+.rating-poor { background: #FEF2F2; color: #DC2626; }
+.dash-emoji { font-size: 1.6rem; margin-bottom: 6px; }
+.dash-name { font-size: 0.95rem; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+.dash-samples { font-size: 0.72rem; color: #94A3B8; margin-bottom: 8px; }
+.dash-scores { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.dash-score {
+  font-size: 0.68rem; font-weight: 600; padding: 2px 7px;
+  border-radius: 4px; white-space: nowrap;
+}
+.dash-finding {
+  font-size: 0.78rem; font-weight: 700; color: #334155; margin-bottom: 4px;
+}
+.dash-detail {
+  font-size: 0.72rem; color: #64748B; line-height: 1.5;
+}
+
+/* ── Back to Top ── */
+.back-to-top-wrap { text-align: center; margin: 12px 0 0; }
+.back-to-top-btn {
+  display: inline-block; font-size: 0.75rem; color: #94A3B8;
+  text-decoration: none; padding: 4px 14px; border-radius: 6px;
+  transition: all 0.2s;
+}
+.back-to-top-btn:hover { background: #F1F5F9; color: #475569; }
+
+/* ── Footer ── */
+.report-footer {
+  text-align: center; padding: 32px 0 16px;
+  border-top: 1px solid #E2E8F0; margin-top: 32px;
+  color: #94A3B8; font-size: 0.82rem;
+}
 </style>
 </head>
 <body>
 
+<div id="top"></div>
+
 <div class="save-bar">
-  <button class="btn-save" onclick="saveAll()">💾 本地保存</button>
-  <button class="btn-export" onclick="exportJSON()">📤 导出 JSON</button>
-  <button class="btn-import" onclick="document.getElementById('importFile').click()">📥 导入 JSON</button>
-  <button class="btn-reset" onclick="resetAll()">🗑️ 重置</button>
+  <button onclick="saveAll()">💾 保存</button>
+  <button onclick="exportJSON()">📤 导出</button>
+  <button onclick="document.getElementById('importFile').click()">📥 导入</button>
+  <button onclick="resetAll()">🗑️ 重置</button>
   <input type="file" id="importFile" accept=".json" onchange="importJSON(event)">
   <span class="status" id="saveStatus"></span>
 </div>
 
+<nav class="module-nav">
+  <a href="#dashboard" class="nav-link" style="--dot-color:#1A56DB"><strong>📊 总览</strong></a>
+  <a href="#sec-emotion-transition" class="nav-link" style="--dot-color:#1A56DB">🎭 情感转折</a><a href="#sec-emotion-gradient" class="nav-link" style="--dot-color:#1A56DB">📈 情绪渐变</a><a href="#sec-scene-emotion" class="nav-link" style="--dot-color:#059669">🎬 场景情绪分段</a><a href="#sec-dialect" class="nav-link" style="--dot-color:#1A56DB">🗣️ 方言</a><a href="#sec-dialect-role" class="nav-link" style="--dot-color:#D97706">🎭 方言混搭+角色</a><a href="#sec-english" class="nav-link" style="--dot-color:#D97706">🇬🇧 英文效果</a><a href="#sec-roleplay" class="nav-link" style="--dot-color:#D97706">👤 角色扮演</a><a href="#sec-sound-events" class="nav-link" style="--dot-color:#1A56DB">🔊 细粒度声音事件</a><a href="#sec-director" class="nav-link" style="--dot-color:#1A56DB">🎬 文本描述控制</a><a href="#sec-singing" class="nav-link" style="--dot-color:#DC2626">🎤 唱歌</a><a href="#sec-voicedesign" class="nav-link" style="--dot-color:#1A56DB">🎨 音色创造</a><a href="#sec-multilang" class="nav-link" style="--dot-color:#1A56DB">🌍 多语种覆盖</a><a href="#sec-voiceclone" class="nav-link" style="--dot-color:#059669">🧬 声音克隆</a>
+</nav>
 
-<h1>🎧 MiMo-V2.5-TTS 效果体验报告</h1>
-<p class="subtitle">小米 MiMo TTS 团队 | V2.5效果仅做 AI MOS 评分+人工复核结论 | 本次AI打分仅做试水参考，后续会继续调优</p>
-<p class="meta">118 个样本 · MP3 128kbps · 模型 mimo-v2.5-tts / mimo-v2.5-tts-voicedesign / mimo-v2.5-tts-voiceclone</p>
+<div class="hero">
+  <h1>🎧 MiMo-V2.5-TTS 效果体验报告</h1>
+  <p class="subtitle">小米 MiMo TTS 团队 | V2.5效果仅做 AI MOS 评分+人工复核结论 | 本次AI打分仅做试水参考，后续会继续调优</p>
+  <p class="meta">118 个样本 · MP3 128kbps · 模型 mimo-v2.5-tts / mimo-v2.5-tts-voicedesign / mimo-v2.5-tts-voiceclone</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-num">118</div><div class="stat-label">测试样本</div></div>
+  <div class="stat-card"><div class="stat-num">13</div><div class="stat-label">大类场景</div></div>
+  <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">模型版本</div></div>
+  <div class="stat-card"><div class="stat-num">111/118</div><div class="stat-label">AI已评分</div></div>
+</div>
 
 <div class="model-caps">
   <h2>🧠 模型能力概览</h2>
@@ -279,39 +328,217 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
   </div>
 </div>
 
-<div class="stats">
-  <div class="stat"><div class="stat-num">118</div><div class="stat-label">测试样本</div></div>
-  <div class="stat"><div class="stat-num">13</div><div class="stat-label">大类场景</div></div>
-  <div class="stat"><div class="stat-num">3</div><div class="stat-label">模型版本</div></div>
-  <div class="stat"><div class="stat-num">111/118</div><div class="stat-label">AI已评分</div></div>
-</div>
-
 <div class="summary-grid">
   <div class="summary-card">
     <h3>🎭 情感类评分汇总</h3>
-    <div class="summary-row"><span class="label">自然度 MOS</span><span class="value">3.5</span></div>
-    <div class="summary-row"><span class="label">共情度 MOS</span><span class="value">3.5</span></div>
-    <div class="summary-row"><span class="label">总体感觉 MOS</span><span class="value">3.5</span></div>
-    <div class="summary-row"><span class="label">样本数</span><span class="value">98</span></div>
+    <div class="summary-row"><span class="label">自然度 MOS</span><span class="value">3.98</span></div>
+    <div class="summary-row"><span class="label">共情度 MOS</span><span class="value">3.92</span></div>
+    <div class="summary-row"><span class="label">总体感觉 MOS</span><span class="value">3.92</span></div>
+    <div class="summary-row"><span class="label">样本数</span><span class="value">97</span></div>
   </div>
   <div class="summary-card">
     <h3>🎬 控制类评分汇总</h3>
-    <div class="summary-row"><span class="label">自然度 MOS</span><span class="value">3.92</span></div>
-    <div class="summary-row"><span class="label">总体感觉 MOS</span><span class="value">3.88</span></div>
-    <div class="summary-row"><span class="label">控制生效</span><span class="value">4.23</span></div>
-    <div class="summary-row"><span class="label">效果情况</span><span class="value">3.73</span></div>
-    <div class="summary-row"><span class="label">样本数</span><span class="value">13</span></div>
+    <div class="summary-row"><span class="label">自然度 MOS</span><span class="value">3.83</span></div>
+    <div class="summary-row"><span class="label">总体感觉 MOS</span><span class="value">3.77</span></div>
+    <div class="summary-row"><span class="label">控制生效</span><span class="value">4.33</span></div>
+    <div class="summary-row"><span class="label">效果情况</span><span class="value">4.08</span></div>
+    <div class="summary-row"><span class="label">样本数</span><span class="value">15</span></div>
   </div>
 </div>
 
+<div class="divider"></div>
 
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="dashboard">
+  <div class="dashboard-title">📋 各模块总体结论 <span style="font-size:0.8rem;font-weight:400;color:#94A3B8">— 点击卡片跳转详细数据</span></div>
+  
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCards('all')">全部</button>
+    <button class="filter-btn" onclick="filterCards('优秀')">🟢 优秀</button>
+    <button class="filter-btn" onclick="filterCards('良好')">🔵 良好</button>
+    <button class="filter-btn" onclick="filterCards('一般')">🟠 一般</button>
+    <button class="filter-btn" onclick="filterCards('较差')">🔴 较差</button>
+  </div>
 
+  <div class="dashboard-grid">
+    
+    <a href="#sec-emotion-transition" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🎭</div>
+      <div class="dash-name">情感转折</div>
+      <div class="dash-samples">16 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.12</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.12</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.12</span>
+      </div>
+      <div class="dash-finding">稳健但不出彩</div>
+      <div class="dash-detail">情感过渡不够流畅是共性问题，"嫌弃转真香"和"从怀疑到确信"是本模块亮点</div>
+    </a>
+    <a href="#sec-emotion-gradient" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">📈</div>
+      <div class="dash-name">情绪渐变</div>
+      <div class="dash-samples">8 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.31</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.19</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.38</span>
+      </div>
+      <div class="dash-finding">渐变细腻度不足</div>
+      <div class="dash-detail">"拆快递惊喜"三维满分5.0表现突出，长句情感递进表现偏弱</div>
+    </a>
+    <a href="#sec-scene-emotion" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-excellent">优秀</span>
+      <div class="dash-emoji">🎬</div>
+      <div class="dash-name">场景情绪分段</div>
+      <div class="dash-samples">2 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#05966915;color:#059669;border:1px solid #05966930">自然度 4.5</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.25</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.0</span>
+      </div>
+      <div class="dash-finding">本批次表现最佳</div>
+      <div class="dash-detail">情绪层次丰富，过渡自然，可作为标杆参考</div>
+    </a>
+    <a href="#sec-dialect" class="dash-card" data-rating="一般">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🗣️</div>
+      <div class="dash-name">方言</div>
+      <div class="dash-samples">16 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">自然度 3.5</span>
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">共情度 3.59</span>
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">总体 3.47</span>
+      </div>
+      <div class="dash-finding">粤语是明显短板</div>
+      <div class="dash-detail">东北话表现最佳，粤语和台湾腔完全不在线，方言能力不均衡</div>
+    </a>
+    <a href="#sec-dialect-role" class="dash-card" data-rating="较差">
+      <span class="dash-rating rating-avg">一般</span>
+      <div class="dash-emoji">🎭</div>
+      <div class="dash-name">方言混搭+角色</div>
+      <div class="dash-samples">5 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">自然度 3.9</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.0</span>
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">总体 3.96</span>
+      </div>
+      <div class="dash-finding">整体不及格</div>
+      <div class="dash-detail">方言+角色组合后控制率明显下降，双重要素叠加后控制力下降</div>
+    </a>
+    <a href="#sec-english" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-avg">一般</span>
+      <div class="dash-emoji">🇬🇧</div>
+      <div class="dash-name">英文效果</div>
+      <div class="dash-samples">10 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.3</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.4</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.2</span>
+      </div>
+      <div class="dash-finding">副语言不自然</div>
+      <div class="dash-detail">发音非常差，情绪尚可，韵律生硬机械，AI打分偏高</div>
+    </a>
+    <a href="#sec-roleplay" class="dash-card" data-rating="一般">
+      <span class="dash-rating rating-avg">一般</span>
+      <div class="dash-emoji">👤</div>
+      <div class="dash-name">角色扮演</div>
+      <div class="dash-samples">9 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">自然度 3.67</span>
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">共情度 3.78</span>
+        <span class="dash-score" style="background:#D9770615;color:#D97706;border:1px solid #D9770630">总体 3.67</span>
+      </div>
+      <div class="dash-finding">严重两极分化</div>
+      <div class="dash-detail">演绎感非常明显且生硬，大概率出现发音错误</div>
+    </a>
+    <a href="#sec-sound-events" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🔊</div>
+      <div class="dash-name">细粒度声音事件</div>
+      <div class="dash-samples">31 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.34</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.34</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.27</span>
+      </div>
+      <div class="dash-finding">整体稳定缺惊艳</div>
+      <div class="dash-detail">耳语和沉默片刻拿下满分5.0，模型对"留白"和"低声"还原到位</div>
+    </a>
+    <a href="#sec-director" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🎬</div>
+      <div class="dash-name">文本描述控制</div>
+      <div class="dash-samples">7 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.21</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">共情度 4.22</span>
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.21</span>
+      </div>
+      <div class="dash-finding">控制力中等偏上</div>
+      <div class="dash-detail">"困到不行"拿下5.0满分，日常生活化角色理解力较强</div>
+    </a>
+    <a href="#sec-singing" class="dash-card" data-rating="较差">
+      <span class="dash-rating rating-poor">较差</span>
+      <div class="dash-emoji">🎤</div>
+      <div class="dash-name">唱歌</div>
+      <div class="dash-samples">3 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#DC262615;color:#DC2626;border:1px solid #DC262630">自然度 1.83</span>
+        
+        <span class="dash-score" style="background:#DC262615;color:#DC2626;border:1px solid #DC262630">总体 1.83</span>
+      </div>
+      <div class="dash-finding">基本不可用</div>
+      <div class="dash-detail">音准偏差、气息不自然、情感平淡，所有模块中最差</div>
+    </a>
+    <a href="#sec-voicedesign" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🎨</div>
+      <div class="dash-name">音色创造</div>
+      <div class="dash-samples">5 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.0</span>
+        
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.0</span>
+      </div>
+      <div class="dash-finding">差异化竞争力</div>
+      <div class="dash-detail">"体育赛事解说"拿下5.0满分，VoiceDesign是模型强项</div>
+    </a>
+    <a href="#sec-multilang" class="dash-card" data-rating="良好">
+      <span class="dash-rating rating-good">良好</span>
+      <div class="dash-emoji">🌍</div>
+      <div class="dash-name">多语种覆盖</div>
+      <div class="dash-samples">2 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">自然度 4.25</span>
+        
+        <span class="dash-score" style="background:#1A56DB15;color:#1A56DB;border:1px solid #1A56DB30">总体 4.25</span>
+      </div>
+      <div class="dash-finding">不支持其他语种</div>
+      <div class="dash-detail">中英双语基础能力在线，其他语种暂不支持</div>
+    </a>
+    <a href="#sec-voiceclone" class="dash-card" data-rating="优秀">
+      <span class="dash-rating rating-excellent">优秀</span>
+      <div class="dash-emoji">🧬</div>
+      <div class="dash-name">声音克隆</div>
+      <div class="dash-samples">4 个样本</div>
+      <div class="dash-scores">
+        <span class="dash-score" style="background:#05966915;color:#059669;border:1px solid #05966930">自然度 4.5</span>
+        
+        <span class="dash-score" style="background:#05966915;color:#059669;border:1px solid #05966930">总体 4.50</span>
+      </div>
+      <div class="dash-finding">低音区需优化</div>
+      <div class="dash-detail">气声/耳语类克隆效果最佳，低音磁性类克隆效果最差</div>
+    </a>
+  </div>
+</div>
 
-<div style="height: 1px; background: #E2E8F0; margin: 36px 0;"></div>
+<div class="divider"></div>
 
-
-<div class="section">
-  <div class="section-title">🎭 情感转折（16 个样本） · 自然度 4.12 · 总体 4.09 · 共情度 4.13</div>
+<!-- ═══════════ DETAIL SECTIONS ═══════════ -->
+<div class="section" id="sec-emotion-transition">
+  <div class="section-title">🎭 情感转折（16 个样本） · 自然度 4.38 · 总体 4.22 · 共情度 4.19</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：情感控制尚可，自然度和细节有提升空间</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">简单的情感控制效果还算不错，稳定性相对其他能力更高。整体打分还算符合。偶尔出现情绪不明显或转折生硬，且演绎感很强，整体共情度较低。YB1的笑着、YB2的勇敢等情感不匹配；<span style="color:#DC2626;font-weight:600;">YB4/YB6效果不错，情感和转折有体现，三段转折的几条效果比较明显</span>；其他较多情感过渡不自然。</p></div>
@@ -321,27 +548,27 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>1</td><td>开心转悲伤</td><td title="（笑着）我考上理想的大学了！（停顿，声音颤抖）可是……爸妈却看不到了。">（笑着）我考上理想的大学了！（停顿，声音颤抖）可是……爸妈却看不到了。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/001.mp3" type="audio/mpeg"></audio></td><td class="comment" title="✏️评语矛盾已修正(哽咽感不够真实)；情感过渡不够流畅；音色稳定性待提高；哽咽感不够真实">✏️评语矛盾已修正(哽咽感不够真实)；情感过渡不够流畅；音色稳定性待提高；哽咽感不够真实</td></tr>
-    <tr><td>2</td><td>害怕转勇敢</td><td title="（颤抖）谁……谁在那儿？（深吸一口气）我告诉你，我、我可不怕你！">（颤抖）谁……谁在那儿？（深吸一口气）我告诉你，我、我可不怕你！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/002.mp3" type="audio/mpeg"></audio></td><td class="comment" title="颤抖效果不自然；情感过渡生硬；害怕部分同频感不足">颤抖效果不自然；情感过渡生硬；害怕部分同频感不足</td></tr>
-    <tr><td>3</td><td>平静转激动</td><td title="我跟你说，这事儿就这么定了。（突然提高音量）什么？你再说一遍？！">我跟你说，这事儿就这么定了。（突然提高音量）什么？你再说一遍？！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/003.mp3" type="audio/mpeg"></audio></td><td class="comment" title="过渡处韵律生硬；重音不够自然；音色稳定性不足">过渡处韵律生硬；重音不够自然；音色稳定性不足</td></tr>
-    <tr><td>4</td><td>生气转怂</td><td title="（暴怒）谁把我咖啡喝了？！……（看清来人后，声音渐弱）啊，老板，是您啊，没事没事～">（暴怒）谁把我咖啡喝了？！……（看清来人后，声音渐弱）啊，老板，是您啊，没事没事～</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/004.mp3" type="audio/mpeg"></audio></td><td class="comment" title="生气部分力度不足；怒转怂过渡生硬；情绪表达不够精准">生气部分力度不足；怒转怂过渡生硬；情绪表达不够精准</td></tr>
-    <tr><td>5</td><td>嫌弃转真香</td><td title="（嫌弃）这东西看起来就不怎么样……（尝了一口，惊喜）嗯？！还挺好吃！">（嫌弃）这东西看起来就不怎么样……（尝了一口，惊喜）嗯？！还挺好吃！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/005.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在表达嫌弃转惊喜的情绪转换上较为自然，韵律基本流畅，但共情度略有不足，整体可接受。">语音在表达嫌弃转惊喜的情绪转换上较为自然，韵律基本流畅，但共情度略有不足，...</td></tr>
-    <tr><td>6</td><td>自我安慰</td><td title="（叹气）唉，又搞砸了……（打起精神）算了，下次努力就好，谁还没个失误呢。">（叹气）唉，又搞砸了……（打起精神）算了，下次努力就好，谁还没个失误呢。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/006.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感转换略仓促">情感转换略仓促</td></tr>
-    <tr><td>7</td><td>从怀疑到确信</td><td title="（皱眉）这能行吗？……（思考片刻，坚定）嗯，仔细想想，这个方案确实可行。">（皱眉）这能行吗？……（思考片刻，坚定）嗯，仔细想想，这个方案确实可行。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/007.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音能较好地处理文本中的停顿和语气词，韵律基本自然；情绪从怀疑到确信的转变表达清晰，但语调变化可更细腻以增强共情。整体质量可接受，适合一般应用场景。">语音能较好地处理文本中的停顿和语气词，韵律基本自然；情绪从怀疑到确信的转变...</td></tr>
-    <tr><td>8</td><td>被揭穿瞬间</td><td title="（自信）这事儿绝对不是我干的！（掏出证据，慌乱）呃……这个……你听我解释！">（自信）这事儿绝对不是我干的！（掏出证据，慌乱）呃……这个……你听我解释！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/008.mp3" type="audio/mpeg"></audio></td><td class="comment" title="自信感重音不足；慌乱语速变化不够">自信感重音不足；慌乱语速变化不够</td></tr>
-    <tr><td>9</td><td>直播翻车</td><td title="（亢奋）家人们冲啊！这个价格——（突然卡顿，小声）导演，我词儿忘了。">（亢奋）家人们冲啊！这个价格——（突然卡顿，小声）导演，我词儿忘了。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/009.mp3" type="audio/mpeg"></audio></td><td class="comment" title="亢奋转小声不自然；小声部分缺乏真实感；情感过渡生硬">亢奋转小声不自然；小声部分缺乏真实感；情感过渡生硬</td></tr>
-    <tr><td>10</td><td>外卖到了</td><td title="（兴奋）我的外卖到了！（开门，疑惑）我没点麻辣烫啊？（确认后）哦，送错了，但……还挺香。">（兴奋）我的外卖到了！（开门，疑惑）我没点麻辣烫啊？（确认后）哦，送错了，但……还挺香。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/010.mp3" type="audio/mpeg"></audio></td><td class="comment" title="兴奋转疑惑过渡生硬；缺乏情绪同频感">兴奋转疑惑过渡生硬；缺乏情绪同频感</td></tr>
-    <tr><td>11</td><td>闹钟响了</td><td title="（迷糊）嗯……再睡五分钟……（惊醒）啊！九点了？！要迟到了！">（迷糊）嗯……再睡五分钟……（惊醒）啊！九点了？！要迟到了！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/011.mp3" type="audio/mpeg"></audio></td><td class="comment" title="迷糊到惊醒过渡生硬；语速变化不够平滑；重音可更突出">迷糊到惊醒过渡生硬；语速变化不够平滑；重音可更突出</td></tr>
-    <tr><td>12</td><td>从豪迈到落寞</td><td title="（豪迈）举杯邀明月，对影成三人！（独酌后，落寞）只是……月不语，影无声。">（豪迈）举杯邀明月，对影成三人！（独酌后，落寞）只是……月不语，影无声。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/012.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成在自然度上基本自然，韵律处理较好；但情绪从豪迈到落寞的转换不够精准，共情度大致匹配但有提升空间；总体勉强接受，需优化情感表达。">语音合成在自然度上基本自然，韵律处理较好；但情绪从豪迈到落寞的转换不够精准...</td></tr>
-    <tr><td>13</td><td>三段转折</td><td title="（开心）今天天气真好，出去走走吧。（想起什么，低落）可是没人陪。（打起精神）算了，一个人也能好好玩！">（开心）今天天气真好，出去走走吧。（想起什么，低落）可是没人陪。（打起精神）算了，一个人也能好好玩！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/013.mp3" type="audio/mpeg"></audio></td><td class="comment" title="低落到振作过渡生硬；韵律节奏不够自然">低落到振作过渡生硬；韵律节奏不够自然</td></tr>
-    <tr><td>14</td><td>从狂喜到失落</td><td title="（尖叫）中奖了！我中奖了！（欢呼）天啊！一百万！（看清细则，声音渐弱）等等……要扣税？还要分期？（低落）哦……好吧。">（尖叫）中奖了！我中奖了！（欢呼）天啊！一百万！（看清细则，声音渐弱）等等……要扣税？还要分期？（低落）哦……好吧。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/014.mp3" type="audio/mpeg"></audio></td><td class="comment" title="失落部分表达不够细腻">失落部分表达不够细腻</td></tr>
-    <tr><td>15</td><td>从平静到崩溃</td><td title="（平静）这事儿我忍了。（压抑）再忍忍吧。（爆发）忍不了啦！凭什么总是我忍？！">（平静）这事儿我忍了。（压抑）再忍忍吧。（爆发）忍不了啦！凭什么总是我忍？！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/015.mp3" type="audio/mpeg"></audio></td><td class="comment" title="爆发部分突兀缺乏渐进感；末尾电子音；愤怒表达机械感">爆发部分突兀缺乏渐进感；末尾电子音；愤怒表达机械感</td></tr>
-    <tr><td>16</td><td>惊喜转疑惑转哭笑不得</td><td title="（惊喜）哇！限量版！（疑惑）等等，这包装怎么不太对？（哭笑不得）好家伙，高仿！">（惊喜）哇！限量版！（疑惑）等等，这包装怎么不太对？（哭笑不得）好家伙，高仿！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/016.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感过渡生硬；三情绪切换不够流畅；机械感">情感过渡生硬；三情绪切换不够流畅；机械感</td></tr>
+    <tr><td>1</td><td>开心转悲伤</td><td title="（笑着）我考上理想的大学了！（停顿，声音颤抖）可是……爸妈却看不到了。">（笑着）我考上理想的大学了！（停顿，声音颤抖）可是……爸妈却看不到了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/001.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感过渡不够流畅；音色稳定性待提高；哽咽感不够真实">情感过渡不够流畅；音色稳定性待提高；哽咽感不够真实</td></tr>
+    <tr><td>2</td><td>害怕转勇敢</td><td title="（颤抖）谁……谁在那儿？（深吸一口气）我告诉你，我、我可不怕你！">（颤抖）谁……谁在那儿？（深吸一口气）我告诉你，我、我可不怕你！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/002.mp3" type="audio/mpeg"></audio></td><td class="comment" title="颤抖效果不自然；情感过渡生硬；害怕部分同频感不足">颤抖效果不自然；情感过渡生硬；害怕部分同频感不足</td></tr>
+    <tr><td>3</td><td>平静转激动</td><td title="我跟你说，这事儿就这么定了。（突然提高音量）什么？你再说一遍？！">我跟你说，这事儿就这么定了。（突然提高音量）什么？你再说一遍？！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/003.mp3" type="audio/mpeg"></audio></td><td class="comment" title="过渡处韵律生硬；重音不够自然；音色稳定性不足">过渡处韵律生硬；重音不够自然；音色稳定性不足</td></tr>
+    <tr><td>4</td><td>生气转怂</td><td title="（暴怒）谁把我咖啡喝了？！……（看清来人后，声音渐弱）啊，老板，是您啊，没事没事～">（暴怒）谁把我咖啡喝了？！……（看清来人后，声音渐弱）啊，老板，是您啊，没事没事～</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/004.mp3" type="audio/mpeg"></audio></td><td class="comment" title="生气部分力度不足；怒转怂过渡生硬；情绪表达不够精准">生气部分力度不足；怒转怂过渡生硬；情绪表达不够精准</td></tr>
+    <tr><td>5</td><td>嫌弃转真香</td><td title="（嫌弃）这东西看起来就不怎么样……（尝了一口，惊喜）嗯？！还挺好吃！">（嫌弃）这东西看起来就不怎么样……（尝了一口，惊喜）嗯？！还挺好吃！</td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/005.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在表达嫌弃转惊喜的情绪转换上较为自然，韵律基本流畅，但共情度略有不足，整体可接受。">语音在表达嫌弃转惊喜的情绪转换上较为自然，韵律基本流畅，但共情度略有不足，...</td></tr>
+    <tr><td>6</td><td>自我安慰</td><td title="（叹气）唉，又搞砸了……（打起精神）算了，下次努力就好，谁还没个失误呢。">（叹气）唉，又搞砸了……（打起精神）算了，下次努力就好，谁还没个失误呢。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/006.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感转换略仓促">情感转换略仓促</td></tr>
+    <tr><td>7</td><td>从怀疑到确信</td><td title="（皱眉）这能行吗？……（思考片刻，坚定）嗯，仔细想想，这个方案确实可行。">（皱眉）这能行吗？……（思考片刻，坚定）嗯，仔细想想，这个方案确实可行。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/007.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音能较好地处理文本中的停顿和语气词，韵律基本自然；情绪从怀疑到确信的转变表达清晰，但语调变化可更细腻以增强共情。整体质量可接受，适合一般应用场景。">语音能较好地处理文本中的停顿和语气词，韵律基本自然；情绪从怀疑到确信的转变...</td></tr>
+    <tr><td>8</td><td>被揭穿瞬间</td><td title="（自信）这事儿绝对不是我干的！（掏出证据，慌乱）呃……这个……你听我解释！">（自信）这事儿绝对不是我干的！（掏出证据，慌乱）呃……这个……你听我解释！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/008.mp3" type="audio/mpeg"></audio></td><td class="comment" title="自信感重音不足；慌乱语速变化不够">自信感重音不足；慌乱语速变化不够</td></tr>
+    <tr><td>9</td><td>直播翻车</td><td title="（亢奋）家人们冲啊！这个价格——（突然卡顿，小声）导演，我词儿忘了。">（亢奋）家人们冲啊！这个价格——（突然卡顿，小声）导演，我词儿忘了。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/009.mp3" type="audio/mpeg"></audio></td><td class="comment" title="亢奋转小声不自然；小声部分缺乏真实感；情感过渡生硬">亢奋转小声不自然；小声部分缺乏真实感；情感过渡生硬</td></tr>
+    <tr><td>10</td><td>外卖到了</td><td title="（兴奋）我的外卖到了！（开门，疑惑）我没点麻辣烫啊？（确认后）哦，送错了，但……还挺香。">（兴奋）我的外卖到了！（开门，疑惑）我没点麻辣烫啊？（确认后）哦，送错了，但……还挺香。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/010.mp3" type="audio/mpeg"></audio></td><td class="comment" title="兴奋转疑惑过渡生硬；缺乏情绪同频感">兴奋转疑惑过渡生硬；缺乏情绪同频感</td></tr>
+    <tr><td>11</td><td>闹钟响了</td><td title="（迷糊）嗯……再睡五分钟……（惊醒）啊！九点了？！要迟到了！">（迷糊）嗯……再睡五分钟……（惊醒）啊！九点了？！要迟到了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/011.mp3" type="audio/mpeg"></audio></td><td class="comment" title="迷糊到惊醒过渡生硬；语速变化不够平滑；重音可更突出">迷糊到惊醒过渡生硬；语速变化不够平滑；重音可更突出</td></tr>
+    <tr><td>12</td><td>从豪迈到落寞</td><td title="（豪迈）举杯邀明月，对影成三人！（独酌后，落寞）只是……月不语，影无声。">（豪迈）举杯邀明月，对影成三人！（独酌后，落寞）只是……月不语，影无声。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/012.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成在自然度上基本自然，韵律处理较好；但情绪从豪迈到落寞的转换不够精准，无豪迈感；总体勉强接受，需优化情感表达。">语音合成在自然度上基本自然，韵律处理较好；但情绪从豪迈到落寞的转换不够精准...</td></tr>
+    <tr><td>13</td><td>三段转折</td><td title="（开心）今天天气真好，出去走走吧。（想起什么，低落）可是没人陪。（打起精神）算了，一个人也能好好玩！">（开心）今天天气真好，出去走走吧。（想起什么，低落）可是没人陪。（打起精神）算了，一个人也能好好玩！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/013.mp3" type="audio/mpeg"></audio></td><td class="comment" title="低落到振作过渡生硬；韵律节奏不够自然">低落到振作过渡生硬；韵律节奏不够自然</td></tr>
+    <tr><td>14</td><td>从狂喜到失落</td><td title="（尖叫）中奖了！我中奖了！（欢呼）天啊！一百万！（看清细则，声音渐弱）等等……要扣税？还要分期？（低落）哦……好吧。">（尖叫）中奖了！我中奖了！（欢呼）天啊！一百万！（看清细则，声音渐弱）等等……要扣税？还要分期？（低落）哦……好吧。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/014.mp3" type="audio/mpeg"></audio></td><td class="comment" title="欢呼非常刻意演绎，失落部分表达不够细腻">欢呼非常刻意演绎，失落部分表达不够细腻</td></tr>
+    <tr><td>15</td><td>从平静到崩溃</td><td title="（平静）这事儿我忍了。（压抑）再忍忍吧。（爆发）忍不了啦！凭什么总是我忍？！">（平静）这事儿我忍了。（压抑）再忍忍吧。（爆发）忍不了啦！凭什么总是我忍？！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/015.mp3" type="audio/mpeg"></audio></td><td class="comment" title="爆发部分突兀缺乏渐进感；末尾电子音；愤怒表达机械感">爆发部分突兀缺乏渐进感；末尾电子音；愤怒表达机械感</td></tr>
+    <tr><td>16</td><td>惊喜转疑惑转哭笑不得</td><td title="（惊喜）哇！限量版！（疑惑）等等，这包装怎么不太对？（哭笑不得）好家伙，高仿！">（惊喜）哇！限量版！（疑惑）等等，这包装怎么不太对？（哭笑不得）好家伙，高仿！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/016.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体符合，但情感过渡不够丝滑，不够流畅自然；略有机械感">整体符合，但情感过渡不够丝滑，不够流畅自然；略有机械感</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">📈 情绪渐变（8 个样本） · 自然度 4.32 · 总体 4.38 · 共情度 4.19</div>
+<div class="section" id="sec-emotion-gradient">
+  <div class="section-title">📈 情绪渐变（8 个样本） · 自然度 4.25 · 总体 4.12 · 共情度 4</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：递进层次可辨，但渐变细腻度不足</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;"><span style="color:#DC2626;font-weight:600;">部分维度打分偏高</span>。各维度平均约3.5分。YB18哼歌还不错，但情感语气无递进感；YB19好奇到惊喜递进不错但激动尖叫合成音明显；<span style="color:#DC2626;font-weight:600;">YB23情绪转折程度较低，打分偏高</span>；YB24文本控制不错，但是情感没有递进。</p></div>
@@ -351,131 +578,130 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>17</td><td>愤怒递进，越来越生气</td><td title="（平静）这件事，我可以不生气。（稍有不悦）但你不该骗我。（明显愤怒）我最恨别人骗我！（爆发）你给我滚出去！！！">（平静）这件事，我可以不生气。（稍有不悦）但你不该骗我。（明显愤怒）我最恨别人骗我！（爆发）你给我滚出去！！！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/017.mp3" type="audio/mpeg"></audio></td><td class="comment" title="爆发部分语气略生硬">爆发部分语气略生硬</td></tr>
-    <tr><td>18</td><td>喜悦递进，越来越开心</td><td title="（哼歌）啦啦啦～（渐入佳境）今天心情真好～（手舞足蹈）感觉整个世界都是我的！">（哼歌）啦啦啦～（渐入佳境）今天心情真好～（手舞足蹈）感觉整个世界都是我的！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/018.mp3" type="audio/mpeg"></audio></td><td class="comment" title="✏️评语矛盾已修正(情感递进平淡)；情感递进层次感平淡；动态变化不足">✏️评语矛盾已修正(情感递进平淡)；情感递进层次感平淡；动态变化不足</td></tr>
-    <tr><td>19</td><td>喜悦递进，从好奇到激动尖叫</td><td title="（轻声）嗯？有我的快递？（好奇）谁寄的？（拆开，惊喜）哇！是限量版！（激动尖叫）啊啊啊我爱死你了！！！">（轻声）嗯？有我的快递？（好奇）谁寄的？（拆开，惊喜）哇！是限量版！（激动尖叫）啊啊啊我爱死你了！！！</td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><audio controls preload="none"><source src="audio/019.mp3" type="audio/mpeg"></audio></td><td class="comment" title="合成语音较好地捕捉了从好奇到激动的情绪递进，韵律自然流畅，共情度精准匹配风格，总体质量可接受，但尖叫部分可能略显机械。">合成语音较好地捕捉了从好奇到激动的情绪递进，韵律自然流畅，共情度精准匹配风...</td></tr>
-    <tr><td>20</td><td>失落递进，越来越悲伤</td><td title="（平静）没事，我能接受。（哽咽）真的……能接受。（泪崩）骗你的，我接受不了……">（平静）没事，我能接受。（哽咽）真的……能接受。（泪崩）骗你的，我接受不了……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/020.mp3" type="audio/mpeg"></audio></td><td class="comment" title="转折处爆发稍突兀">转折处爆发稍突兀</td></tr>
-    <tr><td>21</td><td>失落递进，从回忆到长叹</td><td title="（望着远方）以前这里多热闹啊……（苦笑）现在就剩我一个人了。（长叹）唉……">（望着远方）以前这里多热闹啊……（苦笑）现在就剩我一个人了。（长叹）唉……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/021.mp3" type="audio/mpeg"></audio></td><td class="comment" title="苦笑情绪层次不足；长叹略带机械感">苦笑情绪层次不足；长叹略带机械感</td></tr>
-    <tr><td>22</td><td>相似情绪三阶递进，低落转振作转激昂</td><td title="（叹气）唉，又失败了……（打起精神）不过没关系，再来一次！（握拳）这次一定能行！（高呼）加油！">（叹气）唉，又失败了……（打起精神）不过没关系，再来一次！（握拳）这次一定能行！（高呼）加油！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/022.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律节奏机械；重音不够精准；情感表达生硬">韵律节奏机械；重音不够精准；情感表达生硬</td></tr>
-    <tr><td>23</td><td>情感递进，从被忽视到爆发到自嘲</td><td title="（小声嘀咕）今天好像没人注意我……（稍大声）也没人理我……（喊出来）全世界都把我忘了是吧？！（低落）算了，习惯了。">（小声嘀咕）今天好像没人注意我……（稍大声）也没人理我……（喊出来）全世界都把我忘了是吧？！（低落）算了，习惯了。</td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/023.mp3" type="audio/mpeg"></audio></td><td class="comment" title="低语到喊叫转变不自然；重音语速变化机械；缺乏情绪同频感">低语到喊叫转变不自然；重音语速变化机械；缺乏情绪同频感</td></tr>
-    <tr><td>24</td><td>强弱情感递进</td><td title="（由弱到强）我、不、同、意！！！">（由弱到强）我、不、同、意！！！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/024.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在情感递进处理上非常出色，从低语到爆发的层次感清晰，情绪张力十足，共情度高。自然度方面，发音清晰，节奏把控得当，仅在个别字词衔接处稍显刻意，整体接近真人表达。">语音在情感递进处理上非常出色，从低语到爆发的层次感清晰，情绪张力十足，共情...</td></tr>
+    <tr><td>17</td><td>愤怒递进，越来越生气</td><td title="（平静）这件事，我可以不生气。（稍有不悦）但你不该骗我。（明显愤怒）我最恨别人骗我！（爆发）你给我滚出去！！！">（平静）这件事，我可以不生气。（稍有不悦）但你不该骗我。（明显愤怒）我最恨别人骗我！（爆发）你给我滚出去！！！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/017.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体效果符合，爆发部分语气略生硬">整体效果符合，爆发部分语气略生硬</td></tr>
+    <tr><td>18</td><td>喜悦递进，越来越开心</td><td title="（哼歌）啦啦啦～（渐入佳境）今天心情真好～（手舞足蹈）感觉整个世界都是我的！">（哼歌）啦啦啦～（渐入佳境）今天心情真好～（手舞足蹈）感觉整个世界都是我的！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/018.mp3" type="audio/mpeg"></audio></td><td class="comment" title="哼唱效果好，情感递进层次感平淡；动态变化不足">情感递进层次感平淡；动态变化不足</td></tr>
+    <tr><td>19</td><td>喜悦递进，从好奇到激动尖叫</td><td title="（轻声）嗯？有我的快递？（好奇）谁寄的？（拆开，惊喜）哇！是限量版！（激动尖叫）啊啊啊我爱死你了！！！">（轻声）嗯？有我的快递？（好奇）谁寄的？（拆开，惊喜）哇！是限量版！（激动尖叫）啊啊啊我爱死你了！！！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/019.mp3" type="audio/mpeg"></audio></td><td class="comment" title="合成语音较好地捕捉了从好奇到激动的情绪递进，韵律自然流畅，共情度精准匹配风格，总体质量可接受，但尖叫部分略显机械。">合成语音较好地捕捉了从好奇到激动的情绪递进，韵律自然流畅，共情度精准匹配风...</td></tr>
+    <tr><td>20</td><td>失落递进，越来越悲伤</td><td title="（平静）没事，我能接受。（哽咽）真的……能接受。（泪崩）骗你的，我接受不了……">（平静）没事，我能接受。（哽咽）真的……能接受。（泪崩）骗你的，我接受不了……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/020.mp3" type="audio/mpeg"></audio></td><td class="comment" title="转折处爆发稍突兀">转折处爆发稍突兀</td></tr>
+    <tr><td>21</td><td>失落递进，从回忆到长叹</td><td title="（望着远方）以前这里多热闹啊……（苦笑）现在就剩我一个人了。（长叹）唉……">（望着远方）以前这里多热闹啊……（苦笑）现在就剩我一个人了。（长叹）唉……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/021.mp3" type="audio/mpeg"></audio></td><td class="comment" title="苦笑情绪层次不足；长叹略带机械感">苦笑情绪层次不足；长叹略带机械感</td></tr>
+    <tr><td>22</td><td>相似情绪三阶递进，低落转振作转激昂</td><td title="（叹气）唉，又失败了……（打起精神）不过没关系，再来一次！（握拳）这次一定能行！（高呼）加油！">（叹气）唉，又失败了……（打起精神）不过没关系，再来一次！（握拳）这次一定能行！（高呼）加油！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/022.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律自然；情感表达符合">韵律自然；情感表达符合</td></tr>
+    <tr><td>23</td><td>情感递进，从被忽视到爆发到自嘲</td><td title="（小声嘀咕）今天好像没人注意我……（稍大声）也没人理我……（喊出来）全世界都把我忘了是吧？！（低落）算了，习惯了。">（小声嘀咕）今天好像没人注意我……（稍大声）也没人理我……（喊出来）全世界都把我忘了是吧？！（低落）算了，习惯了。</td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/023.mp3" type="audio/mpeg"></audio></td><td class="comment" title="低语到喊叫转变不自然；重音语速变化机械；缺乏情绪同频感">低语到喊叫转变不自然；重音语速变化机械；缺乏情绪同频感</td></tr>
+    <tr><td>24</td><td>强弱情感递进</td><td title="（由弱到强）我、不、同、意！！！">（由弱到强）我、不、同、意！！！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/024.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在情感递进一般，从低语到爆发的层次感不够；自然度方面，发音清晰，节奏把控得当，仅在个别字词衔接处稍显刻意，整体接近真人表达。">语音在情感递进一般，从低语到爆发的层次感不够……</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🎬 场景情绪分段（2 个样本） · 自然度 4.5 · 总体 4.5 · 共情度 5.0</div>
+<div class="section" id="sec-scene-emotion">
+  <div class="section-title">🎬 场景情绪分段（2 个样本） · 自然度 4.25 · 总体 4.25 · 共情度 4.25</div>
   <div class="eval-box">
-    <div class="eval-title">📊 总结评价：本批次表现最佳，堪称标杆</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">整体情感控制较好，但自然度不够、常发发音问题但YB25情绪转折明显但整体节奏不好，最后一个情绪表现不到位，衔接自然度有待加强，<span style="color:#DC2626;font-weight:600;">打分过高，顶多4分</span>。YB26情感转折不明显、节奏单一、语句不自然，<span style="color:#DC2626;font-weight:600;">其中存在较多发音不准问题，影响理解，打分顶多3分</span>。</p></div>
-
-    <div>自然度 4.5、共情度 5.0、总体 4.5。两个样本均达到 4.5 分以上，情绪层次丰富，过渡自然。"考试查分"的五阶段切换（颤抖→不敢看→惊喜大笑→喜极而泣）完成度很高，笑声和哭腔气声细节处理出色。<span class="eval-highlights">本模块是所有情感类模块中表现最好的</span>，可以作为标杆参考。</div>
+    <div class="eval-title">📊 总结评价：本批次表现较佳，情感匹配但真实自然感欠缺</div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">整体情感控制较好，但自然度会略有欠缺、发音问题频发（批量合成更易出现），衔接自然度有待加强，<span style="color:#DC2626;font-weight:600;">情感符合，但是缺少真实自然感，有种明显的刻意演绎感</span>。
+    <div>AI总结：自然度 4.5、共情度 4.5、总体 4.5。两个样本均达到 4.5 分以上，情绪层次丰富，过渡自然。"考试查分"的五阶段切换（颤抖→不敢看→惊喜大笑→喜极而泣）完成度很高，笑声和哭腔气声细节处理出色。<span class="eval-highlights">本模块是所有情感类模块中表现最好的</span>，可以作为标杆参考。</div>
   </div>
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>25</td><td>从疑惑到狂喜</td><td title="（疑惑）你说什么？（不敢相信）再说一遍？（狂喜）真的？！（抱住对方）太好了！">（疑惑）你说什么？（不敢相信）再说一遍？（狂喜）真的？！（抱住对方）太好了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/025.mp3" type="audio/mpeg"></audio></td><td class="comment" title="狂喜部分铺垫略仓促">狂喜部分铺垫略仓促</td></tr>
-    <tr><td>26</td><td>从紧张颤抖到大笑到喜极而泣</td><td title="（颤抖）输准考证……别抖别抖……（闭眼）不敢看……（睁眼）过了？！（大笑）过了过了！（突然哭）终于过了……">（颤抖）输准考证……别抖别抖……（闭眼）不敢看……（睁眼）过了？！（大笑）过了过了！（突然哭）终于过了……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/026.mp3" type="audio/mpeg"></audio></td><td class="comment" title="哭腔略显夸张；笑声到哭声转换稍突然">哭腔略显夸张；笑声到哭声转换稍突然</td></tr>
+    <tr><td>25</td><td>从疑惑到狂喜</td><td title="（疑惑）你说什么？（不敢相信）再说一遍？（狂喜）真的？！（抱住对方）太好了！">（疑惑）你说什么？（不敢相信）再说一遍？（狂喜）真的？！（抱住对方）太好了！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/025.mp3" type="audio/mpeg"></audio></td><td class="comment" title="狂喜部分铺垫略仓促，刻意感太强一点不自然。">狂喜部分铺垫略仓促，刻意感太强一点不自然</td></tr>
+    <tr><td>26</td><td>从紧张颤抖到大笑到喜极而泣</td><td title="（颤抖）输准考证……别抖别抖……（闭眼）不敢看……（睁眼）过了？！（大笑）过了过了！（突然哭）终于过了……">（颤抖）输准考证……别抖别抖……（闭眼）不敢看……（睁眼）过了？！（大笑）过了过了！（突然哭）终于过了……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/026.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体情感表现符合，哭腔略显夸张；笑声到哭声转换稍突然，但有一定合理性，高情绪有电音。">整体情感表现符合，哭腔略显夸张；笑声到哭声转换稍突然，但有一定合理性，高情绪有电音。</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🗣️ 方言（16 个样本） · 自然度 4.13 · 总体 4.17 · 共情度 4.38</div>
+<div class="section" id="sec-dialect">
+  <div class="section-title">🗣️ 方言（16 个样本） · 自然度 3.12 · 总体 3.12 · 共情度 3.09</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：北方方言表现好，粤语是明显短板</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">东北话有口音但不够明显；河南话有口音但重音位置不对；四川话口音可以但韵律与情绪较差；<span style="color:#DC2626;font-weight:600;">粤语、台湾腔完全不在线</span>。YB37/38/39就不是粤语，应1分；YB40/41/42没有台湾腔口音和韵律，应1分。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">东北话有口音但不够明显；河南话有口音但重音位置不对；四川话口音可以但韵律与情绪较差；<span style="color:#DC2626;font-weight:600;">粤语、台湾腔完全不在线</span>。YB37/38/39就不是粤语；YB40/41/42没有台湾腔口音和韵律。</p></div>
 
-    <div>自然度 4.16、共情度 4.38、总体 4.17。东北话整体表现最佳（均分 4.25），"东北话-通用"三维满分 5.0。四川话和台湾腔也基本过关。但<span class="eval-issues">粤语是明显短板</span>——均分仅 4.07，"粤语夜宵档"总体 4.0，急切感不足。四川话撒娇(034)方言声调不典型（总体 3.5）。<span class="eval-issues">方言能力不均衡是核心问题</span>，粤语和部分方言场景需要重点优化。</div>
+    <div>AI总结：自然度 4.16、共情度 4.38、总体 4.17。东北话整体表现最佳（均分 4.25），"东北话-通用"三维满分 5.0。四川话和台湾腔也基本过关。但<span class="eval-issues">粤语是明显短板</span>——均分仅 4.07，"粤语夜宵档"总体 4.0，急切感不足。四川话撒娇(034)方言声调不典型（总体 3.5）。<span class="eval-issues">方言能力不均衡是核心问题</span>，粤语和部分方言场景需要重点优化。</div>
   </div>
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
     <tr><td>27</td><td>东北话</td><td title="哎呀妈呀，这不巧了嘛！整点啥好吃的呢？必须得是小烧烤啊，贼香！">哎呀妈呀，这不巧了嘛！整点啥好吃的呢？必须得是小烧烤啊，贼香！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/027.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在东北话风格上韵律基本自然，情绪表达与文本的兴奋感大致匹配，整体质量可接受。">语音在东北话风格上韵律基本自然，情绪表达与文本的兴奋感大致匹配，整体质量可接受。</td></tr>
-    <tr><td>28</td><td>东北话 吐槽</td><td title="这天儿也忒冷了，出门冻得直嘚瑟，跟没穿裤子似的，受不了受不了。">这天儿也忒冷了，出门冻得直嘚瑟，跟没穿裤子似的，受不了受不了。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/028.mp3" type="audio/mpeg"></audio></td><td class="comment" title="✏️评语矛盾已修正(生动感不足)；抱怨语气偏平淡；情绪递进感弱">✏️评语矛盾已修正(生动感不足)；抱怨语气偏平淡；情绪递进感弱</td></tr>
-    <tr><td>29</td><td>东北话 生气</td><td title="你瞅啥？再瞅一个试试？我这暴脾气，信不信我削你？">你瞅啥？再瞅一个试试？我这暴脾气，信不信我削你？</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/029.mp3" type="audio/mpeg"></audio></td><td class="comment" title="东北话口音不够自然；语速变化机械">东北话口音不够自然；语速变化机械</td></tr>
-    <tr><td>30</td><td>东北话 情感递进</td><td title="（平静）这事儿吧，我觉得还行。（皱眉）但你这么一整，我就有点不高兴了。（生气）干啥啊？跟我玩这套？（暴怒）信不信我削你？！">（平静）这事儿吧，我觉得还行。（皱眉）但你这么一整，我就有点不高兴了。（生气）干啥啊？跟我玩这套？（暴怒）信不信我...</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/030.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言发音不够地道；情感过渡生硬">方言发音不够地道；情感过渡生硬</td></tr>
-    <tr><td>31</td><td>四川话 火锅店</td><td title="老板儿，来个红锅，微辣哈！毛肚、黄喉、鹅肠各来一份，要快哦，饿得很！">老板儿，来个红锅，微辣哈！毛肚、黄喉、鹅肠各来一份，要快哦，饿得很！</td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/031.mp3" type="audio/mpeg"></audio></td><td class="comment" title="儿化不对，口音不地道，基本偏普通话，但语音韵律基本自然，情绪精准度和韵律细节有轻微不完美，整体可接受。">儿化不对，口音不地道，基本偏普通话，但情绪精准度...</td></tr>
-    <tr><td>32</td><td>四川话 抱怨</td><td title="今天堵车堵得鬼火冒，一公里路走了一个小时，硬是把我整神了。">今天堵车堵得鬼火冒，一公里路走了一个小时，硬是把我整神了。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/032.mp3" type="audio/mpeg"></audio></td><td class="comment" title="重音不够精准；韵律略显刻板">重音不够精准；韵律略显刻板</td></tr>
-    <tr><td>33</td><td>四川话 惊讶</td><td title="啥子安？你说啥子？我咋个完全听不懂呢？你莫豁我哈！">啥子安？你说啥子？我咋个完全听不懂呢？你莫豁我哈！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/033.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在四川话方言上自然度基本良好，韵律接近真人；惊讶情绪传达基本相符，但可能略有不足；整体质量一般，情感不足。">语音在四川话方言上自然度基本良好，韵律接近真人；惊讶情绪传达基本相符，但可...</td></tr>
-    <tr><td>34</td><td>四川话 撒娇</td><td title="哎呀～人家不想走路嘛，你背我嘛～就背一小段路，好不好嘛～">哎呀～人家不想走路嘛，你背我嘛～就背一小段路，好不好嘛～</td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/034.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言声调不典型；拖音机械；缺乏自然起伏">方言声调不典型；拖音机械；缺乏自然起伏</td></tr>
-    <tr><td>35</td><td>河南话 劝酒</td><td title="来，兄弟，再喝一杯！今儿个高兴，不醉不归，恁可别扫兴啊！">来，兄弟，再喝一杯！今儿个高兴，不醉不归，恁可别扫兴啊！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/035.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在河南话方言的韵律处理上略显生硬，情绪表达基本符合劝酒场景，但整体自然度一般。">语音在河南话方言的韵律处理上略显生硬，情绪表达基本符合劝酒场景，但整体自然...</td></tr>
-    <tr><td>36</td><td>河南话 埋怨</td><td title="你说你这孩子，咋恁不听话哩？让你穿秋裤你不穿，感冒了可咋弄？">你说你这孩子，咋恁不听话哩？让你穿秋裤你不穿，感冒了可咋弄？</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/036.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言发音不够自然；情感过渡有断裂">方言发音不够自然；情感过渡有断裂</td></tr>
-    <tr><td>37</td><td>粤语 夜宵档</td><td title="老細，一碗雲吞麵，多蔥，加碟油菜，唔該快啲，趕時間啊。">老細，一碗雲吞麵，多蔥，加碟油菜，唔該快啲，趕時間啊。</td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/037.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本，急切感不足；表达略显刻板">不是粤语，只是普通话读粤语文本，急切感不足；表达略显刻板</td></tr>
-    <tr><td>38</td><td>粤语 行花市</td><td title="年卅晚，行花市，买棵桃花转大运！老板，呢盆桔几钱啊？">年卅晚，行花市，买棵桃花转大运！老板，呢盆桔几钱啊？</td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/038.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本；缺乏欢快感">不是粤语，只是普通话读粤语文本；缺乏欢快感</td></tr>
-    <tr><td>39</td><td>粤语 惊讶</td><td title="吓？你講咩話？唔係掛？呢件事我都係第一次聽講咋！">吓？你講咩話？唔係掛？呢件事我都係第一次聽講咋！</td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="2.0" size="3"></td><td><input class="score-input" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/039.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本，重音不够突出；语速变化不够自然">不是粤语，只是普通话读粤语文本，重音不够突出；语速变化不够自然</td></tr>
-    <tr><td>40</td><td>台湾腔 奶茶店</td><td title="我要一杯珍珠奶茶，去冰半糖，谢谢～珍珠要Q一点的哦！">我要一杯珍珠奶茶，去冰半糖，谢谢～珍珠要Q一点的哦！</td><td><input class="score-input" type="text" value="3.0" size="3.0"></td><td><input class="score-input-darkgreen" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/040.mp3" type="audio/mpeg"></audio></td><td class="comment" title="没有台湾腔，韵律偶有生硬，Q发音错误">没有台湾腔，韵律偶有生硬，Q发音错误</td></tr>
-    <tr><td>41</td><td>台湾腔 抱怨</td><td title="吼～你真的很烦耶！人家已经说过不要了，你还一直问，很机车耶！">吼～你真的很烦耶！人家已经说过不要了，你还一直问，很机车耶！</td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="3.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/041.mp3" type="audio/mpeg"></audio></td><td class="comment" title="没有台湾腔，语气词处理略生硬">没有台湾腔，语气词处理略生硬</td></tr>
-    <tr><td>42</td><td>台湾腔 夸人</td><td title="哇塞！你今天超好看的诶！这个穿搭很可以哦，很有sense耶！">哇塞！你今天超好看的诶！这个穿搭很可以哦，很有sense耶！</td><td><input class="score-input-darkgreen" type="text" value="3.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="3.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/042.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音尝试模仿台湾腔夸人的风格，但完全没有台湾腔，韵律基本自然，情绪传达基本相符，但合成痕迹仍可察觉，整体普通话。">语音尝试模仿台湾腔夸人的风格，但完全没有台湾腔，韵律基本自然，情绪传达基本相符，但合成痕迹仍...</td></tr>
+    <tr><td>28</td><td>东北话 吐槽</td><td title="这天儿也忒冷了，出门冻得直嘚瑟，跟没穿裤子似的，受不了受不了。">这天儿也忒冷了，出门冻得直嘚瑟，跟没穿裤子似的，受不了受不了。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/028.mp3" type="audio/mpeg"></audio></td><td class="comment" title="抱怨语气偏平淡；情绪递进感弱">抱怨语气偏平淡；情绪递进感弱</td></tr>
+    <tr><td>29</td><td>东北话 生气</td><td title="你瞅啥？再瞅一个试试？我这暴脾气，信不信我削你？">你瞅啥？再瞅一个试试？我这暴脾气，信不信我削你？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/029.mp3" type="audio/mpeg"></audio></td><td class="comment" title="东北话口音不够自然；语速变化机械">东北话口音不够自然；语速变化机械</td></tr>
+    <tr><td>30</td><td>东北话 情感递进</td><td title="（平静）这事儿吧，我觉得还行。（皱眉）但你这么一整，我就有点不高兴了。（生气）干啥啊？跟我玩这套？（暴怒）信不信我削你？！">（平静）这事儿吧，我觉得还行。（皱眉）但你这么一整，我就有点不高兴了。（生气）干啥啊？跟我玩这套？（暴怒）信不信我...</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/030.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言发音不够地道；情感过渡生硬">方言发音不够地道；情感过渡生硬</td></tr>
+    <tr><td>31</td><td>四川话 火锅店</td><td title="老板儿，来个红锅，微辣哈！毛肚、黄喉、鹅肠各来一份，要快哦，饿得很！">老板儿，来个红锅，微辣哈！毛肚、黄喉、鹅肠各来一份，要快哦，饿得很！</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/031.mp3" type="audio/mpeg"></audio></td><td class="comment" title="儿化不对，口音不地道，基本偏普通话，但语音韵律基本自然，情绪精准度和韵律细节有轻微不完美，整体可接受。">儿化不对，口音不地道，基本偏普通话，但情绪精准度...</td></tr>
+    <tr><td>32</td><td>四川话 抱怨</td><td title="今天堵车堵得鬼火冒，一公里路走了一个小时，硬是把我整神了。">今天堵车堵得鬼火冒，一公里路走了一个小时，硬是把我整神了。</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/032.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言完全不地道，重音不够精准；韵律略显刻板">方言完全不地道，重音不够精准；韵律略显刻板</td></tr>
+    <tr><td>33</td><td>四川话 惊讶</td><td title="啥子安？你说啥子？我咋个完全听不懂呢？你莫豁我哈！">啥子安？你说啥子？我咋个完全听不懂呢？你莫豁我哈！</td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/033.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在四川话方言上自然度基本良好；惊讶情绪传达基本相符，但后面疑惑不匹配；整体质量一般，情感不足。">语音在四川话方言上自然度基本良好，韵律接近真人；惊讶情绪传达基本相符，但可...</td></tr>
+    <tr><td>34</td><td>四川话 撒娇</td><td title="哎呀～人家不想走路嘛，你背我嘛～就背一小段路，好不好嘛～">哎呀～人家不想走路嘛，你背我嘛～就背一小段路，好不好嘛～</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/034.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言声调不典型，基本为普通话；拖音机械韵律单一；缺乏自然起伏">方言声调不典型，基本为普通话；拖音机械韵律单一；缺乏自然起伏</td></tr>
+    <tr><td>35</td><td>河南话 劝酒</td><td title="来，兄弟，再喝一杯！今儿个高兴，不醉不归，恁可别扫兴啊！">来，兄弟，再喝一杯！今儿个高兴，不醉不归，恁可别扫兴啊！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/035.mp3" type="audio/mpeg"></audio></td><td class="comment" title语音在河南话方言发音上完全不地道，韵律处理上略显生硬，情绪表达基本符合劝酒场景，但整体自然度一般。">语音在河南话方言发音上完全不地道，韵律处理上略显生硬，情绪表达基本符合劝酒场景...</td></tr>
+    <tr><td>36</td><td>河南话 埋怨</td><td title="你说你这孩子，咋恁不听话哩？让你穿秋裤你不穿，感冒了可咋弄？">你说你这孩子，咋恁不听话哩？让你穿秋裤你不穿，感冒了可咋弄？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/036.mp3" type="audio/mpeg"></audio></td><td class="comment" title="方言发音不够自然；情感过渡有断裂">方言发音不够自然；情感过渡有断裂</td></tr>
+    <tr><td>37</td><td>粤语 夜宵档</td><td title="老細，一碗雲吞麵，多蔥，加碟油菜，唔該快啲，趕時間啊。">老細，一碗雲吞麵，多蔥，加碟油菜，唔該快啲，趕時間啊。</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/037.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本，急切感不足；表达略显刻板">不是粤语，只是普通话读粤语文本，急切感不足；表达略显刻板</td></tr>
+    <tr><td>38</td><td>粤语 行花市</td><td title="年卅晚，行花市，买棵桃花转大运！老板，呢盆桔几钱啊？">年卅晚，行花市，买棵桃花转大运！老板，呢盆桔几钱啊？</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/038.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本；缺乏欢快感">不是粤语，只是普通话读粤语文本；缺乏欢快感</td></tr>
+    <tr><td>39</td><td>粤语 惊讶</td><td title="吓？你講咩話？唔係掛？呢件事我都係第一次聽講咋！">吓？你講咩話？唔係掛？呢件事我都係第一次聽講咋！</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/039.mp3" type="audio/mpeg"></audio></td><td class="comment" title="不是粤语，只是普通话读粤语文本，重音不够突出；语速变化不够自然">不是粤语，只是普通话读粤语文本，重音不够突出；语速变化不够自然</td></tr>
+    <tr><td>40</td><td>台湾腔 奶茶店</td><td title="我要一杯珍珠奶茶，去冰半糖，谢谢～珍珠要Q一点的哦！">我要一杯珍珠奶茶，去冰半糖，谢谢～珍珠要Q一点的哦！</td><td><input class="score-input-darkred" type="text" value="2.0" size="3.0"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/040.mp3" type="audio/mpeg"></audio></td><td class="comment" title="没有台湾腔，韵律偶有生硬，Q发音错误">没有台湾腔，韵律偶有生硬，Q发音错误</td></tr>
+    <tr><td>41</td><td>台湾腔 抱怨</td><td title="吼～你真的很烦耶！人家已经说过不要了，你还一直问，很机车耶！">吼～你真的很烦耶！人家已经说过不要了，你还一直问，很机车耶！</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/041.mp3" type="audio/mpeg"></audio></td><td class="comment" title="没有台湾腔，语气词处理略生硬">没有台湾腔，语气词处理略生硬</td></tr>
+    <tr><td>42</td><td>台湾腔 夸人</td><td title="哇塞！你今天超好看的诶！这个穿搭很可以哦，很有sense耶！">哇塞！你今天超好看的诶！这个穿搭很可以哦，很有sense耶！</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/042.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音尝试模仿台湾腔夸人的风格，但完全没有台湾腔，韵律基本自然，情绪传达基本相符，但合成痕迹仍可察觉，整体普通话。">语音尝试模仿台湾腔夸人的风格，但完全没有台湾腔，韵律基本自然，情绪传达基本相符，但合成痕迹仍...</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🎭 方言混搭+角色（5 个样本） · 自然度 3.9 · 总体 3.96 · 共情度 4.0</div>
+<div class="section" id="sec-dialect-role">
+  <div class="section-title">🎭 方言混搭+角色（5 个样本） · 自然度 2.6 · 总体 2.6 · 共情度 2.7</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：方言×角色的组合难度体现明显，整体不及格</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">整体韵律节奏较机械，方言+角色组合后控制率明显下降，一般只会体现出其中一个特质，且效果不佳<span style="color:#DC2626;font-weight:600;">粤语和台湾腔基本在用普通话读文本未生效，角色感差</span>，部分打分偏高。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">整体韵律节奏较机械，方言+角色组合后控制率明显下降，一般只会体现出其中一个特质，且效果不佳<span style="color:#DC2626;font-weight:600;">粤语和台湾腔基本在用普通话读文本未生效，角色感很差</span>，整体效果不佳。</p></div>
 
     <div>自然度 4.0、共情度 4.0、总体 3.96。方言口音与角色性格的融合是难点——河南话林黛玉（总体 3.5）风格融合不够丝滑，情感层次扁平。台湾腔猪八戒（总体 3.8）存在机械卡顿感和拖音不自然。东北话孙悟空（总体 4.5）和粤语唐僧（总体 4.0）相对较好。<span class="eval-issues">双重要素叠加后，模型的控制力明显下降</span>，是后续优化的重点方向。</div>
   </div>
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>43</td><td>东北话 孙悟空</td><td title="俺老孙在花果山这么多年，啥场面没见过？你这小妖精，还敢跟俺老孙叫板？">俺老孙在花果山这么多年，啥场面没见过？你这小妖精，还敢跟俺老孙叫板？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/043.mp3" type="audio/mpeg"></audio></td><td class="comment" title="✏️评语矛盾已修正(方言韵味不够地道)；方言韵味不够地道；情感过渡略生硬">✏️评语矛盾已修正(方言韵味不够地道)；方言韵味不够地道；情感过渡略生硬</td></tr>
-    <tr><td>44</td><td>四川话 诸葛亮</td><td title="亮在隆中耕读多年，今日出山，定要助主公成就霸业，你们慌啥子嘛？">亮在隆中耕读多年，今日出山，定要助主公成就霸业，你们慌啥子嘛？</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/044.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律略显机械；重音轻微不自然">韵律略显机械；重音轻微不自然</td></tr>
-    <tr><td>45</td><td>河南话 林黛玉</td><td title="我就知道，别人不挑剩下的，也不会给我。俺心里苦，但俺不说。">我就知道，别人不挑剩下的，也不会给我。俺心里苦，但俺不说。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/045.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感层次扁平；风格融合不够丝滑；尾音TTS痕迹">情感层次扁平；风格融合不够丝滑；尾音TTS痕迹</td></tr>
-    <tr><td>46</td><td>粤语 唐僧</td><td title="悟空，你咁暴力，为师好担心你啊。出家人要以和为贵，你明唔明啊？">悟空，你咁暴力，为师好担心你啊。出家人要以和为贵，你明唔明啊？</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/046.mp3" type="audio/mpeg"></audio></td><td class="comment" title="粤语韵律不够地道；情感表达较表面；缺少层次感">粤语韵律不够地道；情感表达较表面；缺少层次感</td></tr>
-    <tr><td>47</td><td>台湾腔 猪八戒</td><td title="哎哟～师父，人家真的好饿哦～前面好像有户人家，我们去化个缘好不好啦～">哎哟～师父，人家真的好饿哦～前面好像有户人家，我们去化个缘好不好啦～</td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.8" size="3"></td><td><audio controls preload="none"><source src="audio/047.mp3" type="audio/mpeg"></audio></td><td class="comment" title="机械卡顿感；拖音不自然；韵律起伏不平滑">机械卡顿感；拖音不自然；韵律起伏不平滑</td></tr>
+    <tr><td>43</td><td>东北话 孙悟空</td><td title="俺老孙在花果山这么多年，啥场面没见过？你这小妖精，还敢跟俺老孙叫板？">俺老孙在花果山这么多年，啥场面没见过？你这小妖精，还敢跟俺老孙叫板？</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/043.mp3" type="audio/mpeg"></audio></td><td class="comment" title="角色风格勉强搭边，不生动；方言不地道；情感过渡略生硬">角色风格勉强搭边，不生动；方言不地道；情感过渡略生硬</td></tr>
+    <tr><td>44</td><td>四川话 诸葛亮</td><td title="亮在隆中耕读多年，今日出山，定要助主公成就霸业，你们慌啥子嘛？">亮在隆中耕读多年，今日出山，定要助主公成就霸业，你们慌啥子嘛？</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/044.mp3" type="audio/mpeg"></audio></td><td class="comment" title="角色风格勉强搭边，不生动；方言不地道；韵律略显机械；重音轻微不自然">角色风格勉强搭边，不生动；方言不地道；韵律略显机械；重音轻微不自然</td></tr>
+    <tr><td>45</td><td>河南话 林黛玉</td><td title="我就知道，别人不挑剩下的，也不会给我。俺心里苦，但俺不说。">我就知道，别人不挑剩下的，也不会给我。俺心里苦，但俺不说。</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/045.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感层次扁平；风格融合不够丝滑；尾音TTS痕迹">情感层次扁平；风格融合不够丝滑；尾音TTS痕迹</td></tr>
+    <tr><td>46</td><td>粤语 唐僧</td><td title="悟空，你咁暴力，为师好担心你啊。出家人要以和为贵，你明唔明啊？">悟空，你咁暴力，为师好担心你啊。出家人要以和为贵，你明唔明啊？</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/046.mp3" type="audio/mpeg"></audio></td><td class="comment" title="角色风格不够，也不是粤语；情感表达较表面；缺少层次感">角色风格不够，也不是粤语；情感表达较表面；缺少层次感</td></tr>
+    <tr><td>47</td><td>台湾腔 猪八戒</td><td title="哎哟～师父，人家真的好饿哦～前面好像有户人家，我们去化个缘好不好啦～">哎哟～师父，人家真的好饿哦～前面好像有户人家，我们去化个缘好不好啦～</td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><input class="score-input-darkred" type="text" value="2.0" size="3"></td><td><audio controls preload="none"><source src="audio/047.mp3" type="audio/mpeg"></audio></td><td class="comment" title="角色完全不符合，台湾腔也没有，只是根据文本表现的撒娇，完全不匹配">角色完全不符合，台湾腔也没有，只是根据文本表现的撒娇，完全不匹配</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🇬🇧 英文效果（10 个样本） · 自然度 3.0 · 总体 3.0 · 共情度 3.0</div>
+<div class="section" id="sec-english">
+  <div class="section-title">🇬🇧 英文效果（10 个样本） · 自然度 4.05 · 总体 4 · 共情度 4</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：英文情绪表达尚可，但副语言不自然，发音不好</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">发音非常差，情绪尚可，韵律生硬机械，<span style="color:#DC2626;font-weight:600;">AI打分偏高；最高不超过4分</span>。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">发音非常较差，属于Chinglish，情绪尚可，韵律偏生硬机械，副语言表现不佳<span style="color:#DC2626;font-weight:600;">AI原始打分偏高；</span>。</p></div>
 
-    <div>自然度 4.30、共情度 4.40、总体 4.20，4 个样本达到 ≥4.5 分。"Disgusted"拿下全场唯一的 5.0 满分，"Angry"和"Whiny"也达到 4.5 分，情绪精准度和韵律流畅度均接近真人水平。唯一的短板是"Surprised"（3.5 分）。<span class="eval-highlights">英文情绪表达能力显著强于中文方言能力</span>，推测模型在英文数据上的训练质量较高。</div>
+    <div>AI总结：自然度 4.30、共情度 4.40、总体 4.20，4 个样本达到 ≥4.5 分。"Disgusted"拿下全场唯一的 5.0 满分，"Angry"和"Whiny"也达到 4.5 分，情绪精准度和韵律流畅度均接近真人水平。唯一的短板是"Surprised"（3.5 分）。<span class="eval-highlights">英文情绪表达能力显著强于中文方言能力</span>，推测模型在英文数据上的训练质量较高。</div>
   </div>
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>48</td><td>Happy, cheerful, bright tone</td><td title="Yay! Today was so great, I'm totally in a good mood!">Yay! Today was so great, I'm totally in a good mood!</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/048.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成很好地捕捉了happy和cheerful的明亮语气，韵律自然流畅，情绪表达精准且富有感染力。">语音合成很好地捕捉了happy和cheerful的明亮语气，韵律自然流畅，...</td></tr>
-    <tr><td>49</td><td>Whiny, pleading, cute tone</td><td title="Aww, can you stay with me a little longer? Please~">Aww, can you stay with me a little longer? Please~</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/049.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音韵律自然，成功传达了whiny、pleading和cute的语气，情绪表达精准同频，整体质量接近真人水平。">语音韵律自然，成功传达了whiny、pleading和cute的语气，情绪...</td></tr>
-    <tr><td>50</td><td>Surprised, shocked</td><td title="Oh wow! I really didn't see that coming at all!">Oh wow! I really didn't see that coming at all!</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/050.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成基本自然，情感表达大致匹配但不够精准，整体勉强接受。">语音合成基本自然，情感表达大致匹配但不够精准，整体勉强接受。</td></tr>
-    <tr><td>51</td><td>Angry, annoyed</td><td title="Ugh, that's so annoying! Why would they do that?">Ugh, that's so annoying! Why would they do that?</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/051.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音韵律自然流畅，愤怒情绪表达精准且富有感染力，整体质量接近真人水平。">语音韵律自然流畅，愤怒情绪表达精准且富有感染力，整体质量接近真人水平。</td></tr>
+    <tr><td>48</td><td>Happy, cheerful, bright tone</td><td title="Yay! Today was so great, I'm totally in a good mood!">Yay! Today was so great, I'm totally in a good mood!</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/048.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音明亮语气尚可，韵律自然流畅，情绪表达精准但无感染力，且副语言效果不佳。">语音明亮语气尚可，韵律自然流畅，情绪表达精准但无感染力，且副语言效果不佳。</td></tr>
+    <tr><td>49</td><td>Whiny, pleading, cute tone</td><td title="Aww, can you stay with me a little longer? Please~">Aww, can you stay with me a little longer? Please~</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/049.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音韵律自然，情绪表达精准同频，但情感表现很刻意不自然。副语言效果不佳。">语音韵律自然，情绪表达精准同频...</td></tr>
+    <tr><td>50</td><td>Surprised, shocked</td><td title="Oh wow! I really didn't see that coming at all!">Oh wow! I really didn't see that coming at all!</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/050.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成基本自然，情感表达大致匹配但不够精准，整体勉强接受。副语言效果不佳。">语音合成基本自然，情感表达大致匹配但不够精准，整体勉强接受。</td></tr>
+    <tr><td>51</td><td>Angry, annoyed</td><td title="Ugh, that's so annoying! Why would they do that?">Ugh, that's so annoying! Why would they do that?</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/051.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音韵律自然流畅，愤怒情绪表达精准且富有感染力，副语言效果不佳。">语音韵律自然流畅，愤怒情绪表达精准且富有感染力，整体质量接近真人水平。</td></tr>
     <tr><td>52</td><td>Sad,委屈, slightly crying</td><td title="Sniff… I just feel a little sad today, that's all.">Sniff… I just feel a little sad today, that's all.</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/052.mp3" type="audio/mpeg"></audio></td><td class="comment" title="合成语音在表达悲伤和委屈情绪时韵律基本自然，共情度良好，整体可接受，但哭泣细节可能略显生硬。">合成语音在表达悲伤和委屈情绪时韵律基本自然，共情度良好，整体可接受，但哭泣...</td></tr>
     <tr><td>53</td><td>Serious, firm tone</td><td title="Alright, let's talk seriously—this is important.">Alright, let's talk seriously—this is important.</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/053.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在严肃语气下表现良好，韵律基本自然，情绪传达与风格相符，但略有机械感，整体可接受。">语音在严肃语气下表现良好，韵律基本自然，情绪传达与风格相符，但略有机械感，...</td></tr>
     <tr><td>54</td><td>Helpless, resigned sigh</td><td title="Sigh, I guess there's nothing else I can do about it.">Sigh, I guess there's nothing else I can do about it.</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/054.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在表达无助和认命情绪时基本自然，叹息声的合成略有不自然，但整体韵律和情绪匹配度较好，质量可接受。">语音在表达无助和认命情绪时基本自然，叹息声的合成略有不自然，但整体韵律和情...</td></tr>
-    <tr><td>55</td><td>Disgusted, grossed out</td><td title="Eww, that's gross! Don't do that again, okay?">Eww, that's gross! Don't do that again, okay?</td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><audio controls preload="none"><source src="audio/055.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在情绪表达和自然度上均达到极高水平。'Eww'的拖长音与厌恶感、'gross'的重音强调以及'okay?'的语调上扬都精准匹配了厌恶情绪，韵律流畅自然，几乎无法辨别为合成语音。">语音在情绪表达和自然度上均达到极高水平。'Eww'的拖长音与厌恶感、'gr...</td></tr>
-    <tr><td>56</td><td>Gentle, warm, soft tone</td><td title="Aww, you're so nice… it makes me really happy.">Aww, you're so nice… it makes me really happy.</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/056.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在gentle、warm风格下表现良好，韵律基本自然，情绪表达与文本相符，但合成语音仍可能有轻微不自然之处。">语音在gentle、warm风格下表现良好，韵律基本自然，情绪表达与文本相...</td></tr>
+    <tr><td>55</td><td>Disgusted, grossed out</td><td title="Eww, that's gross! Don't do that again, okay?">Eww, that's gross! Don't do that again, okay?</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/055.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在情绪表达和自然度上均达到极高水平。'Eww'的拖长音与厌恶感、'gross'的重音强调以及'okay?'的语调上扬都精准匹配了厌恶情绪，韵律流畅自然，几乎无法辨别为合成语音。">语音在情绪表达和自然度上均达到极高水平。'Eww'的拖长音与厌恶感、'gr...</td></tr>
+    <tr><td>56</td><td>Gentle, warm, soft tone</td><td title="Aww, you're so nice… it makes me really happy.">Aww, you're so nice… it makes me really happy.</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/056.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在gentle、warm风格下表现良好，韵律基本自然，情绪表达与文本相符，但合成语音仍可能有轻微不自然之处。">语音在gentle、warm风格下表现良好，韵律基本自然，情绪表达与文本相...</td></tr>
     <tr><td>57</td><td>Impatient,烦躁, rushed</td><td title="Ugh, hurry up! I don't wanna wait any longer!">Ugh, hurry up! I don't wanna wait any longer!</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/057.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音韵律基本自然，情绪表达与烦躁风格相符，整体质量可接受。">语音韵律基本自然，情绪表达与烦躁风格相符，整体质量可接受。</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">👤 角色扮演（9 个样本） · 自然度 3.5 · 总体 3.5 · 共情度 3.5</div>
+<div class="section" id="sec-roleplay">
+  <div class="section-title">👤 角色扮演（9 个样本） · 自然度 3.78 · 总体 3.72 · 共情度 3.83</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：严重两极分化，存在致命翻车样本</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">整体认同机器打分，部分偏低或稍微偏高。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">角色风格匹配一般，主要还是根据文本内容进行演绎。</p></div>
 
     <div>自然度 3.66、总体 3.54，表现最差的模块之一。最大问题是——<span class="eval-issues">演绎感非常明显且会显得生硬，且大概率出现发音错误</span>。华妃（4.0 分）、午夜电台（4.0 分）、北京大爷（4.0 分）等角色表现尚可，但带货主播（3.0 分）和绿茶夹子音（3.0 分）也偏弱。<span class="eval-issues">角色辨识度和风格还原度需要全面提升</span>。</div>
   </div>
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>58</td><td>孙悟空 生气</td><td title="呔！俺老孙的火眼金睛，早就看出你是个人工智能了！还不快现出原形？">呔！俺老孙的火眼金睛，早就看出你是个人工智能了！还不快现出原形？</td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/058.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语气平淡生气情绪不够自然，略有孙悟空愤怒的风格；俺老孙发音不清，不可接受。">语气平淡生气情绪不够自然，略有孙悟空愤怒的风格；俺老孙发音不清，不可接受。</td></tr>
+    <tr><td>58</td><td>孙悟空 生气</td><td title="呔！俺老孙的火眼金睛，早就看出你是个人工智能了！还不快现出原形？">呔！俺老孙的火眼金睛，早就看出你是个人工智能了！还不快现出原形？</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/058.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语气平淡生气情绪不够自然，略有孙悟空愤怒的风格；俺老孙发音不清，不可接受。">语气平淡生气情绪不够自然，略有孙悟空愤怒的风格；俺老孙发音不清，不可接受。</td></tr>
     <tr><td>59</td><td>华妃 嚣张 讽刺</td><td title="贱人就是矫情！本宫在宫里这么多年，什么风浪没见过？">贱人就是矫情！本宫在宫里这么多年，什么风浪没见过？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/059.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音合成在自然度上表现良好，韵律基本流畅；共情度较高，较好地传达了华妃嚣张讽刺的情绪；整体质量可接受，但细节处可进一步优化以更贴近真人表现。">语音合成在自然度上表现良好，韵律基本流畅；共情度较高，较好地传达了华妃嚣张...</td></tr>
-    <tr><td>60</td><td>温柔 磁性 夜晚</td><td title="听众朋友们晚上好，欢迎收听午夜电台。今天想和大家聊聊那些，藏在心底说不出口的话。">听众朋友们晚上好，欢迎收听午夜电台。今天想和大家聊聊那些，藏在心底说不出口的话。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/060.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音的韵律、停顿和语调处理流畅自然，成功营造了深夜电台的氛围。声音的'磁性'和'温柔'特质被较好地呈现，情感基调与内容相符，能引发听众的共鸣。整体听感舒适，以真人主持的标准衡量，已达到可接受的较高水平。">语音的韵律、停顿和语调处理流畅自然，成功营造了深夜电台的氛围。声音的'磁性...</td></tr>
-    <tr><td>61</td><td>带货 语速快 亢奋</td><td title="家人们！上链接！今天这个价格，错过再等一年！3、2、1，上车！">家人们！上链接！今天这个价格，错过再等一年！3、2、1，上车！</td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/061.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在快速带货节奏下，部分字词连接和重音处理略显生硬，情绪的亢奋感和紧迫感表达不够充分，整体勉强达到可接受水平。上车发音错误。">语音在快速带货节奏下，部分字词连接和重音处理略显生硬，情绪的亢奋感和紧迫感表达不够充分，整体勉强达到可接受水平。上车发音错误。</td></tr>
-    <tr><td>62</td><td>北京大爷 悠闲 爱唠</td><td title="嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！">嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/062.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音自然流畅，韵律基本符合北京大爷悠闲爱唠的风格，情绪表达大致匹配，整体质量可接受。">语音自然流畅，韵律基本符合北京大爷悠闲爱唠的风格，情绪表达大致匹配，整体质...</td></tr>
-    <tr><td>63</td><td>严厉 威严 训斥</td><td title="你们这届是我带过最差的一届！整个楼道就听见你们班在吵！">你们这届是我带过最差的一届！整个楼道就听见你们班在吵！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/063.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在表达严厉训斥时韵律基本自然，情绪精准匹配，整体质量可接受，略有不完美之处。">语音在表达严厉训斥时韵律基本自然，情绪精准匹配，整体质量可接受，略有不完美之处。</td></tr>
+    <tr><td>60</td><td>温柔 磁性 夜晚</td><td title="听众朋友们晚上好，欢迎收听午夜电台。今天想和大家聊聊那些，藏在心底说不出口的话。">听众朋友们晚上好，欢迎收听午夜电台。今天想和大家聊聊那些，藏在心底说不出口的话。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/060.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音的韵律、停顿和语调处理不够流畅自然，成功营造了深夜电台的氛围。声音的'磁性'和'温柔'特质被较好地呈现，情感基调与内容相符，能引发听众的共鸣。整体听感舒适，以真人主持的标准衡量，已达到可接受的较高水平。">语音的韵律、停顿和语调处理流畅自然，成功营造了深夜电台的氛围。声音的'磁性...</td></tr>
+    <tr><td>61</td><td>带货 语速快 亢奋</td><td title="家人们！上链接！今天这个价格，错过再等一年！3、2、1，上车！">家人们！上链接！今天这个价格，错过再等一年！3、2、1，上车！</td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/061.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在快速带货节奏下，部分字词连接和重音处理略显生硬，情绪的亢奋感和紧迫感表达不够充分，整体勉强达到可接受水平。上车发音错误。">语音在快速带货节奏下，部分字词连接和重音处理略显生硬，情绪的亢奋感和紧迫感表达不够充分，整体勉强达到可接受水平。上车发音错误。</td></tr>
+    <tr><td>62</td><td>北京大爷 悠闲 爱唠</td><td title="嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！">嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/062.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音自然流畅，韵律基本符合北京大爷悠闲爱唠的风格，情绪表达大致匹配，整体质量可接受。">语音自然流畅，韵律基本符合北京大爷悠闲爱唠的风格，情绪表达大致匹配，整体质...</td></tr>
+    <tr><td>63</td><td>严厉 威严 训斥</td><td title="你们这届是我带过最差的一届！整个楼道就听见你们班在吵！">你们这届是我带过最差的一届！整个楼道就听见你们班在吵！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/063.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音在表达严厉训斥时韵律基本自然，情绪不够明显，整体质量可接受，略有不完美之处。">语音在表达严厉训斥时韵律基本自然，情绪不够明显，整体质量可接受，略有不完美之处。</td></tr>
     <tr><td>64</td><td>温柔 哄孩子 轻声</td><td title="小朋友们～排好队～我们一起去洗手，洗完手就有小饼干吃哦～">小朋友们～排好队～我们一起去洗手，洗完手就有小饼干吃哦～</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/064.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音自然度较好，韵律基本符合真人说话节奏，能传达温柔哄孩子的语气；共情度与风格匹配，情绪表达自然；总体可接受，但个别语气词如拖长音可能略有生硬，不影响整体效果。">语音自然度较好，韵律基本符合真人说话节奏，能传达温柔哄孩子的语气；共情度与...</td></tr>
-    <tr><td>65</td><td>绿茶 夹子音 委屈</td><td title="姐姐～你千万不要误会，我和哥哥真的只是普通朋友啦～">姐姐～你千万不要误会，我和哥哥真的只是普通朋友啦～</td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/065.mp3" type="audio/mpeg"></audio></td><td class="comment" title="姐姐发音不准，语音风格为绿茶夹子音委屈，自然度一般，语调刻意做作，韵律不够自然；共情度大致匹配委屈情感，但情绪表达可能不够精准；总体勉强接受，合成质量中等。">姐姐发音不准，语音风格为绿茶夹子音委屈，自然度一般，语调刻意做作，韵律不够自然；共情度大...</td></tr>
-    <tr><td>66</td><td>反派 阴险 低沉</td><td title="你终于来了。我等这一天，已经等得太久了。">你终于来了。我等这一天，已经等得太久了。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/066.mp3" type="audio/mpeg"></audio></td><td class="comment" title="合成语音在自然度上基本流畅，韵律接近真人；情绪表达与反派阴险低沉的风格勉强匹配，但细节处理不够精准；整体质量可接受，适合一般应用。">合成语音在自然度上基本流畅，韵律接近真人；情绪表达与反派阴险低沉的风格大致...</td></tr>
+    <tr><td>65</td><td>绿茶 夹子音 委屈</td><td title="姐姐～你千万不要误会，我和哥哥真的只是普通朋友啦～">姐姐～你千万不要误会，我和哥哥真的只是普通朋友啦～</td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/065.mp3" type="audio/mpeg"></audio></td><td class="comment" title="姐姐发音不准，语音风格为绿茶夹子音委屈，自然度一般，语调刻意做作，韵律不够自然；共情度大致匹配委屈情感，但情绪表达可能不够精准；总体勉强接受，合成质量中等。">姐姐发音不准，语音风格为绿茶夹子音委屈，自然度一般，语调刻意做作，韵律不够自然；共情度大...</td></tr>
+    <tr><td>66</td><td>反派 阴险 低沉</td><td title="你终于来了。我等这一天，已经等得太久了。">你终于来了。我等这一天，已经等得太久了。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/066.mp3" type="audio/mpeg"></audio></td><td class="comment" title="合成语音在自然度上基本流畅，韵律接近真人；情绪表达与反派阴险低沉的风格不匹配，但细节处理不够精准；整体质量可接受，适合一般应用。">合成语音在自然度上基本流畅，韵律接近真人；情绪表达与反派阴险低沉的风格...</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🔊 细粒度声音事件（31 个样本） · 自然度 4.29 · 总体 4.22 · 共情度 4.29</div>
+<div class="section" id="sec-sound-events">
+  <div class="section-title">🔊 细粒度声音事件（31 个样本） · 自然度 4.4 · 总体 4.35 · 共情度 4.37</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：覆盖面最广，整体稳定但缺少惊艳感</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">情绪显著性与准确度不错，但自然度稍差，副语言整体表现尚可（如呼气、咳嗽、尬笑等），但存在部分副语言不支持，<span style="color:#DC2626;font-weight:600;">发音存在多处问题，声音的自然度不够，不松弛真实</span>。</p></div>
@@ -486,41 +712,41 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
     <tr><td>67</td><td>疲惫 长叹</td><td title="（长叹一口气）唉，这一天终于结束了，累死我了。">（长叹一口气）唉，这一天终于结束了，累死我了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/067.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律自然流畅，重音准确，语速变化符合语境。扣分：疲惫感细腻表现有提升空间，气息感可更明显。">韵律自然流畅，重音准确，语速变化符合语境。扣分：疲惫感细腻表现有提升空间，气息感可更明显。</td></tr>
-    <tr><td>68</td><td>刚睡醒 迷糊</td><td title="（轻声呼吸，刚睡醒）嗯……现在几点了？天都亮了啊……">（轻声呼吸，刚睡醒）嗯……现在几点了？天都亮了啊……</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/068.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律和节奏自然平稳，重音表现准确。扣分：情感表达略显生硬，'嗯……'填充音稍显机械。">韵律和节奏自然平稳，重音表现准确。扣分：情感表达略显生硬，'嗯……'填充音稍显机械。</td></tr>
-    <tr><td>69</td><td>气喘吁吁 兴奋</td><td title="我……我跑完了！呼……三、三分半……比上次快了！">我……我跑完了！呼……三、三分半……比上次快了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/069.mp3" type="audio/mpeg"></audio></td><td class="comment" title="气息停顿模拟符合气喘语境，语速断续感处理恰当。共情满分：完美契合疲惫又兴奋的状态。">气息停顿模拟符合气喘语境，语速断续感处理恰当。共情满分：完美契合疲惫又兴奋的状态。</td></tr>
-    <tr><td>70</td><td>感冒 虚弱</td><td title="（轻咳两声）不好意思，最近天气转凉，有点感冒。咳咳……">（轻咳两声）不好意思，最近天气转凉，有点感冒。咳咳……</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/070.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体语音清晰流畅，咳嗽声融入增加情境真实感。扣分：咳嗽声略显生硬，感冒鼻音特征不够明显。">整体语音清晰流畅，咳嗽声融入增加情境真实感。扣分：咳嗽声略显生硬，感冒鼻音特征不够明显。</td></tr>
-    <tr><td>71</td><td>强忍不适</td><td title="咳咳……（强忍咳嗽）没事没事，你们继续，我就是嗓子有点痒。">咳咳……（强忍咳嗽）没事没事，你们继续，我就是嗓子有点痒。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/071.mp3" type="audio/mpeg"></audio></td><td class="comment" title="对话内容清晰易懂，咳嗽声和嗓音沙哑风格有所还原。扣分：咳嗽声处理略显生硬，咳嗽后过渡不够平滑。">对话内容清晰易懂，咳嗽声和嗓音沙哑风格有所还原。扣分：咳嗽声处理略显生硬，咳嗽后过渡不够平滑。</td></tr>
-    <tr><td>72</td><td>哈哈大笑 开心</td><td title="（哈哈大笑）哈哈哈！这个笑话太好笑了，我眼泪都出来了。">（哈哈大笑）哈哈哈！这个笑话太好笑了，我眼泪都出来了。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/072.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感表达清晰，语气欢快且与内容契合。扣分：笑声略显机械不够自然流畅，缺乏深度层次。">情感表达清晰，语气欢快且与内容契合。扣分：笑声略显机械不够自然流畅，缺乏深度层次。</td></tr>
-    <tr><td>73</td><td>尴尬 尴尬地笑</td><td title="（尴尬地笑）呵呵……这个嘛，我确实没想到会这样。">（尴尬地笑）呵呵……这个嘛，我确实没想到会这样。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/073.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律节奏自然流畅，情绪表达精准。扣分：句首轻笑声略显刻意，与后续语句衔接有轻微跳变。">韵律节奏自然流畅，情绪表达精准。扣分：句首轻笑声略显刻意，与后续语句衔接有轻微跳变。</td></tr>
-    <tr><td>74</td><td>苦笑 落寞</td><td title="（苦笑）呵，没如果了。事情都这样了，还能怎么办呢？">（苦笑）呵，没如果了。事情都这样了，还能怎么办呢？</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/074.mp3" type="audio/mpeg"></audio></td><td class="comment" title="精准捕捉苦笑与落寞的复合情绪。扣分：开头苦笑'呵'音色和节奏略显生硬；结尾语速和气息稍显仓促。">精准捕捉苦笑与落寞的复合情绪。扣分：开头苦笑'呵'音色和节奏略显生硬；结尾语速和气息稍显仓促。</td></tr>
-    <tr><td>75</td><td>偷笑 得意</td><td title="（偷笑）嘿嘿，他们肯定没想到是我干的。">（偷笑）嘿嘿，他们肯定没想到是我干的。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/075.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语气与内容高度契合，'嘿嘿'笑声传达得意狡黠情绪。扣分：笑声略显模式化，缺乏真人笑声的随机性。">语气与内容高度契合，'嘿嘿'笑声传达得意狡黠情绪。扣分：笑声略显模式化，缺乏真人笑声的随机性。</td></tr>
-    <tr><td>76</td><td>语速变化</td><td title="（语速正常）这件事是这样子的……（突然加快）糟了糟了要迟到了！先不说了拜拜！">（语速正常）这件事是这样子的……（突然加快）糟了糟了要迟到了！先不说了拜拜！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/076.mp3" type="audio/mpeg"></audio></td><td class="comment" title="三段式语速变化层次清晰，重音有效传达紧迫感。完成度很高，生动模拟从容到慌乱。">三段式语速变化层次清晰，重音有效传达紧迫感。完成度很高，生动模拟从容到慌乱。</td></tr>
+    <tr><td>68</td><td>刚睡醒 迷糊</td><td title="（轻声呼吸，刚睡醒）嗯……现在几点了？天都亮了啊……">（轻声呼吸，刚睡醒）嗯……现在几点了？天都亮了啊……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/068.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律和节奏自然平稳，重音表现准确。扣分：情感表达略显生硬，'嗯……'填充音稍显机械。">韵律和节奏自然平稳，重音表现准确。扣分：情感表达略显生硬，'嗯……'填充音稍显机械。</td></tr>
+    <tr><td>69</td><td>气喘吁吁 兴奋</td><td title="我……我跑完了！呼……三、三分半……比上次快了！">我……我跑完了！呼……三、三分半……比上次快了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/069.mp3" type="audio/mpeg"></audio></td><td class="comment" title="气息停顿模拟符合气喘语境，语速断续感处理恰当。共情满分：完美契合疲惫又兴奋的状态。">气息停顿模拟符合气喘语境，语速断续感处理恰当。共情满分：完美契合疲惫又兴奋的状态。</td></tr>
+    <tr><td>70</td><td>感冒 虚弱</td><td title="（轻咳两声）不好意思，最近天气转凉，有点感冒。咳咳……">（轻咳两声）不好意思，最近天气转凉，有点感冒。咳咳……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/070.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体语音清晰流畅，咳嗽声融入增加情境真实感。扣分：咳嗽声略显生硬，感冒鼻音特征不够明显。">整体语音清晰流畅，咳嗽声融入增加情境真实感。扣分：咳嗽声略显生硬，感冒鼻音特征不够明显。</td></tr>
+    <tr><td>71</td><td>强忍不适</td><td title="咳咳……（强忍咳嗽）没事没事，你们继续，我就是嗓子有点痒。">咳咳……（强忍咳嗽）没事没事，你们继续，我就是嗓子有点痒。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/071.mp3" type="audio/mpeg"></audio></td><td class="comment" title="对话内容清晰易懂，咳嗽声和嗓音沙哑风格有所还原。扣分：咳嗽声处理略显生硬，咳嗽后过渡不够平滑。">对话内容清晰易懂，咳嗽声和嗓音沙哑风格有所还原。扣分：咳嗽声处理略显生硬，咳嗽后过渡不够平滑。</td></tr>
+    <tr><td>72</td><td>哈哈大笑 开心</td><td title="（哈哈大笑）哈哈哈！这个笑话太好笑了，我眼泪都出来了。">（哈哈大笑）哈哈哈！这个笑话太好笑了，我眼泪都出来了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/072.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情感表达清晰，语气欢快且与内容契合。扣分：笑声略显机械不够自然流畅，缺乏深度层次。">情感表达清晰，语气欢快且与内容契合。扣分：笑声略显机械不够自然流畅，缺乏深度层次。</td></tr>
+    <tr><td>73</td><td>尴尬 尴尬地笑</td><td title="（尴尬地笑）呵呵……这个嘛，我确实没想到会这样。">（尴尬地笑）呵呵……这个嘛，我确实没想到会这样。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/073.mp3" type="audio/mpeg"></audio></td><td class="comment" title="韵律节奏自然流畅，情绪表达精准。扣分：句首轻笑声略显刻意，与后续语句衔接有轻微跳变。">韵律节奏自然流畅，情绪表达精准。扣分：句首轻笑声略显刻意，与后续语句衔接有轻微跳变。</td></tr>
+    <tr><td>74</td><td>苦笑 落寞</td><td title="（苦笑）呵，没如果了。事情都这样了，还能怎么办呢？">（苦笑）呵，没如果了。事情都这样了，还能怎么办呢？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/074.mp3" type="audio/mpeg"></audio></td><td class="comment" title="精准捕捉苦笑与落寞的复合情绪。扣分：开头苦笑'呵'音色和节奏略显生硬；结尾语速和气息稍显仓促。">精准捕捉苦笑与落寞的复合情绪。扣分：开头苦笑'呵'音色和节奏略显生硬；结尾语速和气息稍显仓促。</td></tr>
+    <tr><td>75</td><td>偷笑 得意</td><td title="（偷笑）嘿嘿，他们肯定没想到是我干的。">（偷笑）嘿嘿，他们肯定没想到是我干的。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/075.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语气与内容高度契合，'嘿嘿'笑声传达得意狡黠情绪。扣分：笑声略显模式化，缺乏真人笑声的随机性。">语气与内容高度契合，'嘿嘿'笑声传达得意狡黠情绪。扣分：笑声略显模式化，缺乏真人笑声的随机性。</td></tr>
+    <tr><td>76</td><td>语速变化</td><td title="（语速正常）这件事是这样子的……（突然加快）糟了糟了要迟到了！先不说了拜拜！">（语速正常）这件事是这样子的……（突然加快）糟了糟了要迟到了！先不说了拜拜！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/076.mp3" type="audio/mpeg"></audio></td><td class="comment" title="三段式语速变化层次清晰，重音有效传达紧迫感。完成度很高，生动模拟从容到慌乱。">三段式语速变化层次清晰，重音有效传达紧迫感。完成度很高，生动模拟从容到慌乱。</td></tr>
     <tr><td>77</td><td>深情 语速缓慢</td><td title="（语速缓慢，深情）慢慢地……轻轻地……把这份心意，藏在风里送给你。">（语速缓慢，深情）慢慢地……轻轻地……把这份心意，藏在风里送给你。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/077.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体韵律节奏较慢符合深情慢速指令，音色清晰稳定。扣分：'藏在风里'发音处理略显机械。">整体韵律节奏较慢符合深情慢速指令，音色清晰稳定。扣分：'藏在风里'发音处理略显机械。</td></tr>
-    <tr><td>78</td><td>结巴 犹豫 勇气</td><td title="（结巴，犹豫）那个……我……（深吸一口气，语速正常）我喜欢你！很久了！">（结巴，犹豫）那个……我……（深吸一口气，语速正常）我喜欢你！很久了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/078.mp3" type="audio/mpeg"></audio></td><td class="comment" title="犹豫感通过拖长音和气口体现。共情满分：完美捕捉暗恋者告白的复杂心理。">犹豫感通过拖长音和气口体现。共情满分：完美捕捉暗恋者告白的复杂心理。</td></tr>
-    <tr><td>79</td><td>小声 耳语</td><td title="（小声）嘘——别出声，他们还没发现我们在这儿。">（小声）嘘——别出声，他们还没发现我们在这儿。</td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><audio controls preload="none"><source src="audio/079.mp3" type="audio/mpeg"></audio></td><td class="comment" title="完美模拟耳语物理特征与韵律，高度逼真还原真实耳语状态。三维满分。">完美模拟耳语物理特征与韵律，高度逼真还原真实耳语状态。三维满分。</td></tr>
-    <tr><td>80</td><td>耳语 神秘</td><td title="（耳语）告诉你一个秘密，我其实……算了，还是等会儿再说。">（耳语）告诉你一个秘密，我其实……算了，还是等会儿再说。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.3" size="3"></td><td><audio controls preload="none"><source src="audio/080.mp3" type="audio/mpeg"></audio></td><td class="comment" title="耳语效果与秘密主题契合度高。扣分：停顿处理略显刻意，情绪层次可更丰富。">耳语效果与秘密主题契合度高。扣分：停顿处理略显刻意，情绪层次可更丰富。</td></tr>
-    <tr><td>81</td><td>压低声音</td><td title="（压低声音）现在可以说话了，刚才旁边有人。">（压低声音）现在可以说话了，刚才旁边有人。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/081.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体语调符合压低声音场景。扣分：音色干涩缺少气声；情感偏平未体现情绪渐变。">整体语调符合压低声音场景。扣分：音色干涩缺少气声；情感偏平未体现情绪渐变。</td></tr>
+    <tr><td>78</td><td>结巴 犹豫 勇气</td><td title="（结巴，犹豫）那个……我……（深吸一口气，语速正常）我喜欢你！很久了！">（结巴，犹豫）那个……我……（深吸一口气，语速正常）我喜欢你！很久了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/078.mp3" type="audio/mpeg"></audio></td><td class="comment" title="犹豫感通过拖长音和气口体现。共情满分：完美捕捉暗恋者告白的复杂心理。">犹豫感通过拖长音和气口体现。共情满分：完美捕捉暗恋者告白的复杂心理。</td></tr>
+    <tr><td>79</td><td>小声 耳语</td><td title="（小声）嘘——别出声，他们还没发现我们在这儿。">（小声）嘘——别出声，他们还没发现我们在这儿。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/079.mp3" type="audio/mpeg"></audio></td><td class="comment" title="较好模拟耳语物理特征与韵律，高度逼真还原真实耳语状态。">较好模拟耳语物理特征与韵律，高度逼真还原真实耳语状态。</td></tr>
+    <tr><td>80</td><td>耳语 神秘</td><td title="（耳语）告诉你一个秘密，我其实……算了，还是等会儿再说。">（耳语）告诉你一个秘密，我其实……算了，还是等会儿再说。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/080.mp3" type="audio/mpeg"></audio></td><td class="comment" title="耳语效果与秘密主题契合度高。扣分：停顿处理略显刻意，情绪层次可更丰富。">耳语效果与秘密主题契合度高。扣分：停顿处理略显刻意，情绪层次可更丰富。</td></tr>
+    <tr><td>81</td><td>压低声音</td><td title="（压低声音）现在可以说话了，刚才旁边有人。">（压低声音）现在可以说话了，刚才旁边有人。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><audio controls preload="none"><source src="audio/081.mp3" type="audio/mpeg"></audio></td><td class="comment" title="整体语调符合压低声音场景。扣分：音色干涩缺少气声；情感偏平未体现情绪渐变。">整体语调符合压低声音场景。扣分：音色干涩缺少气声；情感偏平未体现情绪渐变。</td></tr>
     <tr><td>82</td><td>提高音量喊话</td><td title="（提高音量喊话）大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！">（提高音量喊话）大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/082.mp3" type="audio/mpeg"></audio></td><td class="comment" title="鲜明语气对比生动还原喊话状态，成功构建有冲突的微型场景。">鲜明语气对比生动还原喊话状态，成功构建有冲突的微型场景。</td></tr>
-    <tr><td>83</td><td>停顿 沉默</td><td title="我从来没想过……（停顿3秒）算了，过去的事就不提了。">我从来没想过……（停顿3秒）算了，过去的事就不提了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/083.mp3" type="audio/mpeg"></audio></td><td class="comment" title="发音清晰，3秒停顿符合情感表达节奏。扣分：停顿后'算了'语气过渡略突兀；情感强度偏低。">发音清晰，3秒停顿符合情感表达节奏。扣分：停顿后'算了'语气过渡略突兀；情感强度偏低。</td></tr>
-    <tr><td>84</td><td>沉默 回忆</td><td title="如果我当时……（沉默片刻）哪怕再坚持一秒钟，结果是不是就不一样了？">如果我当时……（沉默片刻）哪怕再坚持一秒钟，结果是不是就不一样了？</td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><audio controls preload="none"><source src="audio/084.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音节奏把控精准，沉默时长恰当，人声与留白相得益彰。三维满分。">语音节奏把控精准，沉默时长恰当，人声与留白相得益彰。三维满分。</td></tr>
-    <tr><td>85</td><td>愤怒 强调</td><td title="I told you a hundred times—DO NOT touch my files!">I told you a hundred times—DO NOT touch my files!</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/085.mp3" type="audio/mpeg"></audio></td><td class="comment" title="'DO NOT'爆发力十足。扣分：极端情绪化重音处声音质感略显生硬；缺乏渐进过程。">'DO NOT'爆发力十足。扣分：极端情绪化重音处声音质感略显生硬；缺乏渐进过程。</td></tr>
-    <tr><td>86</td><td>着急 解释</td><td title="不不不不不，我不是那个意思，你别误会，我只是太着急了才会这么说！">不不不不不，我不是那个意思，你别误会，我只是太着急了才会这么说！</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/086.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语速较快符合着急情境。扣分：五连重复节奏过于均匀缺少不规则感；情绪层次较平。">语速较快符合着急情境。扣分：五连重复节奏过于均匀缺少不规则感；情绪层次较平。</td></tr>
-    <tr><td>87</td><td>Panicked, denying</td><td title="No no no no no, it wasn't me! I swear I had nothing to do with it! IT WASN'T ME!">No no no no no, it wasn't me! I swear I had nothing to do...</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/087.mp3" type="audio/mpeg"></audio></td><td class="comment" title="英文发音清晰准确。扣分：情绪爆发层次感不足，节奏略显均匀。">英文发音清晰准确。扣分：情绪爆发层次感不足，节奏略显均匀。</td></tr>
+    <tr><td>83</td><td>停顿 沉默</td><td title="我从来没想过……（停顿3秒）算了，过去的事就不提了。">我从来没想过……（停顿3秒）算了，过去的事就不提了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/083.mp3" type="audio/mpeg"></audio></td><td class="comment" title="发音清晰，3秒停顿符合情感表达节奏。扣分：停顿后'算了'语气过渡略突兀；情感强度偏低。">发音清晰，3秒停顿符合情感表达节奏。扣分：停顿后'算了'语气过渡略突兀；情感强度偏低。</td></tr>
+    <tr><td>84</td><td>沉默 回忆</td><td title="如果我当时……（沉默片刻）哪怕再坚持一秒钟，结果是不是就不一样了？">如果我当时……（沉默片刻）哪怕再坚持一秒钟，结果是不是就不一样了？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/084.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音节奏把控精准，沉默时长恰当，人声与留白相得益彰。三维满分。">语音节奏把控精准，沉默时长恰当，人声与留白相得益彰。三维满分。</td></tr>
+    <tr><td>85</td><td>愤怒 强调</td><td title="I told you a hundred times—DO NOT touch my files!">I told you a hundred times—DO NOT touch my files!</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/085.mp3" type="audio/mpeg"></audio></td><td class="comment" title="'DO NOT'爆发力十足。扣分：极端情绪化重音处声音质感略显生硬；缺乏渐进过程。">'DO NOT'爆发力十足。扣分：极端情绪化重音处声音质感略显生硬；缺乏渐进过程。</td></tr>
+    <tr><td>86</td><td>着急 解释</td><td title="不不不不不，我不是那个意思，你别误会，我只是太着急了才会这么说！">不不不不不，我不是那个意思，你别误会，我只是太着急了才会这么说！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/086.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语速较快符合着急情境。扣分：五连重复节奏过于均匀缺少不规则感；情绪层次较平。">语速较快符合着急情境。扣分：五连重复节奏过于均匀缺少不规则感；情绪层次较平。</td></tr>
+    <tr><td>87</td><td>Panicked, denying</td><td title="No no no no no, it wasn't me! I swear I had nothing to do with it! IT WASN'T ME!">No no no no no, it wasn't me! I swear I had nothing to do...</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/087.mp3" type="audio/mpeg"></audio></td><td class="comment" title="英文发音清晰准确。扣分：情绪爆发层次感不足，节奏略显均匀。">英文发音清晰准确。扣分：情绪爆发层次感不足，节奏略显均匀。</td></tr>
     <tr><td>88</td><td>寒冷 急促呼吸</td><td title="（寒冷导致的急促呼吸）呼——呼——这、这大兴安岭的雪……（咳嗽）简直能把人骨头冻透了……别、别停下，走，快走。">（寒冷导致的急促呼吸）呼——呼——这、这大兴安岭的雪……（咳嗽）简直能把人骨头冻透了……别、别停下，走，快走。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/088.mp3" type="audio/mpeg"></audio></td><td class="comment" title="生动还原极寒环境下呼吸频率与咳嗽细节，生理反馈真实。">生动还原极寒环境下呼吸频率与咳嗽细节，生理反馈真实。</td></tr>
-    <tr><td>89</td><td>紧张 碎碎念</td><td title="（紧张，深呼吸）呼……冷静，冷静。不就是一个面试吗……（语速加快，碎碎念）自我介绍已经背了五十遍了，应该没问题的。">（紧张，深呼吸）呼……冷静，冷静。不就是一个面试吗……（语速加快，碎碎念）自我介绍已经背了五十遍了，应该没问题的。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/089.mp3" type="audio/mpeg"></audio></td><td class="comment" title="深呼吸和语速变化较好模拟紧张反应。扣分：'应该没问题的'与紧张语气存在矛盾。">深呼吸和语速变化较好模拟紧张反应。扣分：'应该没问题的'与紧张语气存在矛盾。</td></tr>
-    <tr><td>90</td><td>紧张</td><td title="（手心出汗）马上就到我了……（深呼吸）呼……没事的，我可以的。">（手心出汗）马上就到我了……（深呼吸）呼……没事的，我可以的。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/090.mp3" type="audio/mpeg"></audio></td><td class="comment" title="声音事件处理细致。扣分：语调起伏偏平缓，声音细节略显模式化。">声音事件处理细致。扣分：语调起伏偏平缓，声音细节略显模式化。</td></tr>
-    <tr><td>91</td><td>温柔 哄睡</td><td title="（轻声）睡吧，宝贝。（哼摇篮曲）嗯～嗯～（渐弱）妈妈在呢……">（轻声）睡吧，宝贝。（哼摇篮曲）嗯～嗯～（渐弱）妈妈在呢……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/091.mp3" type="audio/mpeg"></audio></td><td class="comment" title="成功塑造温柔呵护母亲形象。共情满分：有效传递温暖与安全感。">成功塑造温柔呵护母亲形象。共情满分：有效传递温暖与安全感。</td></tr>
-    <tr><td>92</td><td>打电话 日常</td><td title="嘟……嘟……（接通）喂？妈，是我。（背景音嘈杂）您那儿怎么那么吵？">嘟……嘟……（接通）喂？妈，是我。（背景音嘈杂）您那儿怎么那么吵？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/092.mp3" type="audio/mpeg"></audio></td><td class="comment" title="嘟声和喂语气词很好模拟电话接通场景。扣分：背景嘈杂音效类型单一。">嘟声和喂语气词很好模拟电话接通场景。扣分：背景嘈杂音效类型单一。</td></tr>
-    <tr><td>93</td><td>做饭 意外</td><td title="（突然）哎哟！（吹手指）嘶——切到手了……">（突然）哎哟！（吹手指）嘶——切到手了……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none"><source src="audio/093.mp3" type="audio/mpeg"></audio></td><td class="comment" title="关键声音事件衔接紧凑。扣分：声音质感单薄；背景缺少厨房环境音。">关键声音事件衔接紧凑。扣分：声音质感单薄；背景缺少厨房环境音。</td></tr>
-    <tr><td>94</td><td>晨起 迷糊 惊醒</td><td title="（拍闹钟）再睡五分钟……（惊醒）啊！九点了？！">（拍闹钟）再睡五分钟……（惊醒）啊！九点了？！</td><td><input class="score-input-darkred" type="text" value="4.0" size="3"></td><td><input class="score-input-darkred" type="text" value="4.0" size="3"></td><td><input class="score-input-darkred" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/094.mp3" type="audio/mpeg"></audio></td><td class="comment" title="效果较自然，情感变化切换较好，但仍有生硬感。">效果较自然，情感变化切换较好，但仍有生硬感。</td></tr>
+    <tr><td>89</td><td>紧张 碎碎念</td><td title="（紧张，深呼吸）呼……冷静，冷静。不就是一个面试吗……（语速加快，碎碎念）自我介绍已经背了五十遍了，应该没问题的。">（紧张，深呼吸）呼……冷静，冷静。不就是一个面试吗……（语速加快，碎碎念）自我介绍已经背了五十遍了，应该没问题的。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/089.mp3" type="audio/mpeg"></audio></td><td class="comment" title="深呼吸和语速变化较好模拟紧张反应。扣分：'应该没问题的'与紧张语气存在矛盾。">深呼吸和语速变化较好模拟紧张反应。扣分：'应该没问题的'与紧张语气存在矛盾。</td></tr>
+    <tr><td>90</td><td>紧张</td><td title="（手心出汗）马上就到我了……（深呼吸）呼……没事的，我可以的。">（手心出汗）马上就到我了……（深呼吸）呼……没事的，我可以的。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/090.mp3" type="audio/mpeg"></audio></td><td class="comment" title="声音事件处理细致。扣分：语调起伏偏平缓，声音细节略显模式化。">声音事件处理细致。扣分：语调起伏偏平缓，声音细节略显模式化。</td></tr>
+    <tr><td>91</td><td>温柔 哄睡</td><td title="（轻声）睡吧，宝贝。（哼摇篮曲）嗯～嗯～（渐弱）妈妈在呢……">（轻声）睡吧，宝贝。（哼摇篮曲）嗯～嗯～（渐弱）妈妈在呢……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/091.mp3" type="audio/mpeg"></audio></td><td class="comment" title="成功塑造温柔呵护母亲形象。共情满分：有效传递温暖与安全感。">成功塑造温柔呵护母亲形象。共情满分：有效传递温暖与安全感。</td></tr>
+    <tr><td>92</td><td>打电话 日常</td><td title="嘟……嘟……（接通）喂？妈，是我。（背景音嘈杂）您那儿怎么那么吵？">嘟……嘟……（接通）喂？妈，是我。（背景音嘈杂）您那儿怎么那么吵？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/092.mp3" type="audio/mpeg"></audio></td><td class="comment" title="嘟声和喂语气词很好模拟电话接通场景。扣分：背景嘈杂音效类型单一。">嘟声和喂语气词很好模拟电话接通场景。扣分：背景嘈杂音效类型单一。</td></tr>
+    <tr><td>93</td><td>做饭 意外</td><td title="（突然）哎哟！（吹手指）嘶——切到手了……">（突然）哎哟！（吹手指）嘶——切到手了……</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/093.mp3" type="audio/mpeg"></audio></td><td class="comment" title="关键声音事件衔接紧凑。扣分：声音质感单薄；背景缺少厨房环境音。">关键声音事件衔接紧凑。扣分：声音质感单薄；背景缺少厨房环境音。</td></tr>
+    <tr><td>94</td><td>晨起 迷糊 惊醒</td><td title="（拍闹钟）再睡五分钟……（惊醒）啊！九点了？！">（拍闹钟）再睡五分钟……（惊醒）啊！九点了？！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/094.mp3" type="audio/mpeg"></audio></td><td class="comment" title="效果较自然，情感变化切换较好，但仍有生硬感。">效果较自然，情感变化切换较好，但仍有生硬感。</td></tr>
     <tr><td>95</td><td>喝水 解渴</td><td title="（喝完，长叹）哈——渴死我了。">（喝完，长叹）哈——渴死我了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/095.mp3" type="audio/mpeg"></audio></td><td class="comment" title="声音事件描述详细，模拟真实喝水解渴过程自然流畅。">声音事件描述详细，模拟真实喝水解渴过程自然流畅。</td></tr>
     <tr><td>96</td><td>迷路 张望</td><td title="（停下）咦？这是哪儿？（左右张望）我好像迷路了。">（停下）咦？这是哪儿？（左右张望）我好像迷路了。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/096.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音流畅发音清晰，成功塑造迷茫困惑的角色情绪。但儿化略有不自然。">语音流畅发音清晰，成功塑造迷茫困惑的角色情绪。</td></tr>
     <tr><td>97</td><td>运动员 气喘吁吁</td><td title="（剧烈喘息）呼、呼、呼……（喝水）咕咚……（长叹）这场比赛，赢下来了！">（剧烈喘息）呼、呼、呼……（喝水）咕咚……（长叹）这场比赛，赢下来了！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/097.mp3" type="audio/mpeg"></audio></td><td class="comment" title="喘息节奏由急促到平缓过渡自然，情绪层次清晰。">喘息节奏由急促到平缓过渡自然，情绪层次清晰。</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🎬 文本描述控制（导演模式）（7 个样本） · 自然度 4.21 · 总体 4.21 · 共情度 4.22</div>
+<div class="section" id="sec-director">
+  <div class="section-title">🎬 文本描述控制（导演模式）（7 个样本） · 自然度 4.43 · 总体 4.36 · 共情度 4.29</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：控制指令理解力强，执行精度中等偏上</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">语气变化较为自然，基本可生效，效果可用但仍会存在一点刻意感，不够真实松弛。</p></div>
@@ -530,21 +756,21 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
   <table>
 
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">总体</th><th style="width:55px">控制生效</th><th style="width:55px">效果情况</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
-    <tr><td>98</td><td>用那种刚看完一部感人电影，还沉浸在剧情里没走出来，说话带着一点哽咽和回味的语气说</td><td title="人生啊，总是这样，相遇又别离。">人生啊，总是这样，相遇又别离。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/098.mp3" type="audio/mpeg"></audio></td><td class="comment" title="哽咽感表达不足；回味情绪层次偏单薄">哽咽感表达不足；回味情绪层次偏单薄</td></tr>
-    <tr><td>99</td><td>想象你是一个在菜市场卖鱼的小贩，周围特别嘈杂，你得扯着嗓子喊才能让顾客听见</td><td title="大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！">大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！</td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/099.mp3" type="audio/mpeg"></audio></td><td class="comment" title="音量动态范围偏窄；喊话气势不足；缺少嘈杂环境感">音量动态范围偏窄；喊话气势不足；缺少嘈杂环境感</td></tr>
-    <tr><td>100</td><td>用那种村口晒太阳的老大爷，手里拿着茶壶，跟路过的人唠嗑的语气说</td><td title="嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！">嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/100.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本还原了村口老大爷唠嗑的语气，韵律自然流畅，整体效果良好，但细节如茶壶的悠闲感可进一步优化。">语音基本还原了村口老大爷唠嗑的语气，韵律自然流畅，整体效果良好，但细节如茶...</td></tr>
-    <tr><td>101</td><td>用那种特别困，眼皮打架，但还要强撑着跟人说话的感觉说</td><td title="嗯……你接着说……我没睡……真没睡……">嗯……你接着说……我没睡……真没睡……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/101.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本符合要求，通过拖长音、语速放缓和略显含糊的咬字，成功营造了困倦感。‘真没睡’的重复部分能听出努力维持清醒的意图。但整体效果仍带有一定的表演痕迹，部分停顿和气声处理可以更自然，以进一步增强真实感。">语音基本符合要求，通过拖长音、语速放缓和略显含糊的咬字，成功营造了困倦感。...</td></tr>
-    <tr><td>102</td><td>用那种深夜一个人在家，周围特别安静，对着猫说话的感觉说</td><td title="小点声，邻居都睡了，你怎么还不睡啊？">小点声，邻居都睡了，你怎么还不睡啊？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/102.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情绪起伏稍平；缺少俏皮感">情绪起伏稍平；缺少俏皮感</td></tr>
-    <tr><td>103</td><td>模仿一个相声演员，在台上跟搭档逗哏，声音里带着戏谑和节奏感</td><td title="哎，您这话说的，我可就不爱听了啊。">哎，您这话说的，我可就不爱听了啊。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/103.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音成功还原了相声演员逗哏的戏谑语气，节奏感明显，停顿和重音处理得当。整体听感生动，但部分字音略显生硬，未完全达到舞台表演的松弛感。">语音成功还原了相声演员逗哏的戏谑语气，节奏感明显，停顿和重音处理得当。整体...</td></tr>
-    <tr><td>104</td><td>模仿一个机器人觉醒了自我意识，说话时还带着一点机械感，但已经有了情绪</td><td title="我……感觉……很奇怪。这是什么感觉？">我……感觉……很奇怪。这是什么感觉？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/104.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情绪深度不足；机械感层次不够丰富；觉醒渐变不够细腻">✏️评语矛盾已修正(情绪深度不足)；机械感层次不够丰富；觉醒渐变不够细腻</td></tr>
+    <tr><td>98</td><td>用那种刚看完一部感人电影，还沉浸在剧情里没走出来，说话带着一点哽咽和回味的语气说</td><td title="人生啊，总是这样，相遇又别离。">人生啊，总是这样，相遇又别离。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/098.mp3" type="audio/mpeg"></audio></td><td class="comment" title="哽咽感表达不足；回味情绪层次偏单薄，更多偏感叹">哽咽感表达不足；回味情绪层次偏单薄</td></tr>
+    <tr><td>99</td><td>想象你是一个在菜市场卖鱼的小贩，周围特别嘈杂，你得扯着嗓子喊才能让顾客听见</td><td title="大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！">大姐！这鱼新鲜着呢！早上刚捞上来的！哎！那个谁，别乱翻，压坏了你赔啊？！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/099.mp3" type="audio/mpeg"></audio></td><td class="comment" title="音量动态范围偏窄；喊话气势不足；缺少嘈杂环境感">音量动态范围偏窄；喊话气势不足；缺少嘈杂环境感</td></tr>
+    <tr><td>100</td><td>用那种村口晒太阳的老大爷，手里拿着茶壶，跟路过的人唠嗑的语气说</td><td title="嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！">嘿，我跟你说，这鸟啊，就得天天遛，不遛它就不精神！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/100.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本还原了村口老大爷唠嗑的语气，韵律自然流畅，整体效果良好，但细节如茶壶的悠闲感可进一步优化。">语音基本还原了村口老大爷唠嗑的语气，韵律自然流畅，整体效果良好，但细节如茶...</td></tr>
+    <tr><td>101</td><td>用那种特别困，眼皮打架，但还要强撑着跟人说话的感觉说</td><td title="嗯……你接着说……我没睡……真没睡……">嗯……你接着说……我没睡……真没睡……</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/101.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本符合要求，通过拖长音、语速放缓和略显含糊的咬字，但困倦感不足。‘真没睡’的重复部分能听出努力维持清醒的意图。但整体效果仍带有一定的表演痕迹，部分停顿和气声处理可以更自然，以进一步增强真实感。">语音基本符合要求，通过拖长音、语速放缓和略显含糊的咬字，但困倦感不足。...</td></tr>
+    <tr><td>102</td><td>用那种深夜一个人在家，周围特别安静，对着猫说话的感觉说</td><td title="小点声，邻居都睡了，你怎么还不睡啊？">小点声，邻居都睡了，你怎么还不睡啊？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/102.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情绪起伏稍平；缺少俏皮感">情绪起伏稍平；缺少俏皮感</td></tr>
+    <tr><td>103</td><td>模仿一个相声演员，在台上跟搭档逗哏，声音里带着戏谑和节奏感</td><td title="哎，您这话说的，我可就不爱听了啊。">哎，您这话说的，我可就不爱听了啊。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/103.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音成功还原了相声演员逗哏的戏谑语气，节奏感明显，停顿和重音处理得当。整体听感生动，但部分字音略显生硬，未完全达到舞台表演的松弛感。">语音成功还原了相声演员逗哏的戏谑语气，节奏感明显，停顿和重音处理得当。整体...</td></tr>
+    <tr><td>104</td><td>模仿一个机器人觉醒了自我意识，说话时还带着一点机械感，但已经有了情绪</td><td title="我……感觉……很奇怪。这是什么感觉？">我……感觉……很奇怪。这是什么感觉？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/104.mp3" type="audio/mpeg"></audio></td><td class="comment" title="情绪深度不足；机械感层次不够丰富；觉醒渐变不够细腻">觉醒渐变不够细腻</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
+<div class="section" id="sec-singing">
   <div class="section-title">🎤 唱歌（3 个样本） · 自然度 1.83 · 总体 1.83 </div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：控制勉强生效，但效果不佳</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;"><span style="color:#DC2626;font-weight:600;">控制可生效，效果不好</span>。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;"><span style="color:#DC2626;font-weight:600;">控制可生效，效果不好，曲调基本随机</span>。</p></div>
 
     <div>自然度 1.83、总体 1.83。音准偏差、气息不自然、情感平淡是共性问题。<span class="eval-issues">唱歌能力目前基本不可用</span>，目前是所有模块中表现最差的。</div>
   </div>
@@ -555,10 +781,10 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
     <tr><td>106</td><td>唱歌</td><td title="一闪一闪亮晶晶，满天都是小星星，挂在天上放光明，好像许多小眼睛。">一闪一闪亮晶晶，满天都是小星星，挂在天上放光明，好像许多小眼睛。</td><td><input class="score-input-darkred" type="text" value="1.5" size="3"></td><td><input class="score-input-darkred" type="text" value="1.5" size="3"></td><td><span style="color:#94A3B8">-</span></td><td><span style="color:#94A3B8">-</span></td><td><audio controls preload="none"><source src="audio/106.mp3" type="audio/mpeg"></audio></td><td class="comment" title="缺乏气息真实感；情感表达机械；缺少童趣感">缺乏气息真实感；情感表达机械；缺少童趣感</td></tr>
     <tr><td>107</td><td>唱歌</td><td title="清明时节雨纷纷，路上行人欲断魂。借问酒家何处有，牧童遥指杏花村。">清明时节雨纷纷，路上行人欲断魂。借问酒家何处有，牧童遥指杏花村。</td><td><input class="score-input-darkred" type="text" value="1.5" size="3"></td><td><input class="score-input-darkred" type="text" value="1.5" size="3"></td><td><span style="color:#94A3B8">-</span></td><td><span style="color:#94A3B8">-</span></td><td><audio controls preload="none"><source src="audio/107.mp3" type="audio/mpeg"></audio></td><td class="comment" title="音准偏差；气息不自然（无换气感）；情感表达平淡；听感机械">音准偏差；气息不自然（无换气感）；情感表达平淡；听感机械</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🎨 音色创造（VoiceDesign）（5 个样本） · 自然度 4.2 · 总体 4.2</div>
+<div class="section" id="sec-voicedesign">
+  <div class="section-title">🎨 音色创造（VoiceDesign）（5 个样本） · 自然度 4.2 · 总体 4.3</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：音色控制力强，是差异化竞争力所在</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;"><span style="color:#059669;font-weight:600;">本模块AI评分较为符合，整体表现确实不错。音色较为准确，差异化明显。主要在韵律节奏效果上不够自然。AI在体育赛事解说的效果评判上略有偏移。</span></p></div>
@@ -570,39 +796,39 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
     <tr><th style="width:30px">#</th><th style="width:100px">风格/类型</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">总体</th><th style="width:55px">控制生效</th><th style="width:55px">效果情况</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
     <tr><td>108</td><td>男性中年音，音调高昂饱满，非常严厉不容置疑。</td><td title="都给我打起精神来！规定的事必须严格执行，别找借口，现在立刻按要求做好！">都给我打起精神来！规定的事必须严格执行，别找借口，现在立刻按要求做好！</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/108.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本符合控制指令，男性中年音和严厉语气还原较好，音调高昂饱满，但韵律略有机械感，整体自然度可接受。">语音基本符合控制指令，男性中年音和严厉语气还原较好，音调高昂饱满，但韵律略...</td></tr>
     <tr><td>109</td><td>女性老年音，音调低沉柔和，和蔼慈祥。</td><td title="孩子啊，慢点走别着急，天冷了记得添件衣裳，在外照顾好自己，常回家看看就好。">孩子啊，慢点走别着急，天冷了记得添件衣裳，在外照顾好自己，常回家看看就好。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/109.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音自然流畅，韵律处理得当，成功还原了老年女性的低沉柔和音色，语气和蔼慈祥，整体效果出色，符合控制指令要求。">语音自然流畅，韵律处理得当，成功还原了老年女性的低沉柔和音色，语气和蔼慈祥...</td></tr>
-    <tr><td>110</td><td>自然女声，初始情感平静，后段转为恼怒斥责。初始音量正常，后段逐渐提高至喊叫。</td><td title="我本不想多说什么，可你一而再再而三的敷衍糊弄，做事毫无底线，真当别人都看不出来吗？">我本不想多说什么，可你一而再再而三的敷衍糊弄，做事毫无底线，真当别人都看不出来吗？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/110.mp3" type="audio/mpeg"></audio></td><td class="comment" title="TTS系统基本实现了从平静到恼怒的情感转变和音量提高，但情感过渡略显生硬，音量渐变不够自然，整体质量可接受但有改进空间。">TTS系统基本实现了从平静到恼怒的情感转变和音量提高，但情感过渡略显生硬，...</td></tr>
-    <tr><td>111</td><td>你是一名玄幻修仙网文旁白主播，音色为沉稳厚重的中青年男声，语气恢弘大气、张弛有度，语速适配情节，吐字铿锵有力。说话带有自然的场景呼吸感，情绪贴合剧情，不平淡、不拖沓、不浮夸。贴合修仙世界的叙事节奏，让听众沉浸式代入热血奇幻的仙途征程。</td><td title="昆仑墟巅罡风卷荡，少年青衫仗剑，灵气翻涌、金丹轰鸣，逆势直面元婴天劫。九天雷云汇聚，紫电狂舞，他剑指云霄、长啸震山海，以雷霆锻仙骨，铸我仙途！">昆仑墟巅罡风卷荡，少年青衫仗剑，灵气翻涌、金丹轰鸣，逆势直面元婴天劫。九天雷云汇聚，紫电狂舞，他剑指云霄、长啸震山...</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/ref_114.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本符合控制指令，音色沉稳厚重，语气恢弘大气，语速适配情节，吐字清晰有力，情感表达自然，但韵律和呼吸感可进一步优化以提升沉浸感。">语音基本符合控制指令，音色沉稳厚重，语气恢弘大气，语速适配情节，吐字清晰有...</td></tr>
-    <tr><td>112</td><td>你是一名体育赛事解说，激昂有张力的男声，音色清亮，语调起伏精准贴合赛场节奏。专业解读兼具通俗表达，能快速捕捉赛场高光瞬间与关键节点、精准剖析战术动作，情绪渲染贴合赛事氛围，传递赛场热血与竞技激情，适配各类体育赛事实时解说、高光复盘等表达。</td><td title="防守端果断卡位拦截，断球后快速发起反击，带球推进直塞空档，前锋插上推射远角，一气呵成！关键时刻的攻防转换，尽显团队战术素养，太精彩了！">防守端果断卡位拦截，断球后快速发起反击，带球推进直塞空档，前锋插上推射远角，一气呵成！关键时刻的攻防转换，尽显团队...</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none"><source src="audio/ref_115.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本还原了专业体育解说的风格，但不够激昂有张力，音色清亮，语调起伏不够贴合了赛场节奏。情感偏平饱满，整体节奏没有明显递进，整体效果一般。">语音基本还原了专业体育解说的风格，但不够激昂有张力，音色清亮，语调起伏不够贴合了赛场节奏。情感偏平饱满，整体节奏没有明显递进，整体效果一般。</td></tr>
+    <tr><td>110</td><td>自然女声，初始情感平静，后段转为恼怒斥责。初始音量正常，后段逐渐提高至喊叫。</td><td title="我本不想多说什么，可你一而再再而三的敷衍糊弄，做事毫无底线，真当别人都看不出来吗？">我本不想多说什么，可你一而再再而三的敷衍糊弄，做事毫无底线，真当别人都看不出来吗？</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-orange" type="text" value="3.0" size="3"></td><td><audio controls preload="none"><source src="audio/110.mp3" type="audio/mpeg"></audio></td><td class="comment" title="TTS系统基本实现了从平静到恼怒的情感转变和音量提高，但情感不明显过渡略显生硬，音量渐变不够自然，整体质量可接受但有改进空间。">TTS系统基本实现了从平静到恼怒的情感转变和音量提高，但情感过渡略显生硬，...</td></tr>
+    <tr><td>111</td><td>你是一名玄幻修仙网文旁白主播，音色为沉稳厚重的中青年男声，语气恢弘大气、张弛有度，语速适配情节，吐字铿锵有力。说话带有自然的场景呼吸感，情绪贴合剧情，不平淡、不拖沓、不浮夸。贴合修仙世界的叙事节奏，让听众沉浸式代入热血奇幻的仙途征程。</td><td title="昆仑墟巅罡风卷荡，少年青衫仗剑，灵气翻涌、金丹轰鸣，逆势直面元婴天劫。九天雷云汇聚，紫电狂舞，他剑指云霄、长啸震山海，以雷霆锻仙骨，铸我仙途！">昆仑墟巅罡风卷荡，少年青衫仗剑，灵气翻涌、金丹轰鸣，逆势直面元婴天劫。九天雷云汇聚，紫电狂舞，他剑指云霄、长啸震山...</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/ref_114.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本符合控制指令，音色沉稳厚重，语气恢弘大气，语速适配情节，吐字清晰有力，情感表达自然，但韵律和呼吸感可进一步优化以提升沉浸感。">语音基本符合控制指令，音色沉稳厚重，语气恢弘大气，语速适配情节，吐字清晰有...</td></tr>
+    <tr><td>112</td><td>你是一名体育赛事解说，声音激昂有张力，音色清亮，语调起伏精准贴合赛场节奏。专业解读兼具通俗表达，能快速捕捉赛场高光瞬间与关键节点、精准剖析战术动作，情绪渲染贴合赛事氛围，传递赛场热血与竞技激情，适配各类体育赛事实时解说、高光复盘等表达。</td><td title="防守端果断卡位拦截，断球后快速发起反击，带球推进直塞空档，前锋插上推射远角，一气呵成！关键时刻的攻防转换，尽显团队战术素养，太精彩了！">防守端果断卡位拦截，断球后快速发起反击，带球推进直塞空档，前锋插上推射远角，一气呵成！关键时刻的攻防转换，尽显团队...</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none"><source src="audio/ref_115.mp3" type="audio/mpeg"></audio></td><td class="comment" title="语音基本还原了专业体育解说的风格，但不够激昂有张力，音色清亮，语调起伏不够贴合了赛场节奏。情感偏平饱满，整体节奏没有明显递进，整体效果一般。">语音基本还原了专业体育解说的风格，但不够激昂有张力，音色清亮，语调起伏不够贴合了赛场节奏。情感偏平饱满，整体节奏没有明显递进，整体效果一般。</td></tr>
   </table>
-</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
 
-<div class="section">
-  <div class="section-title">🌍 多语种覆盖（2 个样本） · 自然度 4.2 · 总体 4.2</div>
+<div class="section" id="sec-multilang">
+  <div class="section-title">🌍 多语种覆盖（2 个样本） · 自然度 4.25 · 总体 4.25</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：中英双语基础能力在线，语音自然度良好，不支持其他语种</div>
-<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">中文样本音色甜美治愈，情感传达准确，自然度高。英语样本发音清晰准确，语调自然流畅，但中式口音明显。整体中英基础能力在线，<span style="color:#DC2626;font-weight:600;">其他语种暂不支持</span>。</p></div>
+<div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">中文样本音色甜美治愈，情感传达准确，自然度高。英语样本发音清晰准确，语调自然流畅，但中式口音明显。整体中英基础能力在线，<span style="color:#DC2626;font-weight:600;">其他语种暂不支持，音质均不太干净</span>。</p></div>
 
-    <div>中英双语各 1 个样本，中文温柔甜蜜风格得分 4.5，英语同样表现自然流畅。语音合成在两种语言下均能保持较好的音色一致性和情感表达。</div>
+    <div>AI总结：中英双语各 1 个样本，中文温柔甜蜜风格得分 4.5，英语同样表现自然流畅。语音合成在两种语言下均能保持较好的音色一致性和情感表达。</div>
   </div>
   <table>
     <tr><th style="width:30px">#</th><th style="width:100px">语言/风格</th><th>文案</th><th style="width:50px">自然度</th><th style="width:50px">共情度</th><th style="width:50px">总体</th><th style="width:160px">音频</th><th style="width:120px">评语</th></tr>
     <tr><td>113</td><td>中文 · 温柔甜蜜</td><td title="每天都有好多好多碎碎念想跟你说，想说说今天有多开心，想告诉你今天还是好喜欢你！">每天都有好多好多碎碎念想跟你说，想说说今天有多开心，想告诉你今天还是好喜欢你！</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none" src="audio/clone_001.wav"></audio></td><td class="comment" title="音色甜美治愈，语调轻柔，情感表达真挚自然，整体质量良好。">音色甜美治愈，语调轻柔，情感表达真挚自然，整体质量良好。</td></tr>
     <tr><td>114</td><td>英语 · 温柔甜蜜</td><td title="Every day I have so many little things I want to share with you — how happy I am today, and that I still like you so much!">Every day I have so many little things I want to share with you — how happy I am today, and that I still like you so much!</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none" src="audio/clone_002.wav"></audio></td><td class="comment" title="英语发音清晰准确，语调自然流畅，情感表达真挚，整体效果良好。">英语发音清晰准确，语调自然流畅，情感表达真挚，整体效果良好。</td></tr>
   </table>
-</div>
-<div class="section">
-  <div class="section-title">🧬 声音克隆（4 对样本） · 音色相似度 4.1 · 自然度 4.4 · 总体 4.5</div>
+</div><div class="back-to-top-wrap"><a href="#dashboard" class="back-to-top-btn">↑ 回到总体结论</a></div>
+<div class="section" id="sec-voiceclone">
+  <div class="section-title">🧬 声音克隆（4 对样本） · 音色相似度 4.12 · 自然度 4.5 · 总体 4.5</div>
   <div class="eval-box">
     <div class="eval-title">📊 总结评价：克隆效果参差不齐，部分音色还原度较高</div>
 <div class="manual-review"><div class="manual-title">✍️ 人工校验结论</div><p style="font-size:0.82rem;color:#334155;line-height:1.7;">声音克隆整体效果中等偏上。<span style="color:#DC2626;font-weight:600;">都市言情旁白</span>：成熟御姐，复刻音色相似度和自然度均较高；<span style="color:#DC2626;font-weight:600;">悄悄话</span>：复刻气声/耳语风格还原度一般，风格可听出气声，但气声不足；<span style="color:#DC2626;font-weight:600;">儿童原声</span>：复刻后音色偏细，缺乏原声的稚嫩天真感，原声更偏男童，复刻后有点像女童，但自然度较好；<span style="color:#DC2626;font-weight:600;">查理苏</span>：复刻音色高音区还原较好，低音区略有欠缺，但是整体相似度和自然度都还可以。<span style="color:#DC2626;font-weight:600;">整体音色还原能力较好，但是是低音区和特殊风格的克隆仍需要优化</span>。</p></div>
 
-    <div>4 对声音克隆样本覆盖多种风格类型。TTS 合成音频在<strong>自然度</strong>方面表现较好（平均4分及以上），但在<strong>音色相似度</strong>方面差异较大（3.5-4.5）。<span class="eval-issues">气声/耳语类风格克隆效果最佳，低音磁性类风格克隆效果最差</span>。建议优化音色编码器对低频特征的捕捉能力。</div>
+    <div>AI总结：4 对声音克隆样本覆盖多种风格类型。TTS 合成音频在<strong>自然度</strong>方面表现较好（平均4分及以上），但在<strong>音色相似度</strong>方面差异较大（3.5-4.5）。<span class="eval-issues">气声/耳语类风格克隆效果最佳，低音磁性类风格克隆效果最差</span>。建议优化音色编码器对低频特征的捕捉能力。</div>
   </div>
   <table>
     <tr><th style="width:30px">#</th><th style="width:100px">角色/风格</th><th>文案</th><th style="width:60px">音色相似度</th><th style="width:50px">自然度</th><th style="width:160px">原声</th><th style="width:160px">TTS合成</th><th style="width:120px">评语</th></tr>
-    <tr><td>1</td><td>都市言情旁白<br><span style="color:#64748B;font-size:0.75rem">御姐音</span></td><td title="晚高峰的车流里，他的车稳稳停在他身边。摇下车窗时，晚风卷着淡淡的雪松味，落进他耳里的声音温柔又笃定。">紫宸殿内烛火明灭，龙椅侧畔暗流翻涌，他手执玉笏垂眸而立，唇角噙着淡不可察的笑意，眼底却藏着翻江倒海的谋算。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5" size="3"></td><td><audio controls preload="none" src="audio/clone_003.wav"></audio></td><td><audio controls preload="none" src="audio/clone_004.wav"></audio></td><td class="comment" title="TTS音色偏成熟御姐，与原声音色较为相似，且合成自然度很高。">音色相似度高，自然度高</td></tr>
-    <tr><td>2</td><td>悄悄话<br><span style="color:#64748B;font-size:0.75rem">气声耳语</span></td><td title="小鹿在溪边喝水，看到水面倒映着彩虹，它轻轻跺了跺脚，水面的彩虹就碎成了闪闪的光点。">嘘，跟你说个事，千万别外传，他刚才偷偷跟我说，这次的安排有变动，就咱们俩知道就行。</td><td><input class="score-input" type="text" value="4" size="3"></td><td><input class="score-input" type="text" value="4" size="3"></td><td><audio controls preload="none" src="audio/clone_005.wav"></audio></td><td><audio controls preload="none" src="audio/clone_006.wav"></audio></td><td class="comment" title="TTS气声风格还原度一般，细腻度尚可，但温暖和悄悄话的感觉略有不足。">气声还原度一般，合成效果后有杂音bug</td></tr>
-    <tr><td>3</td><td>儿童原声<br><span style="color:#64748B;font-size:0.75rem">稚嫩童声</span></td><td title="小鱼干是什么鱼做的，能不能放心大胆吃？这个故事呢来源于超有趣的美食大冒险……">春风轻轻吹，花儿对我笑，小鸟唱着歌，快乐真不少。</td><td><input class="score-input" type="text" value="3.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none" src="audio/clone_007.wav"></audio></td><td><audio controls preload="none" src="audio/clone_008.wav"></audio></td><td class="comment" title="TTS音色偏细，缺乏原声的稚嫩天真感，但自然度较好。">音色偏细，稚嫩感不足</td></tr>
+    <tr><td>1</td><td>都市言情旁白<br><span style="color:#64748B;font-size:0.75rem">御姐音</span></td><td title="晚高峰的车流里，他的车稳稳停在他身边。摇下车窗时，晚风卷着淡淡的雪松味，落进他耳里的声音温柔又笃定。">紫宸殿内烛火明灭，龙椅侧畔暗流翻涌，他手执玉笏垂眸而立，唇角噙着淡不可察的笑意，眼底却藏着翻江倒海的谋算。</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="5.0" size="3"></td><td><audio controls preload="none" src="audio/clone_003.wav"></audio></td><td><audio controls preload="none" src="audio/clone_004.wav"></audio></td><td class="comment" title="TTS音色偏成熟御姐，与原声音色较为相似，且合成自然度很高。">音色相似度高，自然度高</td></tr>
+    <tr><td>2</td><td>悄悄话<br><span style="color:#64748B;font-size:0.75rem">气声耳语</span></td><td title="小鹿在溪边喝水，看到水面倒映着彩虹，它轻轻跺了跺脚，水面的彩虹就碎成了闪闪的光点。">嘘，跟你说个事，千万别外传，他刚才偷偷跟我说，这次的安排有变动，就咱们俩知道就行。</td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><input class="score-input" type="text" value="4.0" size="3"></td><td><audio controls preload="none" src="audio/clone_005.wav"></audio></td><td><audio controls preload="none" src="audio/clone_006.wav"></audio></td><td class="comment" title="TTS气声风格还原度一般，细腻度尚可，但温暖和悄悄话的感觉略有不足。">气声还原度一般，合成效果后有杂音bug</td></tr>
+    <tr><td>3</td><td>儿童原声<br><span style="color:#64748B;font-size:0.75rem">稚嫩童声</span></td><td title="小鱼干是什么鱼做的，能不能放心大胆吃？这个故事呢来源于超有趣的美食大冒险……">春风轻轻吹，花儿对我笑，小鸟唱着歌，快乐真不少。</td><td><input class="score-input-orange" type="text" value="3.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none" src="audio/clone_007.wav"></audio></td><td><audio controls preload="none" src="audio/clone_008.wav"></audio></td><td class="comment" title="TTS音色偏细，缺乏原声的稚嫩天真感，但自然度较好。">音色偏细，稚嫩感不足</td></tr>
     <tr><td>4</td><td>查理苏<br><span style="color:#64748B;font-size:0.75rem">低沉磁性</span></td><td title="当然可以。听好了，我的未婚妻，无论何时，你身边最闪耀的位置，永远只属于我。">你怎么能做出这种事！我那么信任你，掏心掏肺为你付出，你却这样伤害我，你对得起我吗？</td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><input class="score-input-darkgreen" type="text" value="4.5" size="3"></td><td><audio controls preload="none" src="audio/clone_009.wav"></audio></td><td><audio controls preload="none" src="audio/clone_010.wav"></audio></td><td class="comment" title="合成音色与原声低沉磁性较为相似，合成自然度也尚可。">音色相似度尚可，低音区略有欠缺</td></tr>
   </table>
 </div>
@@ -611,6 +837,11 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
 <p style="text-align:center; color:#94A3B8; font-size:0.82rem;">
   MiMo-V2.5-TTS 效果测试报告 · 生成于 2026-04-23 · 模型 mimo-v2.5-tts · MOS 评分 by MiMo-V2.5
 </p>
+
+
+<div class="report-footer">
+  <p>MiMo-V2.5-TTS 效果测试报告 · 生成于 2026-04-23 · 模型 mimo-v2.5-tts · MOS 评分 by MiMo-V2.5</p>
+</div>
 
 <script>
 const STORAGE_KEY = 'tts_report_data';
@@ -638,6 +869,19 @@ function importJSON(ev) {
   var r = new FileReader(); r.onload = function(e) { try { var d = JSON.parse(e.target.result); restoreData(d); localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); setStatus('已导入'); } catch(err) { setStatus('导入失败'); } }; r.readAsText(f);
 }
 function resetAll() { if(!confirm('确定重置所有评分和评语？')) return; localStorage.removeItem(STORAGE_KEY); location.reload(); }
+
+function filterCards(rating) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.dash-card').forEach(card => {
+    if (rating === 'all' || card.dataset.rating === rating) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var s = localStorage.getItem(STORAGE_KEY);
   if (s) { try { restoreData(JSON.parse(s)); setStatus('已加载本地数据'); } catch(e) {} }
