@@ -259,6 +259,51 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
 .strength { color: #34D399; font-weight: 600; }
 .weakness { color: #F87171; font-weight: 600; }
 
+/* Promo Banner */
+.promo-section {
+  padding: 60px 0 40px;
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(ellipse at center, rgba(99,102,241,0.08), transparent 70%),
+    linear-gradient(180deg, transparent 0%, rgba(15,22,41,0.5) 100%);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.promo-section .container { text-align: center; }
+.promo-label {
+  display: inline-block; padding: 5px 14px; border-radius: 100px;
+  background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
+  color: #A5B4FC; font-size: 0.75rem; letter-spacing: 0.1em; margin-bottom: 20px;
+}
+.promo-link {
+  display: inline-block; position: relative;
+  text-decoration: none; color: inherit;
+  max-width: 100%; cursor: pointer;
+  transition: all 0.3s;
+}
+.promo-link::before {
+  content: ''; position: absolute; inset: -8px;
+  background: linear-gradient(135deg, #6366F1, #EC4899);
+  border-radius: 20px; z-index: -1;
+  opacity: 0; transition: opacity 0.3s; filter: blur(16px);
+}
+.promo-link:hover { transform: translateY(-4px); }
+.promo-link:hover::before { opacity: 0.6; }
+.promo-image-wrap {
+  position: relative; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  transition: border-color 0.3s;
+}
+.promo-link:hover .promo-image-wrap { border-color: rgba(99,102,241,0.5); }
+.promo-image-wrap img { display: block; max-width: 100%; height: auto; }
+.promo-hint {
+  margin-top: 16px; font-size: 0.85rem; color: #94A3B8;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.promo-hint .arrow-icon { display: inline-block; transition: transform 0.3s; }
+.promo-link:hover + .promo-hint .arrow-icon,
+.promo-link:hover .arrow-icon { transform: translateX(4px); }
+
 /* Footer */
 .footer { padding: 60px 0; text-align: center; color: #475569; font-size: 0.82rem; }
 
@@ -400,6 +445,20 @@ audio { height: 28px; border-radius: 6px; max-width: 160px; }
       </ul>
       <h3>评分差异总结</h3>
       <p>AI评分在方言模块偏高约1分（AI给4.17 vs 人工给3.12），英文模块偏高约0.2分，方言混搭模块偏高约1.4分（AI给3.96 vs 人工给2.6）。情感转折、细粒度声音事件等模块AI评分相对准确。建议后续优化AI评分模型对发音准确度和方言地道性的判断能力。</p>
+    </div>
+  </div>
+</section>
+
+<section class="promo-section">
+  <div class="container">
+    <div class="promo-label">📰 更多资讯</div>
+    <a href="http://172.31.101.179:6001/" target="_blank" class="promo-link">
+      <div class="promo-image-wrap">
+        <img src="./promo-banner.png" alt="立即体验">
+      </div>
+    </a>
+    <div class="promo-hint">
+      <span>👆 点击图片跳转资讯&报告平台</span>
     </div>
   </div>
 </section>
@@ -976,17 +1035,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+
+
 </script>
-
-  
-
-<section style="text-align:center;padding:32px 0">
-  <hr style="border:none;border-top:2px solid #e0e0;margin-bottom:24px">
-  <a href="http://172.31.101.179:6001/" target="_blank">
-    <img src="./promo-banner.png" style="max-width:100%;border-radius:12px;cursor:pointer">
-    <div style="margin-top:8px;font-size:14px;color:#666">👆 点击图片跳转体验</div>
-  </a>
-</section>
 
 </body>
 </html>
