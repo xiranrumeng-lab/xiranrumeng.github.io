@@ -357,6 +357,76 @@ body {
 /* Footer */
 .footer { padding: 50px 0; text-align: center; color: #475569; font-size: 0.8rem; }
 
+/* Promo section */
+.promo-section {
+  padding: 60px 0 40px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(168,85,247,0.12), transparent 60%),
+    linear-gradient(180deg, transparent 0%, rgba(14,165,233,0.04) 100%);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+.promo-section .promo-label {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.3);
+  color: #C4B5FD;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+.promo-section .promo-link {
+  display: block;
+  max-width: 720px;
+  margin: 0 auto 18px;
+  text-decoration: none;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(15,22,41,0.6);
+}
+.promo-section .promo-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(14,165,233,0.18), 0 0 0 1px rgba(14,165,233,0.35);
+}
+.promo-section .promo-image-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #0F1629;
+}
+.promo-section .promo-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.promo-section .promo-link:hover .promo-image-wrap img { transform: scale(1.02); }
+.promo-section .promo-image-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(10,14,26,0.35) 100%);
+  pointer-events: none;
+}
+.promo-section .promo-hint {
+  font-size: 0.82rem;
+  color: #7DD3FC;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(14,165,233,0.08);
+  border: 1px solid rgba(14,165,233,0.18);
+}
+
 /* Quick navigation */
 .quick-nav {
   position: fixed; left: 24px; top: 50%; transform: translateY(-50%);
@@ -804,8 +874,22 @@ body {
   </div>
 </section>
 
+<section class="promo-section">
+  <div class="container">
+    <div class="promo-label">📰 更多资讯</div>
+    <a href="http://172.31.101.179:6001/" target="_blank" class="promo-link">
+      <div class="promo-image-wrap">
+        <img src="./promo-banner.png" alt="立即体验">
+      </div>
+    </a>
+    <div class="promo-hint">
+      <span>👆 点击图片跳转资讯&报告平台</span>
+    </div>
+  </div>
+</section>
+
 <footer class="footer">
-  <div class="container">Fish Audio S2-Pro 效果体验报告 · 155 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比</div>
+  <div class="container">Fish Audio S2-Pro 效果体验报告 · 160 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比</div>
 </footer>
 
 <!-- Quick navigation -->
@@ -1497,4 +1581,3 @@ function initQuickNav() {
 
 </body>
 </html>
-
