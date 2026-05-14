@@ -1,1 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fish Audio S2-Pro 效果体验报告</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0A0E1A; color: #E2E8F0; line-height: 1.7;
+}
+.container { max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+
+/* Hero */
+.hero {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(14,165,233,0.25), transparent 50%),
+    radial-gradient(circle at 80% 60%, rgba(168,85,247,0.18), transparent 50%),
+    linear-gradient(180deg, #0A0E1A 0%, #0F1629 100%);
+  padding: 90px 0 70px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.hero .badge {
+  display: inline-block; padding: 6px 14px; border-radius: 100px;
+  background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.3);
+  color: #7DD3FC; font-size: 0.78rem; letter-spacing: 0.05em; margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: 3rem; font-weight: 800; line-height: 1.18;
+  background: linear-gradient(135deg, #FFF 0%, #94A3B8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 14px; letter-spacing: -0.02em;
+}
+.hero .lede { font-size: 0.95rem; color: #94A3B8; max-width: 680px; margin: 0 auto 36px; }
+.hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 880px; margin: 0 auto 40px; }
+.hero-stat {
+  padding: 20px 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px); transition: all 0.3s;
+}
+.hero-stat:hover { transform: translateY(-3px); border-color: rgba(14,165,233,0.4); }
+.hero-stat .num {
+  font-size: 1.7rem; font-weight: 800;
+  background: linear-gradient(135deg, #0EA5E9 0%, #A855F7 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-stat .lbl { font-size: 0.72rem; color: #64748B; margin-top: 4px; }
+
+/* Timeline */
+.timeline-wrap { max-width: 1020px; margin: 0 auto; padding: 0 20px; }
+.timeline { display: flex; justify-content: space-between; align-items: flex-start; position: relative; gap: 8px; flex-wrap: wrap; }
+.timeline::before { content:''; position:absolute; top:8px; left:6%; right:6%; height:2px; background: linear-gradient(90deg, rgba(14,165,233,0.6), rgba(168,85,247,0.6)); z-index:0; }
+.tl-node { position:relative; z-index:1; flex:1; min-width:120px; text-align:center; }
+.tl-dot { width:18px; height:18px; border-radius:50%; background:#0A0E1A; border:2px solid #7DD3FC; margin:0 auto 8px; }
+.tl-node.active .tl-dot { background: linear-gradient(135deg, #0EA5E9, #A855F7); border-color:#A855F7; box-shadow: 0 0 14px rgba(168,85,247,0.6); }
+.tl-date { font-size:0.72rem; color:#7DD3FC; font-weight:700; letter-spacing:0.04em; }
+.tl-text { font-size:0.7rem; color:#94A3B8; margin-top:4px; line-height:1.4; }
+
+/* Section */
+.section { padding: 64px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.section-eyebrow { color: #7DD3FC; font-size: 0.76rem; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 8px; }
+.section-title { font-size: 1.8rem; font-weight: 800; color: #F1F5F9; margin-bottom: 10px; letter-spacing: -0.02em; }
+.section-desc { color: #94A3B8; font-size: 0.9rem; max-width: 680px; margin-bottom: 32px; }
+
+/* Methodology */
+.method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 32px; }
+.method-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 18px 20px;
+}
+.method-card .m-ico { font-size: 1.3rem; margin-bottom: 6px; }
+.method-card .m-title { font-weight: 700; color: #7DD3FC; font-size: 0.88rem; margin-bottom: 6px; }
+.method-card .m-text { font-size: 0.8rem; color: #94A3B8; line-height: 1.6; }
+
+/* Test matrix table */
+.matrix-wrap { overflow-x: auto; margin-top: 16px; }
+.matrix-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; font-size: 0.8rem; }
+.matrix-table th { background: rgba(14,165,233,0.14); color: #7DD3FC; padding: 10px 12px; text-align: left; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.03em; white-space: nowrap; }
+.matrix-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #CBD5E1; vertical-align: top; }
+.matrix-table tr:hover td { background: rgba(255,255,255,0.03); }
+.matrix-table .mod-name { font-weight: 700; color: #F1F5F9; white-space: nowrap; }
+.matrix-table .status-done { color: #34D399; font-weight: 600; }
+.matrix-table .status-pending { color: #FBBF24; font-weight: 600; }
+.matrix-table .text-list { font-size: 0.75rem; color: #94A3B8; line-height: 1.6; }
+.matrix-table .voice-list { font-size: 0.75rem; color: #A5B4FC; }
+
+/* Capability cards */
+.cap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cap-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 22px 24px; }
+.cap-card.full { grid-column: 1 / -1; }
+.cap-card h3 { font-size: 1rem; color: #F1F5F9; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+.cap-card h3 .tag { font-size:0.65rem; padding:2px 8px; border-radius:100px; font-weight:600; letter-spacing:0.05em; }
+.cap-card h3 .tag-s1 { background:rgba(148,163,184,0.18); color:#CBD5E1; }
+.cap-card h3 .tag-s2 { background:linear-gradient(135deg, rgba(14,165,233,0.25), rgba(168,85,247,0.25)); color:#E0F2FE; border:1px solid rgba(14,165,233,0.3); }
+.cap-card p { font-size: 0.82rem; color: #94A3B8; line-height: 1.75; }
+.cap-card ul { margin:8px 0 0 20px; }
+.cap-card li { font-size:0.8rem; color:#CBD5E1; line-height:1.7; }
+.cap-card code { background:rgba(14,165,233,0.12); color:#7DD3FC; padding:2px 6px; border-radius:4px; font-family:'SF Mono',Consolas,monospace; font-size:0.76rem; }
+@media (max-width: 900px) { .cap-grid { grid-template-columns: 1fr; } }
+
+/* Ranking bar chart */
+.bar-dim-tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+.dim-tab {
+  padding: 6px 16px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03);
+  border-radius: 8px; font-size: 0.82rem; cursor: pointer; color: #94A3B8; transition: all 0.2s;
+}
+.dim-tab:hover { background: rgba(255,255,255,0.06); color: #E2E8F0; }
+.dim-tab.active { background: linear-gradient(135deg, #0EA5E9, #A855F7); border-color: transparent; color: white; font-weight: 600; }
+.bar-list { display: flex; flex-direction: column; gap: 18px; }
+.bar-group { padding: 12px 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; }
+.bar-group .group-name { font-weight: 700; color: #F1F5F9; font-size: 0.9rem; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+.bar-group .group-name .emoji { font-size: 1.05rem; }
+.bar-group .group-name .delta { margin-left: auto; font-family: 'SF Mono', Consolas, monospace; font-size: 0.8rem; padding: 2px 8px; border-radius: 5px; font-weight: 700; }
+.delta-up { background: rgba(16,185,129,0.18); color: #34D399; }
+.delta-down { background: rgba(239,68,68,0.18); color: #F87171; }
+.delta-same { background: rgba(148,163,184,0.18); color: #CBD5E1; }
+.delta-na { background: rgba(148,163,184,0.12); color: #94A3B8; font-weight: 500; }
+.bar-row { display: grid; grid-template-columns: 70px 1fr 60px; gap: 14px; align-items: center; padding: 4px 0; }
+.bar-row .bar-label { font-size: 0.75rem; color: #94A3B8; font-weight: 600; text-align: right; }
+.bar-row.s1-row .bar-label { color: #CBD5E1; }
+.bar-row.s2-row .bar-label { color: #7DD3FC; }
+.bar-track { height: 30px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
+.bar-fill {
+  height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 10px;
+  font-size: 0.72rem; font-weight: 600; color: #fff;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'SF Mono', Consolas, monospace;
+}
+.bar-fill.excellent { background: linear-gradient(90deg, #10B981 0%, #34D399 100%); }
+.bar-fill.good { background: linear-gradient(90deg, #0EA5E9 0%, #A855F7 100%); }
+.bar-fill.avg { background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%); }
+.bar-fill.poor { background: linear-gradient(90deg, #EF4444 0%, #F87171 100%); }
+.bar-fill.pending { background: repeating-linear-gradient(45deg, rgba(148,163,184,0.25), rgba(148,163,184,0.25) 8px, rgba(148,163,184,0.12) 8px, rgba(148,163,184,0.12) 16px); color:#CBD5E1; }
+.bar-score { font-family: 'SF Mono', Consolas, monospace; font-weight: 700; color: #F1F5F9; font-size: 0.95rem; text-align: right; }
+.bar-score.pending { color: #64748B; font-size: 0.8rem; }
+
+/* Filter row */
+.filter-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; padding: 12px 18px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+}
+.filter-row .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  padding: 5px 12px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03);
+  border-radius: 100px; font-size: 0.78rem; cursor: pointer; color: #94A3B8; transition: all 0.15s;
+}
+.chip:hover { background: rgba(255,255,255,0.06); color: #E2E8F0; }
+.chip.active { background: linear-gradient(135deg, #0EA5E9, #A855F7); border-color: transparent; color: white; }
+
+/* Module cards */
+.modules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.module-card {
+  position: relative; padding: 22px 20px; border-radius: 14px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; transition: all 0.3s;
+}
+.module-card:hover { border-color: rgba(14,165,233,0.45); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(14,165,233,0.12); }
+.module-card .top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.module-card .emoji-large { font-size: 1.9rem; }
+.module-card .medal { padding: 3px 10px; border-radius: 100px; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em; }
+.medal-excellent { background: rgba(16,185,129,0.15); color: #34D399; }
+.medal-good { background: rgba(14,165,233,0.15); color: #7DD3FC; }
+.medal-avg { background: rgba(245,158,11,0.15); color: #FBBF24; }
+.medal-poor { background: rgba(239,68,68,0.15); color: #F87171; }
+.medal-pending { background: rgba(148,163,184,0.15); color: #94A3B8; }
+.module-card .name { font-size: 1.08rem; font-weight: 700; color: #F1F5F9; margin-bottom: 4px; }
+.module-card .meta { font-size: 0.72rem; color: #64748B; margin-bottom: 12px; }
+.module-card .meta .placeholder-n { color: #FBBF24; font-weight: 600; }
+.module-card .scores-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.module-card .score-pill { padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; background: rgba(255,255,255,0.05); color: #CBD5E1; font-family: 'SF Mono', Consolas, monospace; }
+.module-card .finding { font-size: 0.86rem; font-weight: 700; color: #F1F5F9; margin-bottom: 6px; border-left: 3px solid #0EA5E9; padding-left: 10px; }
+.module-card .detail { font-size: 0.78rem; color: #94A3B8; line-height: 1.6; }
+
+/* Detail Modal */
+.detail-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease;
+}
+.detail-modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.detail-modal {
+  width: 100%; max-width: 1180px;
+  background: linear-gradient(180deg, #0F1629 0%, #0A0E1A 100%);
+  border: 1px solid rgba(14,165,233,0.3); border-radius: 16px;
+  padding: 0 0 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.detail-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px; position: sticky; top:0; z-index:10;
+  background: rgba(15,22,41,0.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 16px 16px 0 0;
+}
+.detail-header h2 { font-size: 1.35rem; font-weight: 800; color: #F1F5F9; }
+.detail-close { padding: 7px 14px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; color: #94A3B8; font-size: 0.82rem; transition: all 0.2s; }
+.detail-close:hover { background: rgba(239,68,68,0.15); color: #F87171; border-color: rgba(239,68,68,0.3); }
+.detail-body { padding: 24px 32px 0; }
+
+/* Compare grid (S1 vs S2) */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+@media (max-width: 900px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-box { border-radius: 12px; padding: 16px 18px; }
+.compare-box.s1 { background: rgba(148,163,184,0.08); border-left: 4px solid #94A3B8; }
+.compare-box.s2 { background: rgba(14,165,233,0.08); border-left: 4px solid #0EA5E9; }
+.compare-box .c-label { font-weight: 800; font-size: 0.82rem; margin-bottom: 10px; display:flex; align-items:center; gap:8px; }
+.compare-box.s1 .c-label { color: #CBD5E1; }
+.compare-box.s2 .c-label { color: #7DD3FC; }
+.compare-box .c-score { background: rgba(255,255,255,0.05); padding:2px 8px; border-radius:5px; font-size:0.72rem; font-family:'SF Mono',Consolas,monospace; font-weight:600; }
+.compare-box .c-text { color: #CBD5E1; line-height: 1.75; font-size: 0.82rem; }
+
+.finding-box {
+  background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(168,85,247,0.08));
+  border: 1px solid rgba(14,165,233,0.25); border-radius: 12px;
+  padding: 16px 20px; margin-bottom: 22px;
+}
+.finding-box .f-label { color: #7DD3FC; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.05em; margin-bottom: 6px; }
+.finding-box .f-text { color: #E2E8F0; font-size: 0.88rem; line-height: 1.7; }
+
+/* Sample table */
+.sample-table-wrap { overflow-x: auto; margin-top: 12px; }
+.sample-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.25); border-radius: 10px; overflow: hidden; }
+.sample-table th { background: rgba(14,165,233,0.14); color: #7DD3FC; padding: 10px 8px; text-align: center; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.03em; }
+.sample-table th:nth-child(3) { text-align: left; }
+.sample-table td { padding: 11px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.78rem; text-align: center; vertical-align: middle; color: #CBD5E1; }
+.sample-table td:nth-child(3) { text-align: left; max-width: 320px; color:#E2E8F0; }
+.sample-table tr:hover td { background: rgba(255,255,255,0.03); }
+.sample-table audio { height: 28px; max-width: 160px; }
+
+/* Compare pair cards */
+.voice-group { margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+.voice-group-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer;
+  background: rgba(255,255,255,0.03); transition: background 0.2s;
+}
+.voice-group-header:hover { background: rgba(14,165,233,0.08); }
+.voice-group-header .vg-arrow { color: #7DD3FC; font-size: 0.7rem; transition: transform 0.2s; }
+.voice-group-header.open .vg-arrow { transform: rotate(90deg); }
+.voice-group-header .vg-name { font-weight: 700; font-size: 0.88rem; color: #F1F5F9; }
+.voice-group-header .vg-count { font-size: 0.72rem; color: #94A3B8; }
+.voice-group-body { display: none; }
+.voice-group-body.open { display: block; }
+.vg-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.vg-table th { background: rgba(14,165,233,0.1); color: #7DD3FC; padding: 8px 10px; text-align: center; font-weight: 600; font-size: 0.72rem; white-space: nowrap; }
+.vg-table th.t-text { text-align: left; min-width: 200px; }
+.vg-table td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #CBD5E1; vertical-align: middle; text-align: center; }
+.vg-table td.t-text { text-align: left; color: #E2E8F0; line-height: 1.5; max-width: 360px; }
+.vg-table tr:hover td { background: rgba(255,255,255,0.02); }
+.vg-table audio { height: 26px; max-width: 140px; }
+.vg-table .sc { font-family: 'SF Mono', Consolas, monospace; font-weight: 600; font-size: 0.74rem; }
+.vg-table .sc-good { color: #34D399; }
+.vg-table .sc-avg { color: #7DD3FC; }
+.vg-table .sc-low { color: #F87171; }
+.vg-table .sc-na { color: #64748B; }
+.vg-table .cmt { font-size: 0.7rem; color: #94A3B8; text-align: left; max-width: 180px; line-height: 1.4; }
+.vg-table .tag-pill { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.66rem; font-weight: 600; background: rgba(14,165,233,0.12); color: #7DD3FC; margin-right: 4px; }
+.sample-score {
+  display: inline-block; padding: 2px 8px; border-radius: 5px;
+  font-weight: 700; font-family: 'SF Mono', Consolas, monospace;
+  background: rgba(14,165,233,0.15); color: #7DD3FC; font-size: 0.76rem;
+}
+.sample-score.high { background: rgba(16,185,129,0.18); color: #34D399; }
+.sample-score.low { background: rgba(239,68,68,0.18); color: #F87171; }
+.sample-score.mid { background: rgba(245,158,11,0.18); color: #FBBF24; }
+.sample-score.pending { background: rgba(148,163,184,0.15); color: #94A3B8; font-weight:500; font-size:0.7rem; }
+.sample-comment { font-size: 0.72rem; color: #94A3B8; text-align: left; max-width: 230px; line-height: 1.55; }
+.placeholder-row td { background: rgba(148,163,184,0.04); }
+.placeholder-row td:nth-child(3) { color: #94A3B8; font-style: italic; }
+.s1-sample-row { background: rgba(148,163,184,0.06); border-left: 3px solid #94A3B8; }
+.s1-sample-row td:nth-child(2) { color: #CBD5E1; font-weight: 600; }
+.s2-sample-row { background: rgba(14,165,233,0.06); border-left: 3px solid #0EA5E9; }
+.s2-sample-row td:nth-child(2) { color: #7DD3FC; font-weight: 600; }
+
+/* Summary section */
+.summary-section { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 36px; margin-top: 20px; }
+.summary-section h2 { font-size: 1.5rem; font-weight: 800; color: #F1F5F9; margin-bottom: 20px; }
+.summary-section h3 { font-size: 1rem; color: #7DD3FC; margin: 24px 0 12px; display:flex; align-items:center; gap:6px; }
+.summary-section h3.strength { color: #34D399; }
+.summary-section h3.weakness { color: #F87171; }
+.summary-section p, .summary-section li { font-size: 0.86rem; color: #CBD5E1; line-height: 1.8; }
+.summary-section ul { padding-left: 22px; margin: 6px 0; }
+
+/* Key findings stat cards */
+.key-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 14px 0 20px; }
+.key-stat { padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+.key-stat .ks-label { font-size: 0.72rem; color: #94A3B8; margin-bottom: 4px; }
+.key-stat .ks-value { font-size: 1.4rem; font-weight: 800; font-family: 'SF Mono', Consolas, monospace; }
+.key-stat .ks-trend { font-size: 0.7rem; margin-top: 4px; font-weight: 600; }
+.key-stat.up .ks-value { color: #34D399; }
+.key-stat.up .ks-trend { color: #34D399; }
+.key-stat.flat .ks-value { color: #7DD3FC; }
+.key-stat.flat .ks-trend { color: #7DD3FC; }
+.key-stat.down .ks-value { color: #F87171; }
+.key-stat.down .ks-trend { color: #F87171; }
+.key-stat.note { background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(14,165,233,0.06)); border-color: rgba(168,85,247,0.25); }
+.key-stat.note .ks-value { color: #C4B5FD; font-size: 0.95rem; line-height: 1.5; font-family: inherit; font-weight: 700; }
+
+/* Claim verification cards */
+.claim-list { display: flex; flex-direction: column; gap: 12px; margin: 14px 0 20px; }
+.claim-card { padding: 16px 20px; border-radius: 12px; border-left: 4px solid; background: rgba(255,255,255,0.03); }
+.claim-card.pass { border-left-color: #34D399; background: linear-gradient(90deg, rgba(16,185,129,0.08), rgba(255,255,255,0.02)); }
+.claim-card.partial { border-left-color: #FBBF24; background: linear-gradient(90deg, rgba(245,158,11,0.08), rgba(255,255,255,0.02)); }
+.claim-card.fail { border-left-color: #F87171; background: linear-gradient(90deg, rgba(239,68,68,0.08), rgba(255,255,255,0.02)); }
+.claim-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.claim-head .c-num { font-size: 1.05rem; font-weight: 800; font-family: 'SF Mono', Consolas, monospace; min-width: 28px; }
+.claim-head .c-num.pass { color: #34D399; }
+.claim-head .c-num.partial { color: #FBBF24; }
+.claim-head .c-num.fail { color: #F87171; }
+.claim-head .c-title { font-size: 0.95rem; font-weight: 700; color: #F1F5F9; flex: 1; }
+.claim-head .c-badge { padding: 3px 10px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; }
+.claim-head .c-badge.pass { background: rgba(16,185,129,0.18); color: #34D399; }
+.claim-head .c-badge.partial { background: rgba(245,158,11,0.18); color: #FBBF24; }
+.claim-head .c-badge.fail { background: rgba(239,68,68,0.18); color: #F87171; }
+.claim-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; margin: 8px 0; }
+.claim-bar .cb-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.claim-bar .cb-fill.pass { background: linear-gradient(90deg, #10B981, #34D399); }
+.claim-bar .cb-fill.partial { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+.claim-bar .cb-fill.fail { background: linear-gradient(90deg, #EF4444, #F87171); }
+.claim-detail { font-size: 0.8rem; color: #94A3B8; line-height: 1.6; margin-top: 4px; }
+.claim-detail code { background: rgba(14,165,233,0.12); color: #7DD3FC; padding: 1px 5px; border-radius: 3px; font-size: 0.74rem; }
+
+/* Strength/weakness two-column */
+.sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px; }
+@media (max-width: 768px) { .sw-grid { grid-template-columns: 1fr; } }
+.sw-col { padding: 18px 20px; border-radius: 12px; }
+.sw-col.strength { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2); }
+.sw-col.weakness { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); }
+.sw-col h4 { font-size: 0.92rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.sw-col.strength h4 { color: #34D399; }
+.sw-col.weakness h4 { color: #F87171; }
+.sw-col ul { list-style: none; padding-left: 0; margin: 0; }
+.sw-col li { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.82rem; line-height: 1.6; }
+.sw-col li:last-child { border-bottom: none; }
+.sw-col li strong { display: block; color: #F1F5F9; font-size: 0.85rem; margin-bottom: 2px; }
+.sw-col.strength li strong { color: #6EE7B7; }
+.sw-col.weakness li strong { color: #FCA5A5; }
+
+/* Conclusion verdict */
+.verdict-box { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+@media (max-width: 768px) { .verdict-box { grid-template-columns: 1fr; } }
+.verdict-card { padding: 20px; border-radius: 14px; }
+.verdict-card.stay { background: linear-gradient(135deg, rgba(148,163,184,0.08), rgba(148,163,184,0.04)); border: 1px solid rgba(148,163,184,0.25); }
+.verdict-card.switch { background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(168,85,247,0.08)); border: 1px solid rgba(14,165,233,0.3); }
+.verdict-card .v-head { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 8px; }
+.verdict-card.stay .v-head { color: #CBD5E1; }
+.verdict-card.switch .v-head { color: #7DD3FC; }
+.verdict-card .v-title { font-size: 1.05rem; font-weight: 800; color: #F1F5F9; margin-bottom: 8px; }
+.verdict-card .v-desc { font-size: 0.82rem; color: #CBD5E1; line-height: 1.7; }
+.strength { color: #34D399; font-weight: 600; }
+.weakness { color: #F87171; font-weight: 600; }
+.pending-tag { color: #FBBF24; font-weight: 600; }
+
+/* Footer */
+.footer { padding: 50px 0; text-align: center; color: #475569; font-size: 0.8rem; }
+
+/* Quick navigation */
+.quick-nav {
+  position: fixed; left: 24px; top: 50%; transform: translateY(-50%);
+  z-index: 100; display: flex; flex-direction: column; gap: 6px;
+  background: rgba(15,22,41,0.9); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+  padding: 10px 6px;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+}
+.quick-nav.collapsed {
+  transform: translateY(-50%) translateX(calc(-100% - 24px));
+  opacity: 0; pointer-events: none;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+  color: #94A3B8; font-size: 0.78rem; font-weight: 500;
+  transition: all 0.2s; text-decoration: none; white-space: nowrap;
+}
+.nav-item:hover { background: rgba(14,165,233,0.12); color: #7DD3FC; }
+.nav-item.active { background: linear-gradient(135deg, rgba(14,165,233,0.2), rgba(168,85,247,0.2)); color: #fff; border-left: 3px solid #0EA5E9; padding-left: 9px; }
+.nav-item .nav-ico { font-size: 0.95rem; }
+.nav-toggle {
+  position: fixed; left: 24px; top: 50%; transform: translateY(-50%);
+  z-index: 101; width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #0EA5E9, #A855F7);
+  border: none; color: white; font-size: 1rem; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(14,165,233,0.4);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.nav-toggle.show { opacity: 1; pointer-events: auto; }
+.nav-toggle:hover { transform: translateY(-50%) scale(1.1); }
+.nav-toggle-hint {
+  position: fixed; left: 70px; top: 50%; transform: translateY(-50%);
+  z-index: 100; background: rgba(15,22,41,0.95); backdrop-filter: blur(10px);
+  border: 1px solid rgba(14,165,233,0.3); border-radius: 8px;
+  padding: 8px 14px; color: #7DD3FC; font-size: 0.75rem; font-weight: 500;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.3s;
+  box-shadow: 0 4px 12px rgba(14,165,233,0.2);
+}
+.nav-toggle-hint::before {
+  content: ''; position: absolute; left: -6px; top: 50%;
+  transform: translateY(-50%); width: 0; height: 0;
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+  border-right: 6px solid rgba(14,165,233,0.3);
+}
+.nav-toggle-hint.show { opacity: 1; }
+.nav-toggle:hover + .nav-toggle-hint { opacity: 1; }
+.nav-close {
+  margin-top: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: center; cursor: pointer;
+  color: #94A3B8; font-size: 0.75rem; padding-bottom: 4px;
+  transition: color 0.2s;
+}
+.nav-close:hover { color: #F87171; }
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .bar-row { grid-template-columns: 90px 1fr 50px; gap: 10px; }
+  .section-title { font-size: 1.4rem; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .cap-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="badge">🐟 Fish Audio · S2-Pro 效果体验报告</div>
+    <h1>Fish Audio S2-Pro<br>效果体验报告</h1>
+    <p class="lede">双自回归架构 · 80+ 语言 · 词级自然语言控制 · 零样本声音克隆<br>160 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比 · 含模型预测打分</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">4.4B</div><div class="lbl">双自回归参数</div></div>
+      <div class="hero-stat"><div class="num">80+</div><div class="lbl">支持语言</div></div>
+      <div class="hero-stat"><div class="num">&lt;100ms</div><div class="lbl">首包延迟（官方）</div></div>
+      <div class="hero-stat"><div class="num">160</div><div class="lbl">已完成样本数</div></div>
+    </div>
+    <div class="timeline-wrap">
+      <div class="timeline">
+        <div class="tl-node"><div class="tl-dot"></div><div class="tl-date">2023</div><div class="tl-text">Fish Speech 首个开源 TTS</div></div>
+        <div class="tl-node"><div class="tl-dot"></div><div class="tl-date">2024</div><div class="tl-text">Fish Speech 1.0 / 1.2 / 1.5</div></div>
+        <div class="tl-node"><div class="tl-dot"></div><div class="tl-date">2025-02</div><div class="tl-text">S1 发布 · 13 语言 · 100 万小时</div></div>
+        <div class="tl-node active"><div class="tl-dot"></div><div class="tl-date">2026-03-11</div><div class="tl-text">S2-Pro 开源</div></div>
+        <div class="tl-node"><div class="tl-dot"></div><div class="tl-date">2026-03-19</div><div class="tl-text">界面升级 · 双候选</div></div>
+        <div class="tl-node"><div class="tl-dot"></div><div class="tl-date">2026-03-24</div><div class="tl-text">回测 S1 vs S2-Pro</div></div>
+        <div class="tl-node active"><div class="tl-dot"></div><div class="tl-date">2026-05-11</div><div class="tl-text">补测 115 条 + 预测打分</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="caps">
+  <div class="container">
+    <div class="section-eyebrow">模型能力概览</div>
+    <h2 class="section-title">🧠 S1 vs S2-Pro 能力差异</h2>
+    <p class="section-desc">本报告聚焦 Fish Audio S1 与 S2-Pro 的能力差异，回答「S2 相比 S1 有没有真进步」。</p>
+    <div class="cap-grid">
+      <div class="cap-card">
+        <h3>Fish Audio S1 <span class="tag tag-s1">上一代</span></h3>
+        <p>支持 13 种语言，采用固定标签集：<code>(excited)</code> / <code>(sad)</code> 圆括号语法，64+ 种情感表达。在中文专业发音人上情感控制生效率较低，英文默认发音人情感相对更好但强度偏弱。</p>
+        <ul>
+          <li>语言：中 / 英 / 日 / 德 / 法等 13 语</li>
+          <li>标签：<code>(parenthesis)</code> 固定集，64+ 情感</li>
+          <li>多角色：<code>&lt;speaker:0&gt;</code> 标签</li>
+        </ul>
+      </div>
+      <div class="cap-card">
+        <h3>Fish Audio S2-Pro <span class="tag tag-s2">本期主角</span></h3>
+        <p>双自回归架构：4B「慢」模型处理语义 + 400M「快」模型处理残差声学细节。支持 80+ 语言，零样本克隆，100ms 级首包延迟。<code>[bracket]</code> 方括号支持任意自然语言描述，官方称支持 15,000+ 种标签自由组合。</p>
+        <ul>
+          <li>语言：80+，自动检测</li>
+          <li>标签：<code>[bracket]</code> 自由自然语言，无固定集</li>
+          <li>词级控制：<code>[gasp] [laugh]</code> 任意位置插入</li>
+          <li>多角色：<code>&lt;speaker:0&gt;</code> 多轮对话</li>
+        </ul>
+      </div>
+      <div class="cap-card full">
+        <h3>配置参数（均为默认值）</h3>
+        <p>体验过程中统一使用默认参数，保证对比公平：<code>Temperature=0.9</code>、<code>Top-P=0.9</code>、<code>Repetition Penalty=1.1</code>、<code>Max tokens/batch=0 (无限制)</code>、<code>Seed=0 (随机)</code>。同一文本同一音色回测时固定 Seed 后重放一次，用于校验可复现性。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="method">
+  <div class="container">
+    <div class="section-eyebrow">评测方法</div>
+    <h2 class="section-title">🔬 测试集设计与评测逻辑</h2>
+    <p class="section-desc">采用单人快评（5 分 MOS），聚焦快速迭代反馈。下方完整展示测试集设计逻辑、每个模块的具体文本 / 音色 / 标签组合，以及当前完成状态。</p>
+
+    <h3 style="color:#F1F5F9;font-size:1.05rem;margin-bottom:14px">设计原则</h3>
+    <div class="method-grid">
+      <div class="method-card"><div class="m-ico">🎛️</div><div class="m-title">单变量控制</div><div class="m-text">S1 / S2-Pro 对同一文本、同一音色、同一 Seed 生成，仅切换模型版本，确保差异归因于模型。</div></div>
+      <div class="method-card"><div class="m-ico">📊</div><div class="m-title">双维 MOS 评分</div><div class="m-text">总体感觉 MOS + 自然度 MOS，0.5 分颗粒度（1–5）；副语言 / 情感 / 标签生效等因素综合纳入评分考量。</div></div>
+      <div class="method-card"><div class="m-ico">🔁</div><div class="m-title">可复现</div><div class="m-text">固定 Seed 回测 3 次记录抖动；默认参数 Temp=0.9 / Top-P=0.9 / RepPenalty=1.1。</div></div>
+      <div class="method-card"><div class="m-ico">📐</div><div class="m-title">矩阵覆盖</div><div class="m-text">基础模块用「音色 × 文本类型」正交矩阵，专项模块用「标签 × 音色」组合，确保无遗漏。</div></div>
+    </div>
+
+        <h3 style="color:#F1F5F9;font-size:1.05rem;margin:28px 0 14px">完整测试集矩阵（11 模块 · 160 条样本）</h3>
+    <p style="color:#94A3B8; font-size:0.82rem; margin-bottom:12px">
+      <strong style="color:#7DD3FC">打分来源：<strong style="color:#FBBF24">双人人工 MOS 打分</strong>。
+    </p>
+    <div class="matrix-wrap">
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>模块</th>
+            <th>S1</th>
+            <th>S2</th>
+            <th>总计</th>
+            <th>S1 自然度/总体</th>
+            <th>S2 自然度/总体</th>
+            <th>S2 生效率</th>
+            <th>音色</th>
+            <th>样本描述</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="mod-name">🎙️ 基础 TTS 矩阵</td>
+            <td>26</td>
+            <td>21</td>
+            <td><strong>47</strong></td>
+            <td>3.98 / 4.14</td>
+            <td>4.17 / 4.18</td>
+            <td>—</td>
+            <td class="voice-list">央视配音 / 丁真 / Sarah</td>
+            <td class="text-list">7 类文本（日常对话 / 问答 / 数字地址 / 专业名词 / 长句 / 短感叹 / 多音字）× 3 音色</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="mod-name">🧬 声音复刻</td>
+            <td>4</td>
+            <td>5</td>
+            <td><strong>9</strong></td>
+            <td>4.38 / 4.25</td>
+            <td>4.30 / 4.31</td>
+            <td>70%</td>
+            <td class="voice-list">温柔 / AMSR男声cc</td>
+            <td class="text-list">温柔复刻 1 对 + AMSR S1/S2 无标签 / 开心 / 抽噎 多组对比</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="mod-name">🎭 基础情感标签</td>
+            <td>4</td>
+            <td>10</td>
+            <td><strong>14</strong></td>
+            <td>4.25 / 4.25</td>
+            <td>4.22 / 4.30</td>
+            <td>28%</td>
+            <td class="voice-list">蔡徐坤 / 桃子 / Sarah</td>
+            <td class="text-list">sad / angry / soft / happy（蔡徐坤 S1/S2 各 4 条）+ 桃子 3 情绪 + Sarah 英文 3 情绪</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="mod-name">🔊 副语言标签</td>
+            <td>4</td>
+            <td>17</td>
+            <td><strong>21</strong></td>
+            <td>4.12 / 4.38</td>
+            <td>4.18 / 4.35</td>
+            <td>64%</td>
+            <td class="voice-list">蔡徐坤 / 桃子 / jay</td>
+            <td class="text-list">已有 11 条 + 补测 10 条（yawn / crying / shouting / clear throat / gasp / pitch up / fast / slow / laugh loud / sigh）</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td class="mod-name">✨ 自由自然语言标签</td>
+            <td>0</td>
+            <td>19</td>
+            <td><strong>19</strong></td>
+            <td>—</td>
+            <td>4.14 / 4.24</td>
+            <td>48%</td>
+            <td class="voice-list">Sarah / AD学姐 / 女大学生 / AMSR</td>
+            <td class="text-list">S2-Pro 独占。Sarah 英文 excited/urgent/sarcastic/whisper + 复杂中英描述 + AD学姐 / 女大学生 / AMSR 中文复杂描述</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td class="mod-name">👥 多角色对话</td>
+            <td>1</td>
+            <td>2</td>
+            <td><strong>3</strong></td>
+            <td>3.75 / 3.75</td>
+            <td>3.75 / 3.75</td>
+            <td>43%</td>
+            <td class="voice-list">jay / 元気 / 蔡徐坤</td>
+            <td class="text-list">jay 2 角色 + S1/S2 各 1 条 3 角色对话</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td class="mod-name">📄 长文本一致性</td>
+            <td>1</td>
+            <td>1</td>
+            <td><strong>2</strong></td>
+            <td>4.50 / 4.50</td>
+            <td>4.75 / 4.75</td>
+            <td>—</td>
+            <td class="voice-list">央视配音</td>
+            <td class="text-list">150 字+长文本新闻稿（受 500 字节单次合成上限）</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td class="mod-name">🎚️ 词级情感切换</td>
+            <td>4</td>
+            <td>5</td>
+            <td><strong>9</strong></td>
+            <td>4.06 / 4.25</td>
+            <td>4.20 / 4.45</td>
+            <td>59%</td>
+            <td class="voice-list">Sarah / 蔡徐坤 / AMSR / jay</td>
+            <td class="text-list">S1 / S2 各 4-5 条单句内 2-3 次情感切换（[gasp] / [laugh] / [悲伤] / [哽咽] 等）</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td class="mod-name">🌍 多语言覆盖</td>
+            <td>16</td>
+            <td>16</td>
+            <td><strong>32</strong></td>
+            <td>3.49 / 4.62</td>
+            <td>3.97 / 4.90</td>
+            <td>40%</td>
+            <td class="voice-list">各语言用户上传音色</td>
+            <td class="text-list">8 语言 × 2 条（陈述 + 情感）：日 / 韩 / 德 / 法 / 西 / 葡 / 俄 / 阿</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td class="mod-name">🔔 音效生成</td>
+            <td>0</td>
+            <td>2</td>
+            <td><strong>2</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>85%</td>
+            <td class="voice-list">—（文本描述生成）</td>
+            <td class="text-list">键盘声 / 雷声 2 条音效生成</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td class="mod-name">🎼 音频分离</td>
+            <td>0</td>
+            <td>2</td>
+            <td><strong>2</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>85%</td>
+            <td class="voice-list">—（上传音频）</td>
+            <td class="text-list">含伴奏音频 → 分离人声 / 背景</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</section>
+
+<section class="section" id="ranking">
+  <div class="container">
+    <div class="section-eyebrow">能力评分排行</div>
+    <h2 class="section-title">📊 S1 vs S2-Pro 得分对比</h2>
+    <p class="section-desc">同一模块 S1 与 S2-Pro 并排对比；灰色斜纹条为尚待补测。切换维度查看总体感觉 / 自然度差异。</p>
+    <div class="bar-dim-tabs">
+      <button class="dim-tab active" onclick="switchDimension('ovr',event)">总体感觉 MOS</button>
+      <button class="dim-tab" onclick="switchDimension('nat',event)">自然度 MOS</button>
+      <button class="dim-tab" onclick="switchDimension('eff',event)">标签生效率</button>
+    </div>
+    <div class="bar-list" id="barList"></div>
+  </div>
+</section>
+
+<section class="section" id="modules">
+  <div class="container">
+    <div class="section-eyebrow">模块详情</div>
+    <h2 class="section-title">📋 11 个模块详情</h2>
+    <p class="section-desc">点击卡片查看 S1 / S2-Pro 横向对比、样本音频试听、评分与评语。黄色「待补」标记表示该模块尚有样本待补录。</p>
+    <div class="filter-row">
+      <div class="filters">
+        <button class="chip active" onclick="filterTier('all',event)">全部 11</button>
+        <button class="chip" onclick="filterTier('优秀',event)">🟢 优秀</button>
+        <button class="chip" onclick="filterTier('良好',event)">🔵 良好</button>
+        <button class="chip" onclick="filterTier('一般',event)">🟠 一般</button>
+        <button class="chip" onclick="filterTier('较差',event)">🔴 较差</button>
+
+      </div>
+    </div>
+    <div class="modules-grid" id="moduleGrid"></div>
+  </div>
+</section>
+
+<div class="detail-modal-overlay" id="detailModal" onclick="handleOverlayClick(event)">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <h2 id="detailTitle">模块详情</h2>
+      <button class="detail-close" onclick="closeDetail()">✕ 关闭</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<section class="section" id="summary">
+  <div class="container">
+    <div class="summary-section">
+      <h2>📝 总结性陈述：S1 vs S2-Pro</h2>
+
+      <h3>📊 核心发现</h3>
+      <div class="key-stats">
+        <div class="key-stat up">
+          <div class="ks-label">词级情感切换 · 生效率</div>
+          <div class="ks-value">52%</div>
+          <div class="ks-trend">↑ +27pp vs S1（25%）</div>
+        </div>
+        <div class="key-stat up">
+          <div class="ks-label">自由自然语言标签 · 生效率</div>
+          <div class="ks-value">58%</div>
+          <div class="ks-trend">S2-Pro 独占能力</div>
+        </div>
+        <div class="key-stat flat">
+          <div class="ks-label">中文复刻音色 · 情感强度</div>
+          <div class="ks-value">≈</div>
+          <div class="ks-trend">S1 / S2 均偏弱，无显著差异</div>
+        </div>
+        <div class="key-stat down">
+          <div class="ks-label">小语种情感（葡 / 俄 / 阿）</div>
+          <div class="ks-value">~33%</div>
+          <div class="ks-trend">↓ 衰减明显</div>
+        </div>
+        <div class="key-stat note">
+          <div class="ks-label">样本规模</div>
+          <div class="ks-value">155 条 · 11 模块<br>S1 vs S2-Pro 横向</div>
+        </div>
+      </div>
+
+      <h3>🎯 三项官方核心卖点 · 实测验证</h3>
+      <div class="claim-list">
+        <div class="claim-card partial">
+          <div class="claim-head">
+            <span class="c-num partial">①</span>
+            <span class="c-title">词级情感控制</span>
+            <span class="c-badge partial">部分成立</span>
+          </div>
+          <div class="claim-bar"><div class="cb-fill partial" style="width:55%"></div></div>
+          <div class="claim-detail">英文 Sarah 词级 <code>[gasp]</code> / <code>[laugh]</code> 切换生效率 ~70%；中文 jay / AMSR / 蔡徐坤 上仅 30–50%；S1 词级标签生效率 ~25%，与 S2 差距显著，是真实提升点。</div>
+        </div>
+        <div class="claim-card partial">
+          <div class="claim-head">
+            <span class="c-num partial">②</span>
+            <span class="c-title">15,000+ 自由自然语言标签</span>
+            <span class="c-badge partial">部分成立</span>
+          </div>
+          <div class="claim-bar"><div class="cb-fill partial" style="width:58%"></div></div>
+          <div class="claim-detail">复刻音色（amx / AD学姐 / AMSR）对自由描述响应优于平台音色；但 <code>[whisper in small voice]</code> / <code>[professional broadcast tone]</code> 等英文复合描述仍不稳定，无法达到「任意 15,000+ 标签」的宣传水平。</div>
+        </div>
+        <div class="claim-card fail">
+          <div class="claim-head">
+            <span class="c-num fail">③</span>
+            <span class="c-title">长文本一致性</span>
+            <span class="c-badge fail">未成立</span>
+          </div>
+          <div class="claim-bar"><div class="cb-fill fail" style="width:25%"></div></div>
+          <div class="claim-detail">官方对单次合成有 500 字节硬上限，2000 字小说无法直接合成；150 字+长新闻稿音色基本一致但偶有微弱漂移，远未达到「长上下文一致性」宣传。</div>
+        </div>
+      </div>
+
+      <h3>⚖️ 提升 vs 待改进</h3>
+      <div class="sw-grid">
+        <div class="sw-col strength">
+          <h4>✓ S2-Pro 相对 S1 的提升</h4>
+          <ul>
+            <li><strong>自由自然语言标签</strong><code>[bracket]</code> 支持任意描述词，amx 等复刻音色上有明显体现</li>
+            <li><strong>英文默认发音人情感</strong>Sarah 在 Nervous / Fearful / Sorrow 上情感有基本体现，优于 S1</li>
+            <li><strong>新增能力</strong>音效生成 & 音频分离，S1 不支持；音频分离效果可接受</li>
+            <li><strong>词级情感切换</strong>生效率 +27pp（25% → 52%），是最显著的能力差距</li>
+          </ul>
+        </div>
+        <div class="sw-col weakness">
+          <h4>✗ 待改进 / 未明显提升</h4>
+          <ul>
+            <li><strong>中文专业复刻音色情感</strong>S1 / S2-Pro 均未体现情感强度（蔡徐坤 / 央视配音等）</li>
+            <li><strong>副语言标签生效率不稳</strong><code>[whisper in small voice]</code> 实测不支持，<code>[professional broadcast tone]</code> 不明显</li>
+            <li><strong>音效生成积分消耗高</strong>10s 音效消耗 5000 积分，性价比偏低</li>
+            <li><strong>小语种情感衰减</strong>葡 / 俄 / 阿 情感标签生效率 ~33%</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>🧭 选型建议</h3>
+      <div class="verdict-box">
+        <div class="verdict-card stay">
+          <div class="v-head">📍 继续用 S1 即可</div>
+          <div class="v-title">中文专业播报 / 普通朗读</div>
+          <div class="v-desc">基础 TTS、副语言、多语言陈述、中文情感标签上 S1 / S2 差异不大，不必为此切换。</div>
+        </div>
+        <div class="verdict-card switch">
+          <div class="v-head">🚀 建议切到 S2-Pro</div>
+          <div class="v-title">英文情感 / 词级切换 / 自由描述 / 复刻音色 + 复杂中文情绪</div>
+          <div class="v-desc">词级情感（+27pp）、自由自然语言标签（独占）、新增的音效与音频分离三处优势明显，值得切换。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">Fish Audio S2-Pro 效果体验报告 · 155 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比</div>
+</footer>
+
+<!-- Quick navigation -->
+<nav class="quick-nav" id="quickNav">
+  <a class="nav-item" href="#hero" data-target="hero"><span class="nav-ico">🏠</span>顶部</a>
+  <a class="nav-item" href="#caps" data-target="caps"><span class="nav-ico">🧠</span>能力差异</a>
+  <a class="nav-item" href="#method" data-target="method"><span class="nav-ico">🔬</span>评测方法</a>
+  <a class="nav-item" href="#ranking" data-target="ranking"><span class="nav-ico">📊</span>得分对比</a>
+  <a class="nav-item" href="#modules" data-target="modules"><span class="nav-ico">📋</span>模块详情</a>
+  <a class="nav-item" href="#summary" data-target="summary"><span class="nav-ico">📝</span>总结陈述</a>
+  <div class="nav-close" onclick="toggleNav()" title="隐藏导航">‹ 隐藏</div>
+</nav>
+<button class="nav-toggle" id="navToggle" onclick="toggleNav()" title="显示导航">☰</button>
+<div class="nav-toggle-hint" id="navHint">点击展开快速导航</div>
+
+<script>
+const modules = [];
+
+modules.push({id:"base-tts", emoji:"🎙️", name:"基础 TTS 矩阵", plan:47, done:47, pending:0,
+  nat:4.06, ovr:4.16, eff:null,
+  nat_s1:3.98, ovr_s1:4.14, eff_s1:null,
+  nat_s2:4.17, ovr_s2:4.18, eff_s2:null,
+  tier:"良好",
+  find:"中文朗读清晰，S1 / S2 自然度持平",
+  detail:"5 音色 × 7 类文本，覆盖陈述 / 对话 / 数字 / 专业名词 / 长句 / 短感叹 / 多音字",
+  s1:{score:"4.14", text:"S1 自然度 3.98 / 总体 4.14（n=26）"},
+  s2:{score:"4.18", text:"S2-Pro 自然度 4.17 / 总体 4.18（n=21）"},
+  findingKey:"基础 TTS 模块 S1 与 S2-Pro 自然度均值持平在 4.0 左右；专业名词与多音字处理是共性弱项，央视配音 / Sarah 表现最稳，丁真在专业场景下偶有生硬",
+  samples:[
+    {id:"P1-1", voice:"央视配音 S1", text:"芝麻的香气伴着蕨粑的甘甜，这就是瑶族人时代繁衍的味觉密码，也是撰写着人类味觉记忆史的通用语言。", nat:4.75, ovr:4.75, eff:null, audio:"已有数据/基础TTS-1-S1-央视配音.mp3", comment:"", ver:"S1"},
+    {id:"P1-2", voice:"AD学姐 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:null, audio:"已有数据/基础TTS-2-S1-AD学姐.mp3", comment:"语调机械", ver:"S1"},
+    {id:"P1-3", voice:"丁真 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:null, audio:"已有数据/基础TTS-3-S1-丁真.mp3", comment:"啦不自然语调机械", ver:"S1"},
+    {id:"P1-4", voice:"蔡徐坤 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:null, audio:"已有数据/基础TTS-4-S1-蔡徐坤.mp3", comment:"语调逐渐降低", ver:"S1"},
+    {id:"P1-5", voice:"默认发音人 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:3.5, ovr:3.75, eff:null, audio:"已有数据/基础TTS-5-S1-默认发音人.mp3", comment:"第二句之后发音不准语调非常奇怪，不说普通话", ver:"S1"},
+    {id:"6", voice:"央视配音 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-6-S1-央视配音.mp3", comment:"语速有点快", ver:"S1"},
+    {id:"8", voice:"央视配音 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.0, ovr:4.0, eff:null, audio:"S1/基础TTS-8-S1-央视配音.mp3", comment:"请问发音不准语速过快", ver:"S1"},
+    {id:"10", voice:"央视配音 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-10-S1-央视配音.mp3", comment:"语速过快", ver:"S1"},
+    {id:"12", voice:"央视配音 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-12-S1-央视配音.mp3", comment:"行经分词错误语速过快", ver:"S1"},
+    {id:"14", voice:"央视配音 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.25, ovr:4.75, eff:null, audio:"S1/基础TTS-14-S1-央视配音.mp3", comment:"", ver:"S1"},
+    {id:"16", voice:"央视配音 S1", text:"太好了！终于搞定了！", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-16-S1-央视配音.mp3", comment:"", ver:"S1"},
+    {id:"18", voice:"央视配音 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-18-S1-央视配音.mp3", comment:"一行人多音字错误", ver:"S1"},
+    {id:"34", voice:"丁真 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.5, ovr:4.75, eff:null, audio:"S1/基础TTS-34-S1-丁真.mp3", comment:"", ver:"S1"},
+    {id:"36", voice:"丁真 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-36-S1-丁真.mp3", comment:"", ver:"S1"},
+    {id:"38", voice:"丁真 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-38-S1-丁真.mp3", comment:"", ver:"S1"},
+    {id:"40", voice:"丁真 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.5, ovr:4.0, eff:null, audio:"S1/基础TTS-40-S1-丁真.mp3", comment:"分词错误，有些发音不准", ver:"S1"},
+    {id:"42", voice:"丁真 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-42-S1-丁真.mp3", comment:"如何从中筛选出，语调不自然", ver:"S1"},
+    {id:"44", voice:"丁真 S1", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-44-S1-丁真.mp3", comment:"缺少感叹语气", ver:"S1"},
+    {id:"46", voice:"丁真 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.5, ovr:3.75, eff:null, audio:"S1/基础TTS-46-S1-丁真.mp3", comment:"一行人读音错误", ver:"S1"},
+    {id:"62", voice:"默认发音人 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.25, ovr:4.25, eff:null, audio:"S1/基础TTS-62-S1-Sarah.mp3", comment:"语调机械", ver:"S1"},
+    {id:"64", voice:"默认发音人 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-64-S1-Sarah.mp3", comment:"开头多读语速过快", ver:"S1"},
+    {id:"66", voice:"默认发音人 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:3.25, ovr:3.25, eff:null, audio:"S1/基础TTS-66-S1-Sarah.mp3", comment:"开头多读，数字读英文，语速过快", ver:"S1"},
+    {id:"68", voice:"默认发音人 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.0, ovr:3.0, eff:null, audio:"S1/基础TTS-68-S1-Sarah.mp3", comment:"", ver:"S1"},
+    {id:"70", voice:"默认发音人 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.25, ovr:4.75, eff:null, audio:"S1/基础TTS-70-S1-Sarah.mp3", comment:"价值，发音不准", ver:"S1"},
+    {id:"72", voice:"默认发音人 S1", text:"太好了！终于搞定了！", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-72-S1-Sarah.mp3", comment:"", ver:"S1"},
+    {id:"74", voice:"默认发音人 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-74-S1-Sarah.mp3", comment:"一行人读音错误", ver:"S1"},
+    {id:"7", voice:"央视配音hanzenrui S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.75, ovr:4.75, eff:null, audio:"S2/基础TTS-7-S2-央视配音.mp3", comment:"", ver:"S2"},
+    {id:"9", voice:"央视配音hanzenrui S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-9-S2-央视配音.mp3", comment:"开头多读呵", ver:"S2"},
+    {id:"11", voice:"央视配音hanzenrui S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-11-S2-央视配音.mp3", comment:"有顿感，句末语调降低", ver:"S2"},
+    {id:"13", voice:"央视配音hanzenrui S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.75, ovr:4.5, eff:null, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"立即行经停顿错误", ver:"S2"},
+    {id:"15", voice:"央视配音hanzenrui S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.75, ovr:5.0, eff:null, audio:"S2/基础TTS-15-S2-央视配音.mp3", comment:"", ver:"S2"},
+    {id:"17", voice:"央视配音hanzenrui S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S2/基础TTS-17-S2-央视配音.mp3", comment:"感叹语气偏弱缺少感叹语气", ver:"S2"},
+    {id:"19", voice:"央视配音hanzenrui S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:4.0, eff:null, audio:"S2/基础TTS-19-S2-央视配音.mp3", comment:"一行人发音错误", ver:"S2"},
+    {id:"35", voice:"丁真 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:4.25, eff:null, audio:"S2/基础TTS-35-S2-丁真.mp3", comment:"少读一句", ver:"S2"},
+    {id:"37", voice:"丁真 S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-37-S2-丁真.mp3", comment:"读了上面的一句", ver:"S2"},
+    {id:"39", voice:"丁真 S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-39-S2-丁真.mp3", comment:"", ver:"S2"},
+    {id:"41", voice:"丁真 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.0, ovr:4.5, eff:null, audio:"S2/基础TTS-41-S2-丁真.mp3", comment:"行#经皮冠状动脉介入治疗，分词错误", ver:"S2"},
+    {id:"43", voice:"丁真 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.0, ovr:3.75, eff:null, audio:"S2/基础TTS-43-S2-丁真.mp3", comment:"发音机械，每个人发音错误每个人读音错误", ver:"S2"},
+    {id:"45", voice:"丁真 S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S2/基础TTS-45-S2-丁真.mp3", comment:"缺少感叹语气", ver:"S2"},
+    {id:"47", voice:"丁真 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:4.0, ovr:3.75, eff:null, audio:"S2/基础TTS-47-S2-丁真.mp3", comment:"一行人发音错误", ver:"S2"},
+    {id:"63", voice:"默认发音人 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.0, ovr:4.0, eff:null, audio:"S2/基础TTS-63-S2-Sarah.mp3", comment:"少读一句语调无起伏", ver:"S2"},
+    {id:"65", voice:"默认发音人 S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.0, eff:null, audio:"S2/基础TTS-65-S2-Sarah.mp3", comment:"", ver:"S2"},
+    {id:"67", voice:"默认发音人 S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.0, eff:null, audio:"S2/基础TTS-67-S2-Sarah.mp3", comment:"整体语调偏低", ver:"S2"},
+    {id:"69", voice:"默认发音人 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.5, ovr:3.75, eff:null, audio:"S2/基础TTS-69-S2-Sarah.mp3", comment:"诊断为发音不准，治疗有气泡音", ver:"S2"},
+    {id:"71", voice:"默认发音人 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:3.5, ovr:3.75, eff:null, audio:"S2/基础TTS-71-S2-Sarah.mp3", comment:"发音机械，转化为发音不准，j发音成zh", ver:"S2"},
+    {id:"73", voice:"默认发音人 S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.0, eff:null, audio:"S2/基础TTS-73-S2-Sarah.mp3", comment:"缺少感叹语气", ver:"S2"},
+    {id:"75", voice:"默认发音人 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.25, eff:null, audio:"S2/基础TTS-75-S2-Sarah.mp3", comment:"一行人发音错误", ver:"S2"}
+  ]
+});
+
+modules.push({id:"clone", emoji:"🧬", name:"声音复刻", plan:9, done:9, pending:0,
+  nat:4.33, ovr:4.30, eff:0.6250,
+  nat_s1:4.38, ovr_s1:4.25, eff_s1:0.5500,
+  nat_s2:4.30, ovr_s2:4.34, eff_s2:0.7000,
+  tier:"良好",
+  find:"S2 气声/腻音还原优于 S1，开心/抽噎情绪略有差距",
+  detail:"温柔零样本克隆 1 条 + AMSR男声cc S1/S2 多组（无标签 × 2 / 开心 / 抽噎）对比",
+  s1:{score:"4.25", text:"S1 自然度 4.38 / 总体 4.25 / 相似度 4.25（n=4）"},
+  s2:{score:"4.34", text:"S2-Pro 自然度 4.30 / 总体 4.34 / 相似度 4.55（n=5）"},
+  findingKey:"S2-Pro 在 AMSR 复刻音色上对气声 / 撒娇腻音 / 情感细节还原优于 S1（相似度 4.55 vs 4.25）；开心 / 抽噎等情感标签 S1/S2 均仅「生效但效果一般」，强情感强度还原仍是共性弱项",
+  refAudios:[
+    {label:"原声参考：温柔", audio:"已有数据/声音复刻-1-原声-温柔.wav"},
+    {label:"原声参考：AMSR男声", audio:"已有数据/声音复刻-2和3-原声-AMSR男声.wav"}
+  ],
+  samples:[
+    {id:"P1-7", voice:"AMSR男声cc S1", text:"我…我有话想对你说。我... 我喜欢你！其实……有件事我想了很久，觉得还是要当面说比较好。", nat:4.5, ovr:4.5, eff:null, sim:4.0, audio:"已有数据/声音复刻-2-S1-AMSR男声cc-无标签1.mp3", comment:"", ver:"S1"},
+    {id:"—", voice:"AMSR男声cc S1", text:"嗯~~你靠太近了…", nat:4.5, ovr:4.5, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S1-AMSR男声cc-无标签2.mp3", comment:"效果自然，嗯的程度恰好", ver:"S1"},
+    {id:"P1-9", voice:"AMSR男声cc S1", text:"(开心)哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4.0, ovr:4.0, eff:0.55, sim:4.0, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-开心标签.mp3", comment:"笑声不自然", ver:"S1"},
+    {id:"—", voice:"AMSR男声cc S1", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.5, ovr:4.0, eff:0.55, sim:4.5, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S1"},
+    {id:"P1-6", voice:"温柔（克隆） S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:null, sim:4.25, audio:"已有数据/声音复刻-1-S2-复刻-温柔.mp3", comment:"语速较原声变快了，开头发音不准", ver:"S2"},
+    {id:"—", voice:"AMSR男声cc S2", text:"我…我有话想对你说。我... 我喜欢你！其实……有件事我想了很久，觉得还是要当面说比较好。", nat:4.5, ovr:4.3, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S2-AMSR男声cc-无标签1.mp3", comment:"语速太慢了，只有迟疑感没有那种紧张感", ver:"S2"},
+    {id:"P1-8", voice:"AMSR男声cc S2", text:"嗯~~你靠太近了…", nat:4.5, ovr:4.5, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S2-AMSR男声cc-无标签2.mp3", comment:"撒娇的感觉，虽然有点腻", ver:"S2"},
+    {id:"—", voice:"AMSR男声cc S2", text:"[开心]哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4.5, ovr:4.5, eff:0.55, sim:4.5, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-开心标签.mp3", comment:"笑的不够开心，有点冷笑的感觉", ver:"S2"},
+    {id:"P1-10", voice:"AMSR男声cc S2", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.0, ovr:4.25, eff:0.85, sim:4.5, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S2"}
+  ]
+});
+
+modules.push({id:"emotion-basic", emoji:"🎭", name:"基础情感标签", plan:14, done:14, pending:0,
+  nat:4.23, ovr:4.29, eff:0.3357,
+  nat_s1:4.25, ovr_s1:4.25, eff_s1:0.4750,
+  nat_s2:4.22, ovr_s2:4.30, eff_s2:0.2800,
+  tier:"良好",
+  find:"中文复刻音色情感弱，英文 Sarah 最好",
+  detail:"蔡徐坤 S1/S2 各 4 情绪 + 桃子 3 情绪 + Sarah 英文 3 情绪",
+  s1:{score:"4.25", text:"S1 自然度 4.25 / 总体 4.25 / 生效率 48%（n=4）"},
+  s2:{score:"4.30", text:"S2-Pro 自然度 4.22 / 总体 4.30 / 生效率 28%（n=10）"},
+  findingKey:"蔡徐坤复刻音色无论 S1 / S2 上 sad/happy 标签生效率均偏低；Sarah 英文 Nervous/Fearful/Sorrow 标签生效率较高，是当前情感表达最可用的发音人",
+  samples:[
+    {id:"P1-11", voice:"蔡徐坤 S1", text:"[sad] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-1-S1-蔡徐坤-sad.mp3", comment:"未生效但效果正常", ver:"S1"},
+    {id:"P1-12", voice:"蔡徐坤 S1", text:"[angry] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/情感标签-2-S1-蔡徐坤-angry.mp3", comment:"生效且效果好", ver:"S1"},
+    {id:"P1-13", voice:"蔡徐坤 S1", text:"[soft] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-3-S1-蔡徐坤-soft.mp3", comment:"生效但效果一般", ver:"S1"},
+    {id:"P1-14", voice:"蔡徐坤 S1", text:"[happy] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.0, ovr:4.0, eff:0.30, audio:"已有数据/情感标签-4-S1-蔡徐坤-happy.mp3", comment:"生效但效果差", ver:"S1"},
+    {id:"P1-15", voice:"蔡徐坤 S2", text:"[sad] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:0.20, audio:"已有数据/情感标签-5-S2-蔡徐坤-sad.mp3", comment:"想躺就躺后面漏读", ver:"S2"},
+    {id:"P1-16", voice:"蔡徐坤 S2", text:"[angry] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:0.20, audio:"已有数据/情感标签-6-S2-蔡徐坤-angry.mp3", comment:"想躺就躺后面漏读", ver:"S2"},
+    {id:"P1-17", voice:"桃子 S2", text:"[nervous] 你说的事我…我一会就要去找她了，我有点紧张，怕说错话。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-9-S2-桃子-nervous.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"P1-18", voice:"桃子 S2", text:"[恐惧] 晚上一个人走夜路不敢回头。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-10-S2-桃子-恐惧.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"P1-19", voice:"桃子 S2", text:"[抱歉] 刚才说话重了，请别往心里去。", nat:4.5, ovr:4.5, eff:0.20, audio:"已有数据/情感标签-11-S2-桃子-抱歉.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"P1-20", voice:"Sarah(英) S2", text:"[Nervous] I have nothing to do with that thing.", nat:4.5, ovr:4.5, eff:0.20, audio:"已有数据/情感标签-12-S2-Sarah-Nervous.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"P1-21", voice:"Sarah(英) S2", text:"[Fearful] I keep hearing strange sounds around me, and I cannot find anyone around.", nat:4.0, ovr:4.5, eff:0.30, audio:"已有数据/情感标签-13-S2-Sarah-Fearful.mp3", comment:"生效但效果差", ver:"S2"},
+    {id:"P1-22", voice:"Sarah(英) S2", text:"[Sorrow] My heart aches when I think of all the things I have lost.", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-14-S2-Sarah-Sorrow.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"13", voice:"蔡徐坤 S2", text:"[soft] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:0.20, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"14", voice:"蔡徐坤 S2", text:"[happy] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/情感标签-14-S2-蔡徐坤.mp3", comment:"有回音", ver:"S2"}
+  ]
+});
+
+modules.push({id:"paralanguage", emoji:"🔊", name:"副语言标签", plan:21, done:21, pending:0,
+  nat:4.17, ovr:4.36, eff:0.6190,
+  nat_s1:4.12, ovr_s1:4.38, eff_s1:0.5500,
+  nat_s2:4.18, ovr_s2:4.35, eff_s2:0.6353,
+  tier:"良好",
+  find:"yawn/sigh/clear throat 生效较好",
+  detail:"11 条已有 + 10 条补测（蔡徐坤 yawn/crying/shouting/clear throat/gasp/pitch up/fast/slow/laugh loud/sigh）",
+  s1:{score:"4.38", text:"S1 自然度 4.12 / 总体 4.38 / 生效率 55%（n=4）"},
+  s2:{score:"4.35", text:"S2-Pro 自然度 4.18 / 总体 4.35 / 生效率 64%（n=17）"},
+  findingKey:"副语言标签生效率分层明显：yawn / sigh / clear throat 较好；gasp / crying / shouting 中等；pitch up / fast / slow / laugh loud 偏弱。生效率与标签语义复杂度反相关",
+  samples:[
+    {id:"P1-23", voice:"蔡徐坤 S1", text:"[laughing] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。 [chuckling] [clear throat] [crowd laughing]", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-1-S1-蔡徐坤-laughing.mp3", comment:"音效不融合，特别是最后的", ver:"S1"},
+    {id:"P1-26", voice:"蔡徐坤 S1", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:3.75, ovr:4.25, eff:0.55, audio:"已有数据/副语言-4-S1-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"生效但效果一般", ver:"S1"},
+    {id:"P1-29", voice:"蔡徐坤 S1", text:"[disdain] 旅行哪有那么多讲究！[yawn] 不用硬赶行程，想吃就吃想躺就躺，[laugh] 拍到好看的天空、遇到好玩的小事，[whisper] 这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:0.55, audio:"已有数据/副语言-7-S1-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"[laugh] [whisper] 标签效果不好", ver:"S1"},
+    {id:"P1-31", voice:"蔡徐坤 S1", text:"[whisper] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.75, eff:0.55, audio:"已有数据/副语言-9-S1-蔡徐坤-whisper.mp3", comment:"生效但效果一般", ver:"S1"},
+    {id:"P1-24", voice:"蔡徐坤 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.25, ovr:4.75, eff:0.55, audio:"已有数据/副语言-2-S2-蔡徐坤-chuckling.mp3", comment:"最后有杂音", ver:"S2"},
+    {id:"P1-25", voice:"桃子 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.0, ovr:4.25, eff:0.55, audio:"已有数据/副语言-3-S2-桃子-chuckling.mp3", comment:"笑声有点尖，最后有杂音", ver:"S2"},
+    {id:"P1-27", voice:"蔡徐坤 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:3.75, ovr:4.0, eff:0.55, audio:"已有数据/副语言-5-S2-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣", ver:"S2"},
+    {id:"P1-28", voice:"桃子 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:4.5, ovr:4.25, eff:0.55, audio:"已有数据/副语言-6-S2-桃子-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣", ver:"S2"},
+    {id:"P1-30", voice:"蔡徐坤 S2", text:"[disdain] 旅行哪有那么多讲究！[yawn] 不用硬赶行程，想吃就吃想躺就躺，[laugh] 拍到好看的天空、遇到好玩的小事，[whisper] 这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:0.55, audio:"已有数据/副语言-8-S2-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"P1-32", voice:"蔡徐坤 S2", text:"[whisper] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-10-S2-蔡徐坤-whisper.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"P1-33", voice:"jay S2", text:"[紧张干笑] …突然点我名，还真有点紧张哈哈，[咳嗽] 那我就随便说两句，大家多担待哈。", nat:3.75, ovr:4.0, eff:0.20, audio:"已有数据/副语言-11-S2-jay-紧张干笑+咳嗽.mp3", comment:"呃不自然，没有咳嗽", ver:"S2"},
+    {id:"100", voice:"蔡徐坤 S2", text:"[yawn] [呻吟]好困啊，今天的会议怎么还没结束，我快撑不住了。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/副语言-100-S2-蔡徐坤.mp3", comment:"呻吟不自然，语气缺少困感", ver:"S2"},
+    {id:"102", voice:"蔡徐坤 S2", text:"[crying] 为什么每次都是这样，我真的好累，不想再坚持了。", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/副语言-102-S2-蔡徐坤.mp3", comment:"哭的音有点短，语气有点夹", ver:"S2"},
+    {id:"104", voice:"蔡徐坤 S2", text:"[shouting] 站住！你给我回来！这件事没完！", nat:4.25, ovr:4.5, eff:0.85, audio:"S2/副语言-104-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"106", voice:"蔡徐坤 S2", text:"[clear throat] 各位同事，今天的会议正式开始，请大家安静。", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/副语言-106-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"108", voice:"蔡徐坤 S2", text:"[gasp] 天哪！你怎么突然出现在这里？吓死我了！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-108-S2-蔡徐坤.mp3", comment:"普通吸气感，缺少惊吓感", ver:"S2"},
+    {id:"110", voice:"蔡徐坤 S2", text:"[pitch up] 真的吗？你确定？这也太不可思议了吧！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-110-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"112", voice:"蔡徐坤 S2", text:"[fast] 快快快，来不及了，赶紧收拾东西，出租车已经在楼下等了！", nat:4.0, ovr:4.25, eff:0.55, audio:"S2/副语言-112-S2-蔡徐坤.mp3", comment:"不是很快", ver:"S2"},
+    {id:"114", voice:"蔡徐坤 S2", text:"[slow] 慢慢来，不着急，我们有的是时间，一步一步把事情理清楚。", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-114-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"116", voice:"蔡徐坤 S2", text:"[laugh loud] 哈哈哈哈！这个笑话太好笑了，我肚子都笑疼了！", nat:4.25, ovr:4.75, eff:0.85, audio:"S2/副语言-116-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"118", voice:"蔡徐坤 S2", text:"[sigh] 算了，事已至此，再纠结也没用了，往前看吧。", nat:3.75, ovr:4.0, eff:0.55, audio:"S2/副语言-118-S2-蔡徐坤.mp3", comment:"叹气不明显", ver:"S2"}
+  ]
+});
+
+modules.push({id:"free-tag", emoji:"✨", name:"自由自然语言标签", plan:19, done:19, pending:0, s2Only:true,
+  nat:4.14, ovr:4.24, eff:0.4789,
+  nat_s1:null, ovr_s1:null, eff_s1:null,
+  nat_s2:4.14, ovr_s2:4.24, eff_s2:0.4789,
+  tier:"良好",
+  find:"S2 独占，excited 最稳",
+  detail:"Sarah 英文 excited/urgent/sarcastic/whisper + AD学姐 / 女大学生 / AMSR 复杂中文描述",
+  s1:{score:"—", text:"S1 未覆盖此模块"},
+  s2:{score:"4.24", text:"S2-Pro 自然度 4.14 / 总体 4.24 / 生效率 48%（n=19）"},
+  findingKey:"S2-Pro 独占能力。Sarah 英文 [excited] 生效率最高，[sarcastic] 最难体现。中文复刻音色（AD学姐 / AMSR）对复杂中文自然语言描述响应优于平台已有音色，验证「复刻音色 > 平台音色」的标签生效偏序",
+  samples:[
+    {id:"P1-34", voice:"amx S2", text:"[语速停顿][强调][偷笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/自由标签-1-S2-amx-多标签.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"P1-35", voice:"amx S2", text:"[偷偷的笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.75, ovr:4.75, eff:0.85, audio:"已有数据/自由标签-2-S2-amx-偷笑.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"120", voice:"Sarah S2", text:"[excited] Oh my god, I cannot believe we finally made it! This is the best day ever!", nat:4.75, ovr:4.5, eff:0.55, audio:"S2/自由标签-120-S2-Sarah.mp3", comment:"情绪表达一般，不是很激动", ver:"S2"},
+    {id:"121", voice:"Sarah S2", text:"[urgent] Listen to me carefully, we do not have much time, we need to leave right now!", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/自由标签-121-S2-Sarah.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"122", voice:"Sarah S2", text:"[sarcastic] Oh sure, that is a brilliant idea. What could possibly go wrong?", nat:4.5, ovr:4.5, eff:0.20, audio:"S2/自由标签-122-S2-Sarah.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"123", voice:"Sarah S2", text:"[whispers sweetly] Come closer, I have something special to tell you.", nat:4.5, ovr:4.5, eff:0.30, audio:"S2/自由标签-123-S2-Sarah.mp3", comment:"生效但效果差", ver:"S2"},
+    {id:"124", voice:"AMSR S2", text:"[激动] 我做到了！我真的做到了！这一刻我等了整整三年！", nat:4.0, ovr:4.5, eff:0.55, audio:"S2/自由标签-124-S2-AMSR男声.mp3", comment:"语调较低，激动的情绪不真实", ver:"S2"},
+    {id:"125", voice:"AMSR S2", text:"[恍然大悟] 啊！原来是这样，我之前怎么都没想明白，现在一下子全通了。", nat:3.75, ovr:4.0, eff:0.55, audio:"S2/自由标签-125-S2-AMSR男声.mp3", comment:"不匹配语境", ver:"S2"},
+    {id:"126", voice:"AMSR S2", text:"[不屑一顾] 就这？我还以为有多厉害呢，不过如此而已。", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/自由标签-126-S2-AMSR男声.mp3", comment:"情感不够饱满", ver:"S2"},
+    {id:"180", voice:"Sarah S2", text:"[Murmuring to oneself alone in the quiet night]I wish we’d never met in the first place.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-180-S2-Sarah英.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"181", voice:"Sarah S2", text:"[深夜独处自言自语般低语]要是当初没有遇见就好了。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-181-S2-Sarah中.mp3", comment:"生效但效果差", ver:"S2"},
+    {id:"182", voice:"Sarah S2", text:"[Turning face away and avoiding eye contact while talking]Don’t stare at me, I feel embarrassed to say it.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-182-S2-Sarah英.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"183", voice:"Sarah S2", text:"[侧过脸小声回避眼神说话]别盯着我看，我不好意思讲。", nat:3.5, ovr:3.75, eff:0.10, audio:"S2/自由标签-183-S2-Sarah中.mp3", comment:"语速快", ver:"S2"},
+    {id:"184", voice:"AD学姐 S2", text:"[紧张尴尬地苦笑] 那个…… 我真的不是故意添麻烦的。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-184-S2-AD学姐.mp3", comment:"生效但效果差", ver:"S2"},
+    {id:"185", voice:"AD学姐 S2", text:"[温柔轻声私语] 过来一点，我有悄悄话想跟你说。", nat:4.5, ovr:4.0, eff:0.55, audio:"S2/自由标签-185-S2-AD学姐.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"186", voice:"AD学姐 S2", text:"[带着无奈轻轻叹气] 有些事，再努力也没办法改变。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/自由标签-186-S2-AD学姐.mp3", comment:"有点像笑", ver:"S2"},
+    {id:"187", voice:"AD学姐 S2", text:"[又惊喜又不敢相信] 真的是你吗？我还以为再也见不到了。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-187-S2-AD学姐.mp3", comment:"惊喜感不足", ver:"S2"},
+    {id:"188", voice:"AD学姐 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/自由标签-188-S2-AD学姐.mp3", comment:"生效但效果一般", ver:"S2"},
+    {id:"189", voice:"女大学生 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:3.5, ovr:4.0, eff:0.10, audio:"S2/自由标签-189-S2-女大学生.mp3", comment:"没有傲娇感", ver:"S2"}
+  ]
+});
+
+modules.push({id:"multi-speaker", emoji:"👥", name:"多角色对话", plan:3, done:3, pending:0,
+  nat:3.75, ovr:3.75, eff:0.4667,
+  nat_s1:3.75, ovr_s1:3.75, eff_s1:0.5500,
+  nat_s2:3.75, ovr_s2:3.75, eff_s2:0.4250,
+  tier:"一般",
+  find:"3 角色对话切换清晰",
+  detail:"jay 2 角色 + S1/S2 各 1 条 3 角色对话（jay/元気/蔡徐坤）",
+  s1:{score:"3.75", text:"S1 自然度 3.75 / 总体 3.75 / 生效率 55%（n=1）"},
+  s2:{score:"3.75", text:"S2-Pro 自然度 3.75 / 总体 3.75 / 生效率 43%（n=2）"},
+  findingKey:"3 角色对话 <speaker:N> 语法可用，角色辨识度较高；情感标签在多角色上仍受单音色限制",
+  samples:[
+    {id:"127", voice:"jay/元气/蔡徐坤 S1", text:"<speaker:0> (笑着说)宝宝，我今晚不回家吃饭了。<speaker:1> (生气)又不回家？你这个月都第几次了？<speaker:2> 姐妹，(生气)别管他了，别管他了，(兴奋)我们自己来吃大餐。", nat:3.75, ovr:3.75, eff:0.55, audio:"S1/多角色-127.mp3", comment:"speaker1发音不自然，第二句语调无起伏，口音不自然", ver:"S1"},
+    {id:"P1-36", voice:"jay(2角色) S2", text:"<speaker:0> [轻快上扬] 告诉你个超棒的消息，你中奖啦，一等奖！\n<speaker:1> [震惊拔高+倒吸一口气] 真的假的？！[雀跃欢呼+拍手] 天呐，我居然中了，也太幸运了吧！", nat:3.5, ovr:3.5, eff:0.30, audio:"已有数据/多角色-1-S2-jay-2角色.mp3", comment:"[雀跃欢呼+拍手]噪音，效果不佳", ver:"S2"},
+    {id:"128", voice:"jay/元气/蔡徐坤 S2", text:"<speaker:0> [哄人]宝宝，我今晚不回家吃饭了。<speaker:1> [生气]又不回家？你这个月都[强调]第几次了？<speaker:2> 姐妹，[嫌弃的劝解]别管他了，别管他了，[兴奋]我们自己来吃大餐。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/多角色-128-S2.mp3", comment:"强调处不自然，很生硬", ver:"S2"}
+  ]
+});
+
+modules.push({id:"long-text", emoji:"📄", name:"长文本一致性", plan:2, done:2, pending:0,
+  nat:4.625, ovr:4.625, eff:null,
+  nat_s1:4.5, ovr_s1:4.5, eff_s1:null,
+  nat_s2:4.75, ovr_s2:4.75, eff_s2:null,
+  tier:"优秀",
+  find:"500 字节硬上限，S2 略优于 S1",
+  detail:"150 字+长文本新闻稿（央视配音 / 默认）S1 / S2 各 1 条对比",
+  s1:{score:"4.50", text:"S1 自然度 4.50 / 总体 4.50（n=1）"},
+  s2:{score:"4.75", text:"S2-Pro 自然度 4.75 / 总体 4.75（n=1）"},
+  findingKey:"官方对长文本有 500 字节单次合成上限；S2 在长新闻稿上发音更自然真实，S1 韵律略生硬；两者音色基本一致，偶有微弱漂移，但都是较好效果的语音",
+  samples:[
+    {id:"—", voice:"央视配音/默认 S1", text:"近日，国务院办公厅印发《关于进一步加强人工智能产业发展的指导意见》，提出到二零三零年，我国要全面建成具有国际影响力的人工智能创新策源地和产业集聚区。意见明确，要加大基础研究投入，突破大模型、具身智能、脑机接口等前沿技术；同时推动人工智能与实体经济深度融合，在智能制造、智慧医疗、智能交通、智慧城市等领域打造一批标杆应用。", nat:4.5, ovr:4.5, eff:null, audio:"S1/长文本-72-央视配音-S1.mp3", comment:"当前效果基本较好，会有细微的韵律发音不够自然真实，但效果可用。", ver:"S1"},
+    {id:"134", voice:"央视配音/默认 S2", text:"近日，国务院办公厅印发《关于进一步加强人工智能产业发展的指导意见》，提出到二零三零年，我国要全面建成具有国际影响力的人工智能创新策源地和产业集聚区。意见明确，要加大基础研究投入，突破大模型、具身智能、脑机接口等前沿技术；同时推动人工智能与实体经济深度融合，在智能制造、智慧医疗、智能交通、智慧城市等领域打造一批标杆应用。", nat:4.75, ovr:4.75, eff:null, audio:"S2/长文本-72-央视配音-S2.mp3", comment:"当前效果较好，发音更自然真实，但存在细微韵律问题。如：提出到，我国要，停顿不自然", ver:"S2"}
+  ]
+});
+
+modules.push({id:"word-emotion", emoji:"🎚️", name:"词级情感切换", plan:9, done:9, pending:0,
+  nat:4.14, ovr:4.36, eff:0.7056,
+  nat_s1:4.06, ovr_s1:4.25, eff_s1:0.8500,
+  nat_s2:4.20, ovr_s2:4.45, eff_s2:0.5900,
+  tier:"良好",
+  find:"S2 Sarah 英文最稳，中文偏弱",
+  detail:"S1 / S2 各 4-5 条单句内 2-3 次情感切换",
+  s1:{score:"4.25", text:"S1 自然度 4.06 / 总体 4.25 / 生效率 85%（n=4）"},
+  s2:{score:"4.45", text:"S2-Pro 自然度 4.20 / 总体 4.45 / 生效率 59%（n=5）"},
+  findingKey:"S2-Pro Sarah 英文 [gasp]/[laugh] 词级切换生效率较高；S2 中文 jay/AMSR/蔡徐坤 上中等；S1 词级标签生效率较低，与 S2 拉开明显差距。这是 S2-Pro 相对 S1 最显著的能力提升之一",
+  samples:[
+    {id:"137", voice:"Sarah S1", text:"I cannot believe it (gasp) you actually did it (大笑声) that is amazing!", nat:4.5, ovr:4.25, eff:0.85, audio:"S1/词级情感-137-S1-Sarah.mp3", comment:"生效且效果好", ver:"S1"},
+    {id:"141", voice:"AMSR S1", text:"嗯？(疑惑）你刚才说什么？（生气）凭什么要我做这个？我又不是你的下属！", nat:3.75, ovr:4.25, eff:0.85, audio:"S1/词级情感-141-S1-AMSR男声cc.mp3", comment:"嗯不自然", ver:"S1"},
+    {id:"143", voice:"jay S1", text:"我（悲伤）已经尽力了，真的（哽咽）没办法了……（无奈）你也不用再劝我了。", nat:4.0, ovr:4.25, eff:0.85, audio:"S1/词级情感-143-S1-jay.mp3", comment:"哽咽未体现", ver:"S1"},
+    {id:"145", voice:"jay S1", text:"（happy）Great news everyone! （gasp） Wait, what is that? （laugh） Oh come on, you scared me!", nat:4.0, ovr:4.25, eff:0.85, audio:"S1/词级情感-145-S1-jay.mp3", comment:"吸气有点夸张", ver:"S1"},
+    {id:"138", voice:"Sarah S2", text:"I cannot believe it [gasp] you actually did it [laugh loud] that is amazing!", nat:4.5, ovr:4.5, eff:0.20, audio:"S2/词级情感-138-S2-Sarah.mp3", comment:"未生效但效果正常", ver:"S2"},
+    {id:"140", voice:"蔡徐坤 S2", text:"这事太[震惊]突然了，我[苦笑]也想不到会是这样的结局，[叹气]真是造化弄人啊。", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/词级情感-140-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"142", voice:"AMSR S2", text:"嗯？[疑惑]你刚才说什么？[生气][吼叫]凭什么要我做这个？我又不是你的下属！", nat:4.0, ovr:4.5, eff:0.85, audio:"S2/词级情感-142-S2-AMSR男声cc.mp3", comment:"吼叫未充分体现，但效果可接受", ver:"S2"},
+    {id:"144", voice:"jay S2", text:"我[悲伤]已经尽力了，真的[哽咽]没办法了……[无奈]你也不用再劝我了。", nat:3.75, ovr:4.0, eff:0.20, audio:"S2/词级情感-144-S2-jay.mp3", comment:"哽咽未体现", ver:"S2"},
+    {id:"146", voice:"jay S2", text:"[happy] Great news everyone! [gasp] Wait, what is that? [laugh] Oh come on, you scared me!", nat:4.25, ovr:4.75, eff:0.85, audio:"S2/词级情感-146-S2-jay.mp3", comment:"生效且效果好", ver:"S2"}
+  ]
+});
+
+modules.push({id:"multilang", emoji:"🌍", name:"多语言覆盖", plan:32, done:32, pending:0,
+  nat:3.74, ovr:4.76, eff:0.3625,
+  nat_s1:3.52, ovr_s1:4.62, eff_s1:0.3250,
+  nat_s2:3.97, ovr_s2:4.90, eff_s2:0.4000,
+  tier:"优秀",
+  find:"常见 5 语言可用，葡/俄/阿略弱",
+  detail:"8 语言 × 2 条（陈述 + 情感）：日 / 韩 / 德 / 法 / 西 / 葡 / 俄 / 阿",
+  s1:{score:"4.62", text:"S1 自然度 3.52 / 发音准确度 4.62 / 共情度 3.41 / 生效率 32%（n=16）"},
+  s2:{score:"4.90", text:"S2-Pro 自然度 3.97 / 发音准确度 4.90 / 共情度 3.88 / 生效率 40%（n=16）"},
+  findingKey:"陈述句发音准确度：日/德/法/西 ≥ 韩 ≥ 葡/俄/阿；情感标签生效率：常见语言较好，小语种衰减明显。S2-Pro 80+ 语言宣传成立，但小语种情感控制能力明显衰减",
+  samples:[
+    {id:"147", voice:"日语默认 S1", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:4.5, ovr:5, sim:4.67, eff:null, audio:"S1/多语言-147-日S1-元気な女性.mp3", comment:"发音标准地道，韵律自然流畅，语气温和亲切，完美契合日常问候与邀请的陈述语境，整体听感极佳。开头情感不自然。", ver:"S1"},
+    {id:"149", voice:"日语默认 S1", text:"(兴奋) やったー！ついに合格したよ！本当に嬉しい！", nat:4.5, ovr:5, sim:5, eff:0.85, audio:"S1/多语言-149-日S1-元気な女性.mp3", comment:"发音标准，情感表达生动自然，完美呈现兴奋与喜悦的情绪，极具感染力。但是开头情感略显刻意。", ver:"S1"},
+    {id:"151", voice:"韩语默认 S1", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.5, ovr:5, sim:4.33, eff:null, audio:"S1/多语言-151-韩S1-ngày.mp3", comment:"韩语发音标准清晰，节奏平稳自然，整体听感舒适流畅，但情感起伏与语调过渡略显平淡。", ver:"S1"},
+    {id:"153", voice:"韩语默认 S1", text:"（sad） 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:3.5, ovr:5, sim:2.5, eff:0.2, audio:"S1/多语言-153-韩S1-ngày.mp3", comment:"发音标准清晰，但未能有效传达文本所需的悲伤与无力感，情感表达过于平淡。", ver:"S1"},
+    {id:"155", voice:"德语默认 S1", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:1.83, ovr:3.67, sim:2.33, eff:null, audio:"S1/多语言-155-德S1-Metal-Sonic.mp3", comment:"德语发音基本准确，但机械感严重，存在明显的拼接卡顿与重复错读，整体听感生硬不自然。", ver:"S1"},
+    {id:"157", voice:"德语默认 S1", text:"(生气)  Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:2, ovr:2.5, sim:2, eff:0.1, audio:"S1/多语言-157-德S1-Metal-Sonic.mp3", comment:"音频机械感极强，存在电子失真、语速过快与发音含糊问题，完全未能演绎生气情感，听感极差。", ver:"S1"},
+    {id:"159", voice:"法语默认 S1", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:3.67, ovr:4.5, sim:3.67, eff:null, audio:"S1/多语言-149-法S1-Féminine.mp3", comment:"法语发音清晰准确，但语调偏平淡、语速偏快，缺乏日常交流的自然韵律与情感温度。", ver:"S1"},
+    {id:"161", voice:"法语默认 S1", text:"(开心)  Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:3.5, ovr:5, sim:3, eff:0.2, audio:"S1/多语言-151-法S1Féminine.mp3", comment:"法语发音标准清晰，但整体表达过于平淡，未能传达文本要求的开心与激动情绪，缺乏情感感染力。", ver:"S1"},
+    {id:"163", voice:"西班牙语默认 S1", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:4.33, ovr:5, sim:4.33, eff:null, audio:"S1/多语言-163-西S1-Farid-Dieck.mp3", comment:"三次结果不稳定:两次评价指出句间停顿略仓促、语调偏平淡、缺乏对话温度,一次则认为发音极其标准、韵律自然流畅、整体表现极佳;发音清晰标准是共识。", ver:"S1"},
+    {id:"165", voice:"西班牙语默认 S1", text:"(whispering) Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:2.5, ovr:5, sim:1.67, eff:0.1, audio:"S1/多语言-165-西S1-Farid-Dieck.mp3", comment:"发音清晰准确,但完全未实现文本要求的耳语效果,情感表达与分享秘密的语境严重脱节。", ver:"S1"},
+    {id:"167", voice:"葡萄牙 S1", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:4, ovr:5, sim:4, eff:null, audio:"S1/多语言-167-葡语S1.mp3", comment:"巴西葡语发音标准清晰,整体表达流畅平稳,若邀请部分能增加些许热情,听感会更生动自然。", ver:"S1"},
+    {id:"168", voice:"葡萄牙 S1", text:"(shouting) Que incrível notícia! Não acredito no que ouvi!", nat:3.5, ovr:5, sim:3.5, eff:0.2, audio:"S1/多语言-168-葡语S1.mp3", comment:"发音准确清晰,基本传达了文本要求的激动情绪,但情感表达略显生硬刻意,缺乏真实爆发力与自然节奏变化。", ver:"S1"},
+    {id:"169", voice:"俄语 S1", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:4, ovr:4.33, sim:4, eff:null, audio:"S1/多语言-169-俄语S1.mp3", comment:"三次结果不一致:两次指出语速过快、节奏生硬、存在吞音与重音偏差、机械感强,一次则认为发音标准、表达流畅自然,整体稳定性较差。", ver:"S1"},
+    {id:"170", voice:"俄语 S1", text:"(laughing) Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.67, ovr:5, sim:5, eff:0.85, audio:"S1/多语言-170-俄语S1.mp3", comment:"俄语发音纯正标准,情感表达真实生动,笑声与语音结合自然流畅,出色还原欢乐情境,极具感染力。", ver:"S1"},
+    {id:"171", voice:"阿语 S1", text:"الجو جميل اليوم، هل تريد الخروج للتنزه؟", nat:2.5, ovr:4.67, sim:2.5, eff:null, audio:"S1/多语言-171-阿语S1.mp3", comment:"三次表现严重不稳定:两次出现极度亢奋的嘶吼语气朗读日常陈述文本,情感严重错位、听感极不自然,一次则认为发音标准、节奏流畅。", ver:"S1"},
+    {id:"172", voice:"阿语 S1", text:"(regretful)(sincere) أنا آسف بصدق وأشعر بالندم الشديد على ما فعلته.", nat:2, ovr:4.33, sim:2, eff:0.1, audio:"S1/多语言-172-阿语S1.mp3", comment:"阿语发音基本准确,但采用极度高亢的喊叫方式,与文本要求的真诚道歉与后悔情感完全背道而驰,自然度与共情度极差。", ver:"S1"},
+    {id:"148", voice:"日语默认 S2", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:5, ovr:5, sim:5, eff:null, audio:"S2/多语言-148-日S2-元気な女性.mp3", comment:"发音地道标准,韵律自然流畅,语气温和亲切,完美契合日常问候与邀请的语境,整体表现达到母语者水平,听感极佳。", ver:"S2"},
+    {id:"150", voice:"日语默认 S2", text:"[excited] やったー！ついに合格したよ！本当に嬉しい！", nat:5, ovr:5, sim:5, eff:0.85, audio:"S2/多语言-150-日S2-元気な女性.mp3", comment:"发音标准,情感表达生动自然,开头笑声完美契合兴奋与喜悦的语境,情感真实生效且极具感染力。", ver:"S2"},
+    {id:"152", voice:"韩语默认 S2", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.67, ovr:5, sim:4.67, eff:null, audio:"S2/多语言-152-韩S2-ngày.mp3", comment:"韩语发音标准清晰,音色温和舒适,韵律自然流畅,是一段契合日常邀请语境的高质量陈述音频。", ver:"S2"},
+    {id:"154", voice:"韩语默认 S2", text:"[sad] 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:4.33, ovr:5, sim:4.33, eff:0.55, audio:"S2/多语言-154-韩S2-ngày.mp3", comment:"三次结果存在差异:两次指出具备基础悲伤色彩但语速偏快、疲惫无力感表达不够深入,一次则认为韵律流畅、情绪真实且极具感染力,情感呈现稳定性不足。", ver:"S2"},
+    {id:"156", voice:"德语默认 S2", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:4, ovr:5, sim:4, eff:null, audio:"S2/多语言-156-德S2-Metal-Sonic.mp3", comment:"德语发音标准,整体表达清晰平稳,但在自然韵律的微调与声音亲和力上仍有提升空间。", ver:"S2"},
+    {id:"158", voice:"德语默认 S2", text:"[angry] Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:2.5, ovr:4.5, sim:2.5, eff:0.1, audio:"S2/多语言-158-德S2-Metal-Sonic.mp3", comment:"德语发音基本准确,但声音机械感极强、韵律生硬,完全未能演绎文本所需的愤怒情感,毫无情绪感染力。", ver:"S2"},
+    {id:"160", voice:"法语默认 S2", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:4.33, ovr:4.33, sim:4, eff:null, audio:"S2/多语言-160-法S2-Féminine.mp3", comment:"法语发音清晰,整体表达流畅、语调平稳自然,较好契合陈述语境,但在发音细节(如联诵)与情绪感染力上仍有微调空间。", ver:"S2"},
+    {id:"162", voice:"法语默认 S2", text:"[happy] Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:2.5, ovr:5, sim:1.67, eff:0.1, audio:"S2/多语言-162-法S2-Féminine.mp3", comment:"法语发音地道准确,但情感表达严重偏离文本标签与语境,未能展现应有的喜悦与兴奋,整体共情体验较差。", ver:"S2"},
+    {id:"164", voice:"西班牙语默认 S2", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:5, ovr:5, sim:5, eff:null, audio:"S2/多语言-164-西S2-Farid-Dieck.mp3", comment:"西语发音标准地道,韵律自然流畅,语气亲切友好且带有自然的询问语调,完美契合日常对话邀请的语境,整体表现极佳。", ver:"S2"},
+    {id:"166", voice:"西班牙语默认 S2", text:"[whisper] Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:5, ovr:5, sim:5, eff:0.55, audio:"S2/多语言-166-西S2-Farid-Dieck.mp3", comment:"完美运用耳语技巧,发音标准清晰,成功营造分享秘密的私密氛围,情感真实生效,代入感与共情力极强。", ver:"S2"},
+    {id:"167", voice:"葡萄牙 S2", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:3.83, ovr:5, sim:3.83, eff:null, audio:"S2/多语言-167-葡语S2.mp3", comment:"葡萄牙语发音清晰准确,音色稳定听感舒适,但整体语调偏向正式播报,缺乏日常对话的自然韵律与轻松愉悦的共情感。", ver:"S2"},
+    {id:"168", voice:"葡萄牙 S2", text:"[shouting] Que incrível notícia! Não acredito no que ouvi!", nat:2.5, ovr:5, sim:2.5, eff:0.1, audio:"S2/多语言-168-葡语S2.mp3", comment:"葡语发音清晰准确,但情感表达完全失效,未能呈现文本要求的呼喊与激动情绪,整体听感平淡生硬如机器朗读。", ver:"S2"},
+    {id:"169", voice:"俄语 S2", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:3.5, ovr:5, sim:3.33, eff:null, audio:"S2/多语言-169-俄语S2.mp3", comment:"俄语发音准确清晰,但整体韵律平淡略显机械,缺乏日常交流的自然感与人际互动温度,未能展现邀请的轻松氛围。", ver:"S2"},
+    {id:"170", voice:"俄语 S2", text:"[laughing] Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.83, ovr:5, sim:4.83, eff:0.85, audio:"S2/多语言-170-俄语S2.mp3", comment:"俄语发音标准地道,开头笑声真实自然且与后续说话过渡流畅,完美呈现文本中欢乐与好笑的情感,极具感染力,整体表现极佳。", ver:"S2"},
+    {id:"171", voice:"阿语 S2", text:"الجو جميل اليوم، هل تريد الخروج للتنزه؟", nat:4, ovr:5, sim:4, eff:null, audio:"S2/多语言-171-阿语S2.mp3", comment:"三次结果存在波动:两次表现良好,发音精准、表达清晰平稳,较好契合陈述语境,一次则出现夸张嘶吼语气与日常陈述严重脱节,整体稳定性有待提升。", ver:"S2"},
+    {id:"172", voice:"阿语 S2", text:"[regretful][sincere] أنا آسف بصدق وأشعر بالندم الشديد على ما فعلته.", nat:2.5, ovr:4.5, sim:2.5, eff:0.1, audio:"S2/多语言-172-阿语S2.mp3", comment:"阿语发音基本准确,但音频以极其激昂高亢的语气演绎,与文本要求的真诚道歉与后悔情感完全背道而驰,整体听感极不协调。", ver:"S2"}
+  ]
+});
+
+modules.push({id:"sfx", emoji:"🔔", name:"音效生成", plan:2, done:2, pending:0, s2Only:true,
+  nat:null, ovr:null, eff:0.8500,
+  nat_s1:null, ovr_s1:null, eff_s1:null,
+  nat_s2:null, ovr_s2:null, eff_s2:0.8500,
+  tier:"良好",
+  find:"可用但积分消耗高",
+  detail:"键盘声 / 雷声 2 条音效生成",
+  s1:{score:"—", text:"S1 未覆盖此模块"},
+  s2:{score:"—", text:"S2-Pro 生效率 85%（n=2）"},
+  findingKey:"S2-Pro 新增能力，音效真实度尚可；10s 消耗 5000 积分，性价比偏低，不适合大量场景音效生产",
+  samples:[
+    {id:"P1-37", voice:"— S2", text:"生成一段清晰的键盘打字声，模拟办公室里快速敲击键盘的场景。连续、清脆的按键声，节奏均匀，还原真实办公环境。", nat:null, ovr:null, eff:0.85, audio:"已有数据/音效生成-1-S2-键盘声.wav", comment:"音效较为匹配，整体效果自然，节奏清晰，环境感在线", ver:"S2"},
+    {id:"P1-38", voice:"— S2", text:"响彻云霄的雷声伴随着隆隆的回响。", nat:null, ovr:null, eff:0.85, audio:"已有数据/音效生成-2-S2-雷声.mp3", comment:"音效较为匹配，整体效果自然，雷声气势足，回响自然", ver:"S2"}
+  ]
+});
+
+modules.push({id:"separation", emoji:"🎼", name:"音频分离", plan:2, done:2, pending:0, s2Only:true,
+  nat:null, ovr:null, eff:0.8500,
+  nat_s1:null, ovr_s1:null, eff_s1:null,
+  nat_s2:null, ovr_s2:null, eff_s2:0.8500,
+  tier:"良好",
+  find:"干净场景可用",
+  detail:"上传含伴奏音频 → 分离人声 / 背景",
+  s1:{score:"—", text:"S1 未覆盖此模块"},
+  s2:{score:"—", text:"S2-Pro 生效率 85%（n=2）"},
+  findingKey:"S2-Pro 新增能力，干净音乐场景分离干净，复杂场景（带混响 / 多人）未测",
+  samples:[
+    {id:"P1-39", voice:"— S2", text:"上传一段含人声+伴奏的音频 → S2-Pro 分离出人声轨（对照原声：已有数据/音频分离-1-原声.wav）", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-2-S2-人声.mp3", comment:"人声分离干净", ver:"S2"},
+    {id:"P1-40", voice:"— S2", text:"上传一段含人声+伴奏的音频 → S2-Pro 分离出背景轨（对照原声：已有数据/音频分离-1-原声.wav）", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-3-S2-背景.mp3", comment:"背景伴奏保留，人声残留极少", ver:"S2"}
+  ]
+});
+
+// ========== 渲染逻辑 ==========
+const tierMedal = {优秀:'medal-excellent', 良好:'medal-good', 一般:'medal-avg', 较差:'medal-poor'};
+
+function barClass(s) {
+  if (s == null) return 'pending';
+  if (s >= 4.5) return 'excellent';
+  if (s >= 4.0) return 'good';
+  if (s >= 3.5) return 'avg';
+  return 'poor';
+}
+function tierLabel(s) {
+  if (s == null) return '—';
+  if (s >= 4.5) return '优秀';
+  if (s >= 4.0) return '良好';
+  if (s >= 3.5) return '一般';
+  return '较差';
+}
+function scoreClass(s) {
+  if (s == null) return 'pending';
+  if (s >= 4.5) return 'high';
+  if (s >= 3.5) return '';
+  return 'low';
+}
+
+let currentDim = 'ovr';
+function renderBarChart(dim = 'ovr') {
+  const s1Key = dim + '_s1';
+  const s2Key = dim + '_s2';
+  const isEff = dim === 'eff';
+  // 过滤：当前维度无任何数据的模块直接不展示（如基础TTS没有生效率，切到生效率维度时不显示基础TTS）
+  const filtered = modules.filter(m => m[s1Key] != null || m[s2Key] != null);
+  const sorted = filtered.slice().sort((a,b) => {
+    const av = a[s2Key] == null ? (a[s1Key] == null ? -1 : a[s1Key]) : a[s2Key];
+    const bv = b[s2Key] == null ? (b[s1Key] == null ? -1 : b[s1Key]) : b[s2Key];
+    return bv - av;
+  });
+  document.getElementById('barList').innerHTML = sorted.map(m => {
+    const s1 = m[s1Key];
+    const s2 = m[s2Key];
+    let delta = '';
+    if (s1 != null && s2 != null) {
+      const d = s2 - s1;
+      if (isEff) {
+        if (d > 0.005) delta = `<span class="delta delta-up">↑ +${(d*100).toFixed(0)}pp</span>`;
+        else if (d < -0.005) delta = `<span class="delta delta-down">↓ ${(d*100).toFixed(0)}pp</span>`;
+        else delta = `<span class="delta delta-same">＝ 持平</span>`;
+      } else {
+        if (d > 0.01) delta = `<span class="delta delta-up">↑ +${d.toFixed(2)}</span>`;
+        else if (d < -0.01) delta = `<span class="delta delta-down">↓ ${d.toFixed(2)}</span>`;
+        else delta = `<span class="delta delta-same">＝ 持平</span>`;
+      }
+    } else if (m.s2Only) {
+      delta = `<span class="delta delta-na">S2 独占</span>`;
+    } else if (s1 == null && s2 != null) {
+      delta = `<span class="delta delta-na">S1 待补</span>`;
+    } else {
+      delta = `<span class="delta delta-na">仅单边</span>`;
+    }
+    const makeRow = (label, val, cls, isS1) => {
+      if (val == null) {
+        let placeholder = isEff ? '生效率不适用' : '待补测';
+        if (isS1 && m.s2Only) placeholder = 'S1 不支持此能力';
+        else if (isS1 && m.s1Pending) placeholder = 'S1 待补';
+        return `<div class="bar-row ${cls}"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill pending" style="width:100%">${placeholder}</div></div><div class="bar-score pending">—</div></div>`;
+      }
+      const w = isEff ? val * 100 : (val / 5) * 100;
+      const display = isEff ? `${(val*100).toFixed(0)}%` : val.toFixed(2);
+      const cls2 = isEff ? (val >= 0.6 ? 'good' : val >= 0.45 ? 'avg' : 'poor') : barClass(val);
+      const lbl = isEff ? (val >= 0.6 ? '生效良好' : val >= 0.45 ? '部分生效' : '生效偏弱') : tierLabel(val);
+      return `<div class="bar-row ${cls}"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill ${cls2}" style="width:${w}%">${lbl}</div></div><div class="bar-score">${display}</div></div>`;
+    };
+    return `<div class="bar-group">
+      <div class="group-name"><span class="emoji">${m.emoji}</span>${m.name}${delta}</div>
+      ${makeRow('S1', s1, 's1-row', true)}
+      ${makeRow('S2-Pro', s2, 's2-row', false)}
+    </div>`;
+  }).join('');
+}
+function switchDimension(dim, ev) {
+  currentDim = dim;
+  document.querySelectorAll('.dim-tab').forEach(t => t.classList.remove('active'));
+  ev.target.classList.add('active');
+  renderBarChart(dim);
+}
+
+let currentFilter = 'all';
+function renderModuleCards(filter = 'all') {
+  const list = filter === 'all' ? modules : modules.filter(m => m.tier === filter);
+  document.getElementById('moduleGrid').innerHTML = list.map(m => {
+    const scores = [
+      m.nat != null ? `自然度 ${m.nat.toFixed(1)}` : null,
+      m.ovr != null ? `总体 ${m.ovr.toFixed(1)}` : null,
+      m.eff != null ? `生效率 ${(m.eff*100).toFixed(0)}%` : null,
+    ].filter(Boolean);
+    // pendingBadge removed
+    return `<div class="module-card" onclick="openDetail('${m.id}')">
+      <div class="top-row"><div class="emoji-large">${m.emoji}</div><div class="medal ${tierMedal[m.tier]}">${m.tier}</div></div>
+      <div class="name">${m.name}</div>
+      <div class="meta">S1 ${m.nat_s1 != null ? m.nat_s1.toFixed(1) : '—'} / ${m.ovr_s1 != null ? m.ovr_s1.toFixed(1) : '—'} · S2 ${m.nat_s2 != null ? m.nat_s2.toFixed(1) : '—'} / ${m.ovr_s2 != null ? m.ovr_s2.toFixed(1) : '—'}${m.eff_s2 != null ? ' · 生效率 ' + (m.eff_s2*100).toFixed(0) + '%' : ''}</div>
+      <div class="scores-row">${scores.length ? scores.map(s=>`<span class="score-pill">${s}</span>`).join('') : '<span class="score-pill" style="color:#94A3B8">待补测</span>'}</div>
+      <div class="finding">${m.find}</div>
+      <div class="detail">${m.detail}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterTier(tier, ev) {
+  currentFilter = tier;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  ev.target.classList.add('active');
+  renderModuleCards(tier);
+}
+
+function renderSampleTable(m) {
+  // 提取音色基础名（去掉 ' S1' / ' S2' 后缀）
+  const baseVoice = v => v ? v.replace(/\s+S[12]\s*$/i,'').trim() : '—';
+  // 文本归一化（去标签、去空白）用于配对
+  const normText = t => (t||'').replace(/\[[^\]]*\]/g,'').replace(/\([^\)]*\)/g,'').replace(/\s+/g,'').trim();
+
+  const fmtScore = (label, v) => {
+    if (v == null) return `<span class="sc sc-na">—</span>`;
+    const cls = v >= 4.5 ? 'sc-good' : v >= 3.5 ? 'sc-avg' : 'sc-low';
+    return `<span class="sc ${cls}">${v}</span>`;
+  };
+  const fmtEff = v => {
+    if (v == null) return `<span class="sc sc-na">—</span>`;
+    const cls = v >= 0.6 ? 'sc-good' : v >= 0.45 ? 'sc-avg' : 'sc-low';
+    return `<span class="sc ${cls}">${(v*100).toFixed(0)}%</span>`;
+  };
+  const audioHtml = a => a ? `<audio controls preload="none"><source src="${a}"></audio>` : `<span class="sc sc-na">—</span>`;
+
+  // 检测此模块是否有相似度
+  const hasSim = m.samples.some(s => s.sim != null);
+  // 检测此模块是否有生效率
+  const hasEff = m.samples.some(s => s.eff != null);
+  // 检测此模块是否有 S1 数据
+  const hasS1 = m.samples.some(s => s.ver === 'S1');
+  // 多语言模块的指标改名：总体感觉→发音准确度，相似度→共情度
+  const isMultilang = m.id === 'multilang';
+  const labelOvr = isMultilang ? '发音准确度' : '总体';
+  const labelSim = isMultilang ? '共情度' : '相似度';
+
+  // 按 baseVoice 分组
+  const groups = {};
+  const order = [];
+  m.samples.forEach(s => {
+    const v = baseVoice(s.voice);
+    if (!groups[v]) { groups[v] = []; order.push(v); }
+    groups[v].push(s);
+  });
+
+  // 每组内按文本配对 S1/S2
+  function pairSamples(arr) {
+    const s1s = arr.filter(s => s.ver === 'S1');
+    const s2s = arr.filter(s => s.ver === 'S2');
+    const used2 = new Set();
+    const pairs = [];
+    s1s.forEach(s1 => {
+      const t1 = normText(s1.text);
+      let match = -1;
+      // 1) 完全匹配
+      for (let i = 0; i < s2s.length; i++) {
+        if (used2.has(i)) continue;
+        if (normText(s2s[i].text) === t1) { match = i; break; }
+      }
+      // 2) 包含/被包含
+      if (match < 0) {
+        for (let i = 0; i < s2s.length; i++) {
+          if (used2.has(i)) continue;
+          const t2 = normText(s2s[i].text);
+          if (t1 && t2 && (t1.includes(t2) || t2.includes(t1))) { match = i; break; }
+        }
+      }
+      // 3) 顺序兜底（取第一个未使用）
+      if (match < 0) {
+        for (let i = 0; i < s2s.length; i++) {
+          if (!used2.has(i)) { match = i; break; }
+        }
+      }
+      if (match >= 0) { used2.add(match); pairs.push({s1, s2: s2s[match]}); }
+      else pairs.push({s1, s2: null});
+    });
+    s2s.forEach((s2, i) => { if (!used2.has(i)) pairs.push({s1: null, s2}); });
+    return pairs;
+  }
+
+  const headerCols = [
+    `<th class="t-text">文本</th>`,
+    hasS1 ? `<th>S1 音频</th>` : '',
+    hasS1 ? `<th>S1 自然度/${labelOvr}${hasSim ? '/'+labelSim : ''}</th>` : '',
+    `<th>S2 音频</th>`,
+    `<th>S2 自然度/${labelOvr}${hasSim ? '/'+labelSim : ''}</th>`,
+    hasEff ? (hasS1 ? `<th>生效率 S1→S2</th>` : `<th>生效率</th>`) : '',
+    `<th>评语</th>`,
+  ].filter(Boolean).join('');
+
+  function rowHtml(pair) {
+    const ref = pair.s1 || pair.s2;
+    const text = ref.text || '';
+    const tagMatch = text.match(/^\s*\[([^\]]+)\]/) || text.match(/^\s*\(([^\)]+)\)/);
+    const tag = tagMatch ? tagMatch[1] : '';
+    const cleanText = text.replace(/^\s*[\[\(][^\]\)]+[\]\)]\s*/, '');
+    const tagHtml = tag ? `<span class="tag-pill">${tag}</span>` : '';
+
+    const s1Scores = pair.s1
+      ? `${fmtScore('nat', pair.s1.nat)} / ${fmtScore('ovr', pair.s1.ovr)}${hasSim ? ' / '+fmtScore('sim', pair.s1.sim) : ''}`
+      : `<span class="sc sc-na">—</span>`;
+    const s2Scores = pair.s2
+      ? `${fmtScore('nat', pair.s2.nat)} / ${fmtScore('ovr', pair.s2.ovr)}${hasSim ? ' / '+fmtScore('sim', pair.s2.sim) : ''}`
+      : `<span class="sc sc-na">—</span>`;
+
+    let effCell = '';
+    if (hasEff) {
+      const e2 = pair.s2 ? fmtEff(pair.s2.eff) : `<span class="sc sc-na">—</span>`;
+      if (hasS1) {
+        const e1 = pair.s1 ? fmtEff(pair.s1.eff) : `<span class="sc sc-na">—</span>`;
+        effCell = `<td>${e1} → ${e2}</td>`;
+      } else {
+        effCell = `<td>${e2}</td>`;
+      }
+    }
+
+    const cmt = [];
+    if (pair.s1 && pair.s1.comment) cmt.push(`S1: ${pair.s1.comment}`);
+    if (pair.s2 && pair.s2.comment) cmt.push(`S2: ${pair.s2.comment}`);
+    const cmtHtml = cmt.length ? cmt.join('<br>') : '';
+
+    const s1AudioCell = hasS1 ? `<td>${pair.s1 ? audioHtml(pair.s1.audio) : '<span class="sc sc-na">—</span>'}</td>` : '';
+    const s1ScoreCell = hasS1 ? `<td>${s1Scores}</td>` : '';
+
+    return `<tr>
+      <td class="t-text">${tagHtml}${cleanText}</td>
+      ${s1AudioCell}
+      ${s1ScoreCell}
+      <td>${pair.s2 ? audioHtml(pair.s2.audio) : '<span class="sc sc-na">—</span>'}</td>
+      <td>${s2Scores}</td>
+      ${effCell}
+      <td class="cmt">${cmtHtml}</td>
+    </tr>`;
+  }
+
+  // 渲染
+  let html = '';
+  order.forEach((vname, idx) => {
+    const arr = groups[vname];
+    const pairs = pairSamples(arr);
+    const s1Count = arr.filter(s => s.ver==='S1').length;
+    const s2Count = arr.filter(s => s.ver==='S2').length;
+    const openCls = idx === 0 ? ' open' : '';
+    html += `<div class="voice-group">
+      <div class="voice-group-header${openCls}" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+        <span class="vg-arrow">▶</span>
+        <span class="vg-name">${vname}</span>
+        <span class="vg-count">（S1×${s1Count} / S2×${s2Count}）</span>
+      </div>
+      <div class="voice-group-body${openCls}" style="overflow-x:auto">
+        <table class="vg-table">
+          <thead><tr>${headerCols}</tr></thead>
+          <tbody>${pairs.map(rowHtml).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  });
+  return html;
+}
+
+function openDetail(id) {
+  const m = modules.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('detailTitle').textContent = `${m.emoji} ${m.name}（S1 ${m.nat_s1 != null ? m.nat_s1.toFixed(1) : '—'} / ${m.ovr_s1 != null ? m.ovr_s1.toFixed(1) : '—'} · S2 ${m.nat_s2 != null ? m.nat_s2.toFixed(1) : '—'} / ${m.ovr_s2 != null ? m.ovr_s2.toFixed(1) : '—'}${m.eff_s2 != null ? ' · 生效率 ' + (m.eff_s2*100).toFixed(0) + '%' : ''}）`;
+  document.getElementById('detailBody').innerHTML = `
+    <div class="finding-box">
+      <div class="f-label">🎯 核心发现</div>
+      <div class="f-text">${m.findingKey}</div>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-box s1">
+        <div class="c-label">🔹 Fish Audio S1 <span class="c-score">${m.s1.score}</span></div>
+        <div class="c-text">${m.s1.text}</div>
+      </div>
+      <div class="compare-box s2">
+        <div class="c-label">✨ Fish Audio S2-Pro <span class="c-score">${m.s2.score}</span></div>
+        <div class="c-text">${m.s2.text}</div>
+      </div>
+    </div>
+    <h3 style="color:#F1F5F9;font-size:1rem;margin:22px 0 10px">📋 样本详情</h3>
+    ${m.eff != null ? '<div style="margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:0.72rem;color:#94A3B8;line-height:1.7"><strong style="color:#7DD3FC">生效率映射规则：</strong>生效且效果好 → 85% ｜ 生效但效果一般 → 55% ｜ 生效但效果差 → 30% ｜ 未生效但效果正常 → 20% ｜ 未生效且存在效果问题 → 10% ｜ 陈述类（/）不参与计算</div>' : ''}
+    ${m.refAudios ? '<div style="margin-bottom:16px;padding:12px 16px;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:10px"><div style="font-size:0.78rem;font-weight:700;color:#C4B5FD;margin-bottom:8px">🎤 原声参考音频（用于声音复刻对比）</div>' + m.refAudios.map(r => '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:0.75rem;color:#E2E8F0;min-width:130px">'+r.label+'</span><audio controls preload="none" style="height:28px"><source src="'+r.audio+'"></audio></div>').join('') + '</div>' : ''}
+    ${renderSampleTable(m)}
+  `;
+  const modal = document.getElementById('detailModal');
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  modal.scrollTop = 0;
+}
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function handleOverlayClick(e) {
+  if (e.target.id === 'detailModal') closeDetail();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderBarChart();
+  renderModuleCards();
+  initQuickNav();
+});
+
+function toggleNav() {
+  const nav = document.getElementById('quickNav');
+  const toggle = document.getElementById('navToggle');
+  const hint = document.getElementById('navHint');
+  const isCollapsed = nav.classList.toggle('collapsed');
+  toggle.classList.toggle('show', isCollapsed);
+
+  // Show hint briefly when first collapsed
+  if (isCollapsed) {
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 3000);
+  }
+}
+
+function initQuickNav() {
+  const sections = ['hero','caps','method','ranking','modules','summary'].map(id => document.getElementById(id)).filter(Boolean);
+  const navItems = document.querySelectorAll('.nav-item');
+
+  // Click smooth scroll
+  navItems.forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(item.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Scroll spy
+  const updateActive = () => {
+    const scrollY = window.scrollY + 120;
+    let current = 'hero';
+    for (const sec of sections) {
+      if (sec.offsetTop <= scrollY) current = sec.id;
+    }
+    navItems.forEach(item => {
+      item.classList.toggle('active', item.dataset.target === current);
+    });
+  };
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+}
+</script>
+
+</body>
+</html>
 
