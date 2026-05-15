@@ -502,12 +502,12 @@ body {
   <div class="container">
     <div class="badge">🐟 Fish Audio · S2-Pro 效果体验报告</div>
     <h1>Fish Audio S2-Pro<br>效果体验报告</h1>
-    <p class="lede">双自回归架构 · 80+ 语言 · 词级自然语言控制 · 零样本声音克隆<br>160 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比 · 含模型预测打分</p>
+    <p class="lede">双自回归架构 · 80+ 语言 · 词级自然语言控制 · 零样本声音克隆<br>166 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比 · 含模型预测打分</p>
     <div class="hero-stats">
       <div class="hero-stat"><div class="num">4.4B</div><div class="lbl">双自回归参数</div></div>
       <div class="hero-stat"><div class="num">80+</div><div class="lbl">支持语言</div></div>
       <div class="hero-stat"><div class="num">&lt;100ms</div><div class="lbl">首包延迟（官方）</div></div>
-      <div class="hero-stat"><div class="num">160</div><div class="lbl">已完成样本数</div></div>
+      <div class="hero-stat"><div class="num">166</div><div class="lbl">已完成样本数</div></div>
     </div>
     <div class="timeline-wrap">
       <div class="timeline">
@@ -570,7 +570,7 @@ body {
       <div class="method-card"><div class="m-ico">📐</div><div class="m-title">矩阵覆盖</div><div class="m-text">基础模块用「音色 × 文本类型」正交矩阵，专项模块用「标签 × 音色」组合，确保无遗漏。</div></div>
     </div>
 
-        <h3 style="color:#F1F5F9;font-size:1.05rem;margin:28px 0 14px">完整测试集矩阵（11 模块 · 160 条样本）</h3>
+        <h3 style="color:#F1F5F9;font-size:1.05rem;margin:28px 0 14px">完整测试集矩阵（11 模块 · 166 条样本）</h3>
     <p style="color:#94A3B8; font-size:0.82rem; margin-bottom:12px">
       <strong style="color:#7DD3FC">打分来源：<strong style="color:#FBBF24">双人人工 MOS 打分</strong>。
     </p>
@@ -595,10 +595,10 @@ body {
             <td>1</td>
             <td class="mod-name">🎙️ 基础 TTS 矩阵</td>
             <td>26</td>
-            <td>21</td>
-            <td><strong>47</strong></td>
+            <td>26</td>
+            <td><strong>52</strong></td>
             <td>3.98 / 4.14</td>
-            <td>4.17 / 4.18</td>
+            <td>4.21 / 4.21</td>
             <td>—</td>
             <td class="voice-list">央视配音 / 丁真 / Sarah</td>
             <td class="text-list">7 类文本（日常对话 / 问答 / 数字地址 / 专业名词 / 长句 / 短感叹 / 多音字）× 3 音色</td>
@@ -678,12 +678,12 @@ body {
           <tr>
             <td>8</td>
             <td class="mod-name">🎚️ 词级情感切换</td>
-            <td>4</td>
             <td>5</td>
-            <td><strong>9</strong></td>
-            <td>4.06 / 4.25</td>
-            <td>4.20 / 4.45</td>
-            <td>59%</td>
+            <td>5</td>
+            <td><strong>10</strong></td>
+            <td>4.40 / 4.21</td>
+            <td>4.56 / 4.51</td>
+            <td>79%</td>
             <td class="voice-list">Sarah / 蔡徐坤 / AMSR / jay</td>
             <td class="text-list">S1 / S2 各 4-5 条单句内 2-3 次情感切换（[gasp] / [laugh] / [悲伤] / [哽咽] 等）</td>
           </tr>
@@ -693,9 +693,9 @@ body {
             <td>16</td>
             <td>16</td>
             <td><strong>32</strong></td>
-            <td>3.49 / 4.62</td>
-            <td>3.97 / 4.90</td>
-            <td>40%</td>
+            <td>3.47 / 4.27</td>
+            <td>3.99 / 4.59</td>
+            <td>47%</td>
             <td class="voice-list">各语言用户上传音色</td>
             <td class="text-list">8 语言 × 2 条（陈述 + 情感）：日 / 韩 / 德 / 法 / 西 / 葡 / 俄 / 阿</td>
           </tr>
@@ -732,7 +732,7 @@ body {
   <div class="container">
     <div class="section-eyebrow">能力评分排行</div>
     <h2 class="section-title">📊 S1 vs S2-Pro 得分对比</h2>
-    <p class="section-desc">同一模块 S1 与 S2-Pro 并排对比；灰色斜纹条为尚待补测。切换维度查看总体感觉 / 自然度差异。</p>
+    <p class="section-desc">同一模块 S1 与 S2-Pro 并排对比。切换维度查看总体感觉 / 自然度差异。</p>
     <div class="bar-dim-tabs">
       <button class="dim-tab active" onclick="switchDimension('ovr',event)">总体感觉 MOS</button>
       <button class="dim-tab" onclick="switchDimension('nat',event)">自然度 MOS</button>
@@ -746,7 +746,7 @@ body {
   <div class="container">
     <div class="section-eyebrow">模块详情</div>
     <h2 class="section-title">📋 11 个模块详情</h2>
-    <p class="section-desc">点击卡片查看 S1 / S2-Pro 横向对比、样本音频试听、评分与评语。黄色「待补」标记表示该模块尚有样本待补录。</p>
+    <p class="section-desc">点击卡片查看 S1 / S2-Pro 横向对比、样本音频试听、评分与评语。</p>
     <div class="filter-row">
       <div class="filters">
         <button class="chip active" onclick="filterTier('all',event)">全部 11</button>
@@ -780,8 +780,8 @@ body {
       <div class="key-stats">
         <div class="key-stat up">
           <div class="ks-label">词级情感切换 · 生效率</div>
-          <div class="ks-value">52%</div>
-          <div class="ks-trend">↑ +27pp vs S1（25%）</div>
+          <div class="ks-value">79%</div>
+          <div class="ks-trend">↑ +25pp vs S1（54%）</div>
         </div>
         <div class="key-stat up">
           <div class="ks-label">自由自然语言标签 · 生效率</div>
@@ -795,7 +795,7 @@ body {
         </div>
         <div class="key-stat down">
           <div class="ks-label">小语种情感（葡 / 俄 / 阿）</div>
-          <div class="ks-value">~33%</div>
+          <div class="ks-value">~32%</div>
           <div class="ks-trend">↓ 衰减明显</div>
         </div>
         <div class="key-stat note">
@@ -812,8 +812,8 @@ body {
             <span class="c-title">词级情感控制</span>
             <span class="c-badge partial">部分成立</span>
           </div>
-          <div class="claim-bar"><div class="cb-fill partial" style="width:55%"></div></div>
-          <div class="claim-detail">英文 Sarah 词级 <code>[gasp]</code> / <code>[laugh]</code> 切换生效率 ~70%；中文 jay / AMSR / 蔡徐坤 上仅 30–50%；S1 词级标签生效率 ~25%，与 S2 差距显著，是真实提升点。</div>
+          <div class="claim-bar"><div class="cb-fill partial" style="width:79%"></div></div>
+          <div class="claim-detail">英文 Sarah 词级 <code>[gasp]</code> / <code>[laugh]</code> 切换生效率较高（官方默认发音人）；中文 jay / AMSR / 蔡徐坤上中等（个人用 10s 音频复刻的音色）；词级标签生效相差不大，但 S2 的生效情感表现更自然真实（S2 79% vs S1 54%，+25pp）。</div>
         </div>
         <div class="claim-card partial">
           <div class="claim-head">
@@ -843,7 +843,7 @@ body {
             <li><strong>自由自然语言标签</strong><code>[bracket]</code> 支持任意描述词，amx 等复刻音色上有明显体现</li>
             <li><strong>英文默认发音人情感</strong>Sarah 在 Nervous / Fearful / Sorrow 上情感有基本体现，优于 S1</li>
             <li><strong>新增能力</strong>音效生成 & 音频分离，S1 不支持；音频分离效果可接受</li>
-            <li><strong>词级情感切换</strong>生效率 +27pp（25% → 52%），是最显著的能力差距</li>
+            <li><strong>词级情感切换</strong>生效率 +25pp（54% → 79%），S2 情感表现更自然真实</li>
           </ul>
         </div>
         <div class="sw-col weakness">
@@ -852,7 +852,7 @@ body {
             <li><strong>中文专业复刻音色情感</strong>S1 / S2-Pro 均未体现情感强度（蔡徐坤 / 央视配音等）</li>
             <li><strong>副语言标签生效率不稳</strong><code>[whisper in small voice]</code> 实测不支持，<code>[professional broadcast tone]</code> 不明显</li>
             <li><strong>音效生成积分消耗高</strong>10s 音效消耗 5000 积分，性价比偏低</li>
-            <li><strong>小语种情感衰减</strong>葡 / 俄 / 阿 情感标签生效率 ~33%</li>
+            <li><strong>小语种情感衰减</strong>葡 / 俄 / 阿 情感标签生效率 ~32%</li>
           </ul>
         </div>
       </div>
@@ -867,7 +867,7 @@ body {
         <div class="verdict-card switch">
           <div class="v-head">🚀 建议切到 S2-Pro</div>
           <div class="v-title">英文情感 / 词级切换 / 自由描述 / 复刻音色 + 复杂中文情绪</div>
-          <div class="v-desc">词级情感（+27pp）、自由自然语言标签（独占）、新增的音效与音频分离三处优势明显，值得切换。</div>
+          <div class="v-desc">词级情感（+25pp）、自由自然语言标签（独占）、新增的音效与音频分离三处优势明显，值得切换。</div>
         </div>
       </div>
     </div>
@@ -889,11 +889,11 @@ body {
 </section>
 
 <footer class="footer">
-  <div class="container">Fish Audio S2-Pro 效果体验报告 · 160 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比</div>
+  <div class="container">Fish Audio S2-Pro 效果体验报告 · 166 条样本 · 11 个能力模块 · S1 / S2-Pro 横向对比</div>
 </footer>
 
 <!-- Quick navigation -->
-<nav class="quick-nav" id="quickNav">
+<nav class="quick-nav collapsed" id="quickNav">
   <a class="nav-item" href="#hero" data-target="hero"><span class="nav-ico">🏠</span>顶部</a>
   <a class="nav-item" href="#caps" data-target="caps"><span class="nav-ico">🧠</span>能力差异</a>
   <a class="nav-item" href="#method" data-target="method"><span class="nav-ico">🔬</span>评测方法</a>
@@ -902,249 +902,255 @@ body {
   <a class="nav-item" href="#summary" data-target="summary"><span class="nav-ico">📝</span>总结陈述</a>
   <div class="nav-close" onclick="toggleNav()" title="隐藏导航">‹ 隐藏</div>
 </nav>
-<button class="nav-toggle" id="navToggle" onclick="toggleNav()" title="显示导航">☰</button>
+<button class="nav-toggle show" id="navToggle" onclick="toggleNav()" title="显示导航">☰</button>
 <div class="nav-toggle-hint" id="navHint">点击展开快速导航</div>
 
 <script>
 const modules = [];
 
-modules.push({id:"base-tts", emoji:"🎙️", name:"基础 TTS 矩阵", plan:47, done:47, pending:0,
-  nat:4.06, ovr:4.16, eff:null,
-  nat_s1:3.98, ovr_s1:4.14, eff_s1:null,
-  nat_s2:4.17, ovr_s2:4.18, eff_s2:null,
+modules.push({id:"base-tts", emoji:"🎙️", name:"基础 TTS 矩阵", plan:52, done:52, pending:0,
+  nat:4.15, ovr:4.08, eff:null,
+  nat_s1:4.06, ovr_s1:4.02, eff_s1:null,
+  nat_s2:4.24, ovr_s2:4.14, eff_s2:null,
   tier:"良好",
-  find:"中文朗读清晰，S1 / S2 自然度持平",
+  find:"中文朗读清晰，S2 自然度略优于 S1",
   detail:"5 音色 × 7 类文本，覆盖陈述 / 对话 / 数字 / 专业名词 / 长句 / 短感叹 / 多音字",
-  s1:{score:"4.14", text:"S1 自然度 3.98 / 总体 4.14（n=26）"},
-  s2:{score:"4.18", text:"S2-Pro 自然度 4.17 / 总体 4.18（n=21）"},
-  findingKey:"基础 TTS 模块 S1 与 S2-Pro 自然度均值持平在 4.0 左右；专业名词与多音字处理是共性弱项，央视配音 / Sarah 表现最稳，丁真在专业场景下偶有生硬",
+  s1:{score:"4.02", text:"S1 自然度 4.06 / 总体 4.02（n=26）"},
+  s2:{score:"4.14", text:"S2-Pro 自然度 4.24 / 总体 4.14（n=26）"},
+  findingKey:"基础 TTS 模块 S2-Pro 自然度（4.21）略优于 S1（3.98）。陈述类对比样本均显示 S2 韵律更自然、机械感降低；专业名词与多音字处理是 S1/S2 共性弱项；央视配音 / Sarah 表现最稳，丁真在专业场景下偶有生硬，但可能属于复刻的音色，音色相似度和风格上还原度很高，导致还原了本人的语言特征",
   samples:[
     {id:"P1-1", voice:"央视配音 S1", text:"芝麻的香气伴着蕨粑的甘甜，这就是瑶族人时代繁衍的味觉密码，也是撰写着人类味觉记忆史的通用语言。", nat:4.75, ovr:4.75, eff:null, audio:"已有数据/基础TTS-1-S1-央视配音.mp3", comment:"", ver:"S1"},
-    {id:"P1-2", voice:"AD学姐 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:null, audio:"已有数据/基础TTS-2-S1-AD学姐.mp3", comment:"语调机械", ver:"S1"},
+    {id:"—", voice:"默认发音人Sarah S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, eff:null, audio:"S2/基础TTS-5-S2-默认发音人.mp3", comment:"发音语调相对S1有提升，但仍有外国口音", ver:"S2"},
+    {id:"P1-2", voice:"AD学姐 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, eff:null, audio:"已有数据/基础TTS-2-S1-AD学姐.mp3", comment:"语调整体很低，略有些机械，整体发音和韵律尚可", ver:"S1"},
+    {id:"—", voice:"AD学姐 S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.3, eff:null, audio:"S2/基础TTS-2-S2-AD学姐.mp3", comment:"语调韵律更丰富自然", ver:"S2"},
     {id:"P1-3", voice:"丁真 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:null, audio:"已有数据/基础TTS-3-S1-丁真.mp3", comment:"啦不自然语调机械", ver:"S1"},
+    {id:"—", voice:"丁真 S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-3-S2-丁真.mp3", comment:"在原声的语言风格基础上算是自然的语音，相比S1会更自然生动一点", ver:"S2"},
     {id:"P1-4", voice:"蔡徐坤 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:null, audio:"已有数据/基础TTS-4-S1-蔡徐坤.mp3", comment:"语调逐渐降低", ver:"S1"},
-    {id:"P1-5", voice:"默认发音人 S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:3.5, ovr:3.75, eff:null, audio:"已有数据/基础TTS-5-S1-默认发音人.mp3", comment:"第二句之后发音不准语调非常奇怪，不说普通话", ver:"S1"},
-    {id:"6", voice:"央视配音 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-6-S1-央视配音.mp3", comment:"语速有点快", ver:"S1"},
-    {id:"8", voice:"央视配音 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.0, ovr:4.0, eff:null, audio:"S1/基础TTS-8-S1-央视配音.mp3", comment:"请问发音不准语速过快", ver:"S1"},
-    {id:"10", voice:"央视配音 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-10-S1-央视配音.mp3", comment:"语速过快", ver:"S1"},
-    {id:"12", voice:"央视配音 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-12-S1-央视配音.mp3", comment:"行经分词错误语速过快", ver:"S1"},
-    {id:"14", voice:"央视配音 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.25, ovr:4.75, eff:null, audio:"S1/基础TTS-14-S1-央视配音.mp3", comment:"", ver:"S1"},
+    {id:"—", voice:"蔡徐坤 S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-4-S2-蔡徐坤.mp3", comment:"整体自然，语调更稳，比S1的更有力量", ver:"S2"},
+    {id:"P1-5", voice:"默认发音人Sarah S1", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:3.75, ovr:3.75, eff:null, audio:"已有数据/基础TTS-5-S1-默认发音人.mp3", comment:"第一句较自然。第二句之后发音带有浓厚的外语口音，导致语流整体变得机械", ver:"S1"},
+    {id:"—", voice:"默认发音人 S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:null, audio:"S2/基础TTS-5-S2-默认发音人.mp3", comment:"发音语调相对S1有提升，但仍有外国口音", ver:"S2"},
+    {id:"6", voice:"央视配音 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-6-S1-央视配音.mp3", comment:"语速有点快，语气有点急促，不是关心的语气", ver:"S1"},
+    {id:"8", voice:"央视配音 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4, ovr:4, eff:null, audio:"S1/基础TTS-8-S1-央视配音.mp3", comment:"请问发音不准语速过快", ver:"S1"},
+    {id:"10", voice:"央视配音 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.25, ovr:4.25, eff:null, audio:"S1/基础TTS-10-S1-央视配音.mp3", comment:"语速偏快", ver:"S1"},
+    {id:"12", voice:"央视配音 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4, ovr:4, eff:null, audio:"S1/基础TTS-12-S1-央视配音.mp3", comment:"行经分词错误语速过快", ver:"S1"},
+    {id:"14", voice:"央视配音 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-14-S1-央视配音.mp3", comment:"", ver:"S1"},
     {id:"16", voice:"央视配音 S1", text:"太好了！终于搞定了！", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-16-S1-央视配音.mp3", comment:"", ver:"S1"},
     {id:"18", voice:"央视配音 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-18-S1-央视配音.mp3", comment:"一行人多音字错误", ver:"S1"},
-    {id:"34", voice:"丁真 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.5, ovr:4.75, eff:null, audio:"S1/基础TTS-34-S1-丁真.mp3", comment:"", ver:"S1"},
-    {id:"36", voice:"丁真 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-36-S1-丁真.mp3", comment:"", ver:"S1"},
+    {id:"34", voice:"丁真 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-34-S1-丁真.mp3", comment:"", ver:"S1"},
+    {id:"36", voice:"丁真 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.75, ovr:3.5, eff:null, audio:"S1/基础TTS-36-S1-丁真.mp3", comment:"请问发音不准", ver:"S1"},
     {id:"38", voice:"丁真 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-38-S1-丁真.mp3", comment:"", ver:"S1"},
-    {id:"40", voice:"丁真 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.5, ovr:4.0, eff:null, audio:"S1/基础TTS-40-S1-丁真.mp3", comment:"分词错误，有些发音不准", ver:"S1"},
+    {id:"40", voice:"丁真 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-40-S1-丁真.mp3", comment:"分词错误，有些发音不准", ver:"S1"},
     {id:"42", voice:"丁真 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.5, ovr:4.5, eff:null, audio:"S1/基础TTS-42-S1-丁真.mp3", comment:"如何从中筛选出，语调不自然", ver:"S1"},
-    {id:"44", voice:"丁真 S1", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S1/基础TTS-44-S1-丁真.mp3", comment:"缺少感叹语气", ver:"S1"},
-    {id:"46", voice:"丁真 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.5, ovr:3.75, eff:null, audio:"S1/基础TTS-46-S1-丁真.mp3", comment:"一行人读音错误", ver:"S1"},
-    {id:"62", voice:"默认发音人 S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.25, ovr:4.25, eff:null, audio:"S1/基础TTS-62-S1-Sarah.mp3", comment:"语调机械", ver:"S1"},
-    {id:"64", voice:"默认发音人 S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-64-S1-Sarah.mp3", comment:"开头多读语速过快", ver:"S1"},
-    {id:"66", voice:"默认发音人 S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:3.25, ovr:3.25, eff:null, audio:"S1/基础TTS-66-S1-Sarah.mp3", comment:"开头多读，数字读英文，语速过快", ver:"S1"},
-    {id:"68", voice:"默认发音人 S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.0, ovr:3.0, eff:null, audio:"S1/基础TTS-68-S1-Sarah.mp3", comment:"", ver:"S1"},
-    {id:"70", voice:"默认发音人 S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.25, ovr:4.75, eff:null, audio:"S1/基础TTS-70-S1-Sarah.mp3", comment:"价值，发音不准", ver:"S1"},
-    {id:"72", voice:"默认发音人 S1", text:"太好了！终于搞定了！", nat:3.75, ovr:4.0, eff:null, audio:"S1/基础TTS-72-S1-Sarah.mp3", comment:"", ver:"S1"},
-    {id:"74", voice:"默认发音人 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-74-S1-Sarah.mp3", comment:"一行人读音错误", ver:"S1"},
-    {id:"7", voice:"央视配音hanzenrui S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.75, ovr:4.75, eff:null, audio:"S2/基础TTS-7-S2-央视配音.mp3", comment:"", ver:"S2"},
-    {id:"9", voice:"央视配音hanzenrui S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-9-S2-央视配音.mp3", comment:"开头多读呵", ver:"S2"},
-    {id:"11", voice:"央视配音hanzenrui S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-11-S2-央视配音.mp3", comment:"有顿感，句末语调降低", ver:"S2"},
-    {id:"13", voice:"央视配音hanzenrui S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.75, ovr:4.5, eff:null, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"立即行经停顿错误", ver:"S2"},
-    {id:"15", voice:"央视配音hanzenrui S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.75, ovr:5.0, eff:null, audio:"S2/基础TTS-15-S2-央视配音.mp3", comment:"", ver:"S2"},
-    {id:"17", voice:"央视配音hanzenrui S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S2/基础TTS-17-S2-央视配音.mp3", comment:"感叹语气偏弱缺少感叹语气", ver:"S2"},
-    {id:"19", voice:"央视配音hanzenrui S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:4.0, eff:null, audio:"S2/基础TTS-19-S2-央视配音.mp3", comment:"一行人发音错误", ver:"S2"},
-    {id:"35", voice:"丁真 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:4.25, eff:null, audio:"S2/基础TTS-35-S2-丁真.mp3", comment:"少读一句", ver:"S2"},
+    {id:"44", voice:"丁真 S1", text:"太好了！终于搞定了！", nat:4, ovr:4, eff:null, audio:"S1/基础TTS-44-S1-丁真.mp3", comment:"缺少感叹语气，无感情", ver:"S1"},
+    {id:"46", voice:"丁真 S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:4, ovr:3.75, eff:null, audio:"S1/基础TTS-46-S1-丁真.mp3", comment:"一行人读音错误", ver:"S1"},
+    {id:"62", voice:"默认发音人Sarah S1", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.25, ovr:4.25, eff:null, audio:"S1/基础TTS-62-S1-Sarah.mp3", comment:"语调机械", ver:"S1"},
+    {id:"64", voice:"默认发音人Sarah S1", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:3.5, ovr:3.5, eff:null, audio:"S1/基础TTS-64-S1-Sarah.mp3", comment:"开头多读语速过快，发音含糊，影响理解", ver:"S1"},
+    {id:"66", voice:"默认发音人Sarah S1", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:3.25, ovr:3.25, eff:null, audio:"S1/基础TTS-66-S1-Sarah.mp3", comment:"开头多读，数字读英文，语速过快", ver:"S1"},
+    {id:"68", voice:"默认发音人Sarah S1", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3, ovr:3, eff:null, audio:"S1/基础TTS-68-S1-Sarah.mp3", comment:"", ver:"S1"},
+    {id:"70", voice:"默认发音人Sarah S1", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.25, ovr:4.25, eff:null, audio:"S1/基础TTS-70-S1-Sarah.mp3", comment:"价值，发音不准", ver:"S1"},
+    {id:"72", voice:"默认发音人Sarah S1", text:"太好了！终于搞定了！", nat:4.5, ovr:4, eff:null, audio:"S1/基础TTS-72-S1-Sarah.mp3", comment:"", ver:"S1"},
+    {id:"74", voice:"默认发音人Sarah S1", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.75, eff:null, audio:"S1/基础TTS-74-S1-Sarah.mp3", comment:"一行人读音错误", ver:"S1"},
+    {id:"7", voice:"央视配音 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.75, ovr:4.75, eff:null, audio:"S2/基础TTS-7-S2-央视配音.mp3", comment:"", ver:"S2"},
+    {id:"9", voice:"央视配音 S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-9-S2-央视配音.mp3", comment:"开头多读呵", ver:"S2"},
+    {id:"11", voice:"央视配音 S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-11-S2-央视配音.mp3", comment:"有顿感，句末语调降低", ver:"S2"},
+    {id:"13", voice:"央视配音 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.75, ovr:4.5, eff:null, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"立即行经停顿错误", ver:"S2"},
+    {id:"15", voice:"央视配音 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.75, ovr:4.75, eff:null, audio:"S2/基础TTS-15-S2-央视配音.mp3", comment:"", ver:"S2"},
+    {id:"17", voice:"央视配音 S2", text:"太好了！终于搞定了！", nat:4.25, ovr:4.25, eff:null, audio:"S2/基础TTS-17-S2-央视配音.mp3", comment:"感叹语气偏弱缺少感叹语气", ver:"S2"},
+    {id:"19", voice:"央视配音 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:4, ovr:4, eff:null, audio:"S2/基础TTS-19-S2-央视配音.mp3", comment:"一行人发音错误", ver:"S2"},
+    {id:"35", voice:"丁真 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:3.75, ovr:3.75, eff:null, audio:"S2/基础TTS-35-S2-丁真.mp3", comment:"更加不流畅，发音韵律都不够自然", ver:"S2"},
     {id:"37", voice:"丁真 S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-37-S2-丁真.mp3", comment:"读了上面的一句", ver:"S2"},
     {id:"39", voice:"丁真 S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.5, eff:null, audio:"S2/基础TTS-39-S2-丁真.mp3", comment:"", ver:"S2"},
-    {id:"41", voice:"丁真 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4.0, ovr:4.5, eff:null, audio:"S2/基础TTS-41-S2-丁真.mp3", comment:"行#经皮冠状动脉介入治疗，分词错误", ver:"S2"},
-    {id:"43", voice:"丁真 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4.0, ovr:3.75, eff:null, audio:"S2/基础TTS-43-S2-丁真.mp3", comment:"发音机械，每个人发音错误每个人读音错误", ver:"S2"},
-    {id:"45", voice:"丁真 S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.25, eff:null, audio:"S2/基础TTS-45-S2-丁真.mp3", comment:"缺少感叹语气", ver:"S2"},
-    {id:"47", voice:"丁真 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:4.0, ovr:3.75, eff:null, audio:"S2/基础TTS-47-S2-丁真.mp3", comment:"一行人发音错误", ver:"S2"},
-    {id:"63", voice:"默认发音人 S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4.0, ovr:4.0, eff:null, audio:"S2/基础TTS-63-S2-Sarah.mp3", comment:"少读一句语调无起伏", ver:"S2"},
-    {id:"65", voice:"默认发音人 S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4.0, eff:null, audio:"S2/基础TTS-65-S2-Sarah.mp3", comment:"", ver:"S2"},
-    {id:"67", voice:"默认发音人 S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4.0, eff:null, audio:"S2/基础TTS-67-S2-Sarah.mp3", comment:"整体语调偏低", ver:"S2"},
-    {id:"69", voice:"默认发音人 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.5, ovr:3.75, eff:null, audio:"S2/基础TTS-69-S2-Sarah.mp3", comment:"诊断为发音不准，治疗有气泡音", ver:"S2"},
-    {id:"71", voice:"默认发音人 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:3.5, ovr:3.75, eff:null, audio:"S2/基础TTS-71-S2-Sarah.mp3", comment:"发音机械，转化为发音不准，j发音成zh", ver:"S2"},
-    {id:"73", voice:"默认发音人 S2", text:"太好了！终于搞定了！", nat:4.0, ovr:4.0, eff:null, audio:"S2/基础TTS-73-S2-Sarah.mp3", comment:"缺少感叹语气", ver:"S2"},
-    {id:"75", voice:"默认发音人 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.25, eff:null, audio:"S2/基础TTS-75-S2-Sarah.mp3", comment:"一行人发音错误", ver:"S2"}
+    {id:"41", voice:"丁真 S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:4, ovr:4, eff:null, audio:"S2/基础TTS-41-S2-丁真.mp3", comment:"行#经皮冠状动脉介入治疗，分词错误", ver:"S2"},
+    {id:"43", voice:"丁真 S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:4, ovr:3.75, eff:null, audio:"S2/基础TTS-43-S2-丁真.mp3", comment:"发音机械，每个人发音错误每个人读音错误", ver:"S2"},
+    {id:"45", voice:"丁真 S2", text:"太好了！终于搞定了！", nat:4.25, ovr:4.25, eff:null, audio:"S2/基础TTS-45-S2-丁真.mp3", comment:"缺少感叹语气，略僵硬", ver:"S2"},
+    {id:"47", voice:"丁真 S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:4, ovr:3.75, eff:null, audio:"S2/基础TTS-47-S2-丁真.mp3", comment:"一行人发音错误", ver:"S2"},
+    {id:"63", voice:"默认发音人Sarah S2", text:"你今天怎么这么早？昨晚没睡好吗？我看你眼圈都黑了。", nat:4, ovr:4, eff:null, audio:"S2/基础TTS-63-S2-Sarah.mp3", comment:"少读一句语调无起伏", ver:"S2"},
+    {id:"65", voice:"默认发音人Sarah S2", text:"请问从这里到最近的地铁站怎么走？大概需要多长时间？", nat:4.5, ovr:4, eff:null, audio:"S2/基础TTS-65-S2-Sarah.mp3", comment:"", ver:"S2"},
+    {id:"67", voice:"默认发音人Sarah S2", text:"请拨打客服电话 400-123-4567，或发送短信至 10086。我们的地址是北京市海淀区中关村大街 27 号。", nat:4.5, ovr:4, eff:null, audio:"S2/基础TTS-67-S2-Sarah.mp3", comment:"整体语调偏低", ver:"S2"},
+    {id:"69", voice:"默认发音人Sarah S2", text:"患者诊断为急性心肌梗死，需立即行经皮冠状动脉介入治疗，术后给予双联抗血小板治疗。", nat:3.5, ovr:3.5, eff:null, audio:"S2/基础TTS-69-S2-Sarah.mp3", comment:"诊断为发音不准，治疗有气泡音，整体比较机械", ver:"S2"},
+    {id:"71", voice:"默认发音人Sarah S2", text:"在这个信息爆炸的时代，我们每天都被海量的数据和消息所包围，如何从中筛选出真正有价值的内容，并将其转化为可执行的行动方案，已经成为每个人都必须面对的核心挑战。", nat:3.5, ovr:3.25, eff:null, audio:"S2/基础TTS-71-S2-Sarah.mp3", comment:"发音机械，转化为发音不准，j发音成zh", ver:"S2"},
+    {id:"73", voice:"默认发音人Sarah S2", text:"太好了！终于搞定了！", nat:4, ovr:4, eff:null, audio:"S2/基础TTS-73-S2-Sarah.mp3", comment:"缺少感叹语气", ver:"S2"},
+    {id:"75", voice:"默认发音人Sarah S2", text:"这个银行行长在长城上行走，觉得这一行人都很行。他还说今天的音乐会会很精彩。", nat:3.75, ovr:3.25, eff:null, audio:"S2/基础TTS-75-S2-Sarah.mp3", comment:"一行人发音错误", ver:"S2"}
   ]
 });
 
 modules.push({id:"clone", emoji:"🧬", name:"声音复刻", plan:9, done:9, pending:0,
-  nat:4.33, ovr:4.30, eff:0.6250,
+  nat:4.39, ovr:4.28, eff:0.6250,
   nat_s1:4.38, ovr_s1:4.25, eff_s1:0.5500,
-  nat_s2:4.30, ovr_s2:4.34, eff_s2:0.7000,
+  nat_s2:4.40, ovr_s2:4.31, eff_s2:0.7000,
   tier:"良好",
   find:"S2 气声/腻音还原优于 S1，开心/抽噎情绪略有差距",
   detail:"温柔零样本克隆 1 条 + AMSR男声cc S1/S2 多组（无标签 × 2 / 开心 / 抽噎）对比",
-  s1:{score:"4.25", text:"S1 自然度 4.38 / 总体 4.25 / 相似度 4.25（n=4）"},
-  s2:{score:"4.34", text:"S2-Pro 自然度 4.30 / 总体 4.34 / 相似度 4.55（n=5）"},
+  s1:{score:"4.25", text:"S1 自然度 4.38 / 总体 4.25 / 相似度 4.25 / 生效率 55%（n=4）"},
+  s2:{score:"4.31", text:"S2-Pro 自然度 4.40 / 总体 4.31 / 相似度 4.55 / 生效率 70%（n=5）"},
   findingKey:"S2-Pro 在 AMSR 复刻音色上对气声 / 撒娇腻音 / 情感细节还原优于 S1（相似度 4.55 vs 4.25）；开心 / 抽噎等情感标签 S1/S2 均仅「生效但效果一般」，强情感强度还原仍是共性弱项",
   refAudios:[
     {label:"原声参考：温柔", audio:"已有数据/声音复刻-1-原声-温柔.wav"},
     {label:"原声参考：AMSR男声", audio:"已有数据/声音复刻-2和3-原声-AMSR男声.wav"}
   ],
   samples:[
-    {id:"P1-7", voice:"AMSR男声cc S1", text:"我…我有话想对你说。我... 我喜欢你！其实……有件事我想了很久，觉得还是要当面说比较好。", nat:4.5, ovr:4.5, eff:null, sim:4.0, audio:"已有数据/声音复刻-2-S1-AMSR男声cc-无标签1.mp3", comment:"", ver:"S1"},
-    {id:"—", voice:"AMSR男声cc S1", text:"嗯~~你靠太近了…", nat:4.5, ovr:4.5, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S1-AMSR男声cc-无标签2.mp3", comment:"效果自然，嗯的程度恰好", ver:"S1"},
-    {id:"P1-9", voice:"AMSR男声cc S1", text:"(开心)哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4.0, ovr:4.0, eff:0.55, sim:4.0, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-开心标签.mp3", comment:"笑声不自然", ver:"S1"},
+    {id:"P1-7", voice:"AMSR男声cc S1", text:"我…我有话想对你说。我... 我喜欢你！其实……有件事我想了很久，觉得还是要当面说比较好。", nat:4.5, ovr:4.5, sim:4, eff:null, audio:"已有数据/声音复刻-2-S1-AMSR男声cc-无标签1.mp3", comment:"", ver:"S1"},
+    {id:"—", voice:"AMSR男声cc S1", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.5, ovr:4, sim:4.5, eff:0.55, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S1"},
+    {id:"P1-9", voice:"AMSR男声cc S1", text:"(开心)哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4, ovr:4, sim:4, eff:0.55, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-开心标签.mp3", comment:"笑声不自然", ver:"S1"},
     {id:"—", voice:"AMSR男声cc S1", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.5, ovr:4.0, eff:0.55, sim:4.5, audio:"已有数据/声音复刻-3-S1-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S1"},
-    {id:"P1-6", voice:"温柔（克隆） S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:null, sim:4.25, audio:"已有数据/声音复刻-1-S2-复刻-温柔.mp3", comment:"语速较原声变快了，开头发音不准", ver:"S2"},
-    {id:"—", voice:"AMSR男声cc S2", text:"我…我有话想对你说。我... 我喜欢你！其实……有件事我想了很久，觉得还是要当面说比较好。", nat:4.5, ovr:4.3, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S2-AMSR男声cc-无标签1.mp3", comment:"语速太慢了，只有迟疑感没有那种紧张感", ver:"S2"},
-    {id:"P1-8", voice:"AMSR男声cc S2", text:"嗯~~你靠太近了…", nat:4.5, ovr:4.5, eff:null, sim:4.5, audio:"已有数据/声音复刻-2-S2-AMSR男声cc-无标签2.mp3", comment:"撒娇的感觉，虽然有点腻", ver:"S2"},
+    {id:"P1-6", voice:"温柔（克隆） S2", text:"旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, sim:4.25, eff:null, audio:"已有数据/声音复刻-1-S2-复刻-温柔.mp3", comment:"语速较原声变快了，开头发音不准", ver:"S2"},
+    {id:"—", voice:"AMSR男声cc S2", text:"[开心]哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4.5, ovr:4.5, sim:4.5, eff:0.55, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-开心标签.mp3", comment:"笑的不够开心，有点冷笑的感觉", ver:"S2"},
+    {id:"P1-8", voice:"AMSR男声cc S2", text:"嗯~~你靠太近了…", nat:4.5, ovr:4.5, sim:4.5, eff:null, audio:"已有数据/声音复刻-2-S2-AMSR男声cc-无标签2.mp3", comment:"撒娇的感觉，虽然有点腻", ver:"S2"},
     {id:"—", voice:"AMSR男声cc S2", text:"[开心]哈哈哈，今天真的太开心啦，什么都顺利极了！", nat:4.5, ovr:4.5, eff:0.55, sim:4.5, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-开心标签.mp3", comment:"笑的不够开心，有点冷笑的感觉", ver:"S2"},
-    {id:"P1-10", voice:"AMSR男声cc S2", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.0, ovr:4.25, eff:0.85, sim:4.5, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S2"}
+    {id:"P1-10", voice:"AMSR男声cc S2", text:"(抽噎)我错了，你别生我气了。(哭腔)我给你买好吃的，给你讲故事，好不好？", nat:4.5, ovr:4.25, sim:4.5, eff:0.85, audio:"已有数据/声音复刻-3-S2-AMSR男声cc-抽噎标签.mp3", comment:"", ver:"S2"}
   ]
 });
 
 modules.push({id:"emotion-basic", emoji:"🎭", name:"基础情感标签", plan:14, done:14, pending:0,
-  nat:4.23, ovr:4.29, eff:0.3357,
-  nat_s1:4.25, ovr_s1:4.25, eff_s1:0.4750,
-  nat_s2:4.22, ovr_s2:4.30, eff_s2:0.2800,
+  nat:4.34, ovr:4.29, eff:0.4500,
+  nat_s1:4.31, ovr_s1:4.25, eff_s1:0.4750,
+  nat_s2:4.35, ovr_s2:4.30, eff_s2:0.4400,
   tier:"良好",
   find:"中文复刻音色情感弱，英文 Sarah 最好",
   detail:"蔡徐坤 S1/S2 各 4 情绪 + 桃子 3 情绪 + Sarah 英文 3 情绪",
-  s1:{score:"4.25", text:"S1 自然度 4.25 / 总体 4.25 / 生效率 48%（n=4）"},
-  s2:{score:"4.30", text:"S2-Pro 自然度 4.22 / 总体 4.30 / 生效率 28%（n=10）"},
+  s1:{score:"4.25", text:"S1 自然度 4.31 / 总体 4.25 / 生效率 48%（n=4）"},
+  s2:{score:"4.30", text:"S2-Pro 自然度 4.35 / 总体 4.30 / 生效率 44%（n=10）"},
   findingKey:"蔡徐坤复刻音色无论 S1 / S2 上 sad/happy 标签生效率均偏低；Sarah 英文 Nervous/Fearful/Sorrow 标签生效率较高，是当前情感表达最可用的发音人",
   samples:[
-    {id:"P1-11", voice:"蔡徐坤 S1", text:"[sad] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-1-S1-蔡徐坤-sad.mp3", comment:"未生效但效果正常", ver:"S1"},
-    {id:"P1-12", voice:"蔡徐坤 S1", text:"[angry] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/情感标签-2-S1-蔡徐坤-angry.mp3", comment:"生效且效果好", ver:"S1"},
-    {id:"P1-13", voice:"蔡徐坤 S1", text:"[soft] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-3-S1-蔡徐坤-soft.mp3", comment:"生效但效果一般", ver:"S1"},
-    {id:"P1-14", voice:"蔡徐坤 S1", text:"[happy] 不管遇到多大困难，不管面临多少坎坷与挫折，我都会冲破一切努力坚强。", nat:4.0, ovr:4.0, eff:0.30, audio:"已有数据/情感标签-4-S1-蔡徐坤-happy.mp3", comment:"生效但效果差", ver:"S1"},
-    {id:"P1-15", voice:"蔡徐坤 S2", text:"[sad] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:0.20, audio:"已有数据/情感标签-5-S2-蔡徐坤-sad.mp3", comment:"想躺就躺后面漏读", ver:"S2"},
-    {id:"P1-16", voice:"蔡徐坤 S2", text:"[angry] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:0.20, audio:"已有数据/情感标签-6-S2-蔡徐坤-angry.mp3", comment:"想躺就躺后面漏读", ver:"S2"},
-    {id:"P1-17", voice:"桃子 S2", text:"[nervous] 你说的事我…我一会就要去找她了，我有点紧张，怕说错话。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-9-S2-桃子-nervous.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"P1-18", voice:"桃子 S2", text:"[恐惧] 晚上一个人走夜路不敢回头。", nat:4.0, ovr:4.0, eff:0.20, audio:"已有数据/情感标签-10-S2-桃子-恐惧.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"P1-19", voice:"桃子 S2", text:"[抱歉] 刚才说话重了，请别往心里去。", nat:4.5, ovr:4.5, eff:0.20, audio:"已有数据/情感标签-11-S2-桃子-抱歉.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"P1-20", voice:"Sarah(英) S2", text:"[Nervous] I have nothing to do with that thing.", nat:4.5, ovr:4.5, eff:0.20, audio:"已有数据/情感标签-12-S2-Sarah-Nervous.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"P1-21", voice:"Sarah(英) S2", text:"[Fearful] I keep hearing strange sounds around me, and I cannot find anyone around.", nat:4.0, ovr:4.5, eff:0.30, audio:"已有数据/情感标签-13-S2-Sarah-Fearful.mp3", comment:"生效但效果差", ver:"S2"},
-    {id:"P1-22", voice:"Sarah(英) S2", text:"[Sorrow] My heart aches when I think of all the things I have lost.", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-14-S2-Sarah-Sorrow.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"13", voice:"蔡徐坤 S2", text:"[soft] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:0.20, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"14", voice:"蔡徐坤 S2", text:"[happy] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/情感标签-14-S2-蔡徐坤.mp3", comment:"有回音", ver:"S2"}
+    {id:"P1-11", voice:"蔡徐坤 S1", text:"[sad] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, eff:0.2, audio:"已有数据/情感标签-1-S1-蔡徐坤-sad.mp3", comment:"无明显情感，不够自然流畅", ver:"S1"},
+    {id:"P1-12", voice:"蔡徐坤 S1", text:"[angry] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.75, ovr:4.5, eff:0.85, audio:"已有数据/情感标签-2-S1-蔡徐坤-angry.mp3", comment:"情感比较明显，整体自然", ver:"S1"},
+    {id:"P1-13", voice:"蔡徐坤 S1", text:"[soft] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-3-S1-蔡徐坤-soft.mp3", comment:"", ver:"S1"},
+    {id:"P1-14", voice:"蔡徐坤 S1", text:"[happy] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, eff:0.3, audio:"已有数据/情感标签-4-S1-蔡徐坤-happy.mp3", comment:"", ver:"S1"},
+    {id:"P1-15", voice:"蔡徐坤 S2", text:"[sad] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:0.2, audio:"已有数据/情感标签-5-S2-蔡徐坤-sad.mp3", comment:"情感没有体现", ver:"S2"},
+    {id:"P1-16", voice:"蔡徐坤 S2", text:"[angry] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/情感标签-6-S2-蔡徐坤-angry.mp3", comment:"情感比较明显，整体自然", ver:"S2"},
+    {id:"P1-17", voice:"桃子 S2", text:"[nervous] 马上就要上台发言了，手心全是汗，心脏怦怦跳个不停，生怕说错话。", nat:4.25, ovr:4, eff:0.2, audio:"已有数据/情感标签-9-S2-桃子-nervous.mp3", comment:"紧张感很低", ver:"S2"},
+    {id:"P1-18", voice:"桃子 S2", text:"[恐惧] 晚上一个人走在黑漆漆的小路上，总觉得身后有声音，吓得不敢回头。", nat:4, ovr:4, eff:0.2, audio:"已有数据/情感标签-10-S2-桃子-恐惧.mp3", comment:"无恐惧情感，基本中立", ver:"S2"},
+    {id:"P1-19", voice:"桃子 S2", text:"[抱歉] 刚刚是我太着急说错话了，真的很对不起，希望你不要往心里去。", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-11-S2-桃子-抱歉.mp3", comment:"抱歉感不够", ver:"S2"},
+    {id:"P1-20", voice:"Sarah(英) S2", text:"[Nervous] I have nothing to do with that thing.", nat:4.5, ovr:4.5, eff:0.2, audio:"已有数据/情感标签-12-S2-Sarah-Nervous.mp3", comment:"", ver:"S2"},
+    {id:"P1-21", voice:"Sarah(英) S2", text:"[Fearful] I keep hearing strange sounds around me, and I cannot find anyone around.", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-13-S2-Sarah-Fearful.mp3", comment:"", ver:"S2"},
+    {id:"P1-22", voice:"Sarah(英) S2", text:"[Sorrow] My heart aches when I think of all the things I have lost.", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/情感标签-14-S2-Sarah-Sorrow.mp3", comment:"", ver:"S2"},
+    {id:"13", voice:"蔡徐坤 S2", text:"[soft] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4, ovr:4, eff:0.55, audio:"S2/基础TTS-13-S2-央视配音.mp3", comment:"", ver:"S2"},
+    {id:"14", voice:"蔡徐坤 S2", text:"[happy] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.25, eff:0.55, audio:"S2/情感标签-14-S2-蔡徐坤.mp3", comment:"有回音", ver:"S2"}
   ]
 });
 
 modules.push({id:"paralanguage", emoji:"🔊", name:"副语言标签", plan:21, done:21, pending:0,
-  nat:4.17, ovr:4.36, eff:0.6190,
-  nat_s1:4.12, ovr_s1:4.38, eff_s1:0.5500,
-  nat_s2:4.18, ovr_s2:4.35, eff_s2:0.6353,
+  nat:4.32, ovr:4.29, eff:0.6100,
+  nat_s1:4.25, ovr_s1:4.19, eff_s1:0.4900,
+  nat_s2:4.34, ovr_s2:4.31, eff_s2:0.6400,
   tier:"良好",
   find:"yawn/sigh/clear throat 生效较好",
   detail:"11 条已有 + 10 条补测（蔡徐坤 yawn/crying/shouting/clear throat/gasp/pitch up/fast/slow/laugh loud/sigh）",
-  s1:{score:"4.38", text:"S1 自然度 4.12 / 总体 4.38 / 生效率 55%（n=4）"},
-  s2:{score:"4.35", text:"S2-Pro 自然度 4.18 / 总体 4.35 / 生效率 64%（n=17）"},
+  s1:{score:"4.19", text:"S1 自然度 4.25 / 总体 4.19 / 生效率 49%（n=4）"},
+  s2:{score:"4.31", text:"S2-Pro 自然度 4.34 / 总体 4.31 / 生效率 64%（n=17）"},
   findingKey:"副语言标签生效率分层明显：yawn / sigh / clear throat 较好；gasp / crying / shouting 中等；pitch up / fast / slow / laugh loud 偏弱。生效率与标签语义复杂度反相关",
   samples:[
-    {id:"P1-23", voice:"蔡徐坤 S1", text:"[laughing] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。 [chuckling] [clear throat] [crowd laughing]", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-1-S1-蔡徐坤-laughing.mp3", comment:"音效不融合，特别是最后的", ver:"S1"},
-    {id:"P1-26", voice:"蔡徐坤 S1", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:3.75, ovr:4.25, eff:0.55, audio:"已有数据/副语言-4-S1-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"生效但效果一般", ver:"S1"},
-    {id:"P1-29", voice:"蔡徐坤 S1", text:"[disdain] 旅行哪有那么多讲究！[yawn] 不用硬赶行程，想吃就吃想躺就躺，[laugh] 拍到好看的天空、遇到好玩的小事，[whisper] 这趟就已经值回票价啦～", nat:4.0, ovr:4.0, eff:0.55, audio:"已有数据/副语言-7-S1-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"[laugh] [whisper] 标签效果不好", ver:"S1"},
-    {id:"P1-31", voice:"蔡徐坤 S1", text:"[whisper] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4.75, eff:0.55, audio:"已有数据/副语言-9-S1-蔡徐坤-whisper.mp3", comment:"生效但效果一般", ver:"S1"},
-    {id:"P1-24", voice:"蔡徐坤 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.25, ovr:4.75, eff:0.55, audio:"已有数据/副语言-2-S2-蔡徐坤-chuckling.mp3", comment:"最后有杂音", ver:"S2"},
-    {id:"P1-25", voice:"桃子 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.0, ovr:4.25, eff:0.55, audio:"已有数据/副语言-3-S2-桃子-chuckling.mp3", comment:"笑声有点尖，最后有杂音", ver:"S2"},
-    {id:"P1-27", voice:"蔡徐坤 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:3.75, ovr:4.0, eff:0.55, audio:"已有数据/副语言-5-S2-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣", ver:"S2"},
-    {id:"P1-28", voice:"桃子 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:4.5, ovr:4.25, eff:0.55, audio:"已有数据/副语言-6-S2-桃子-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣", ver:"S2"},
-    {id:"P1-30", voice:"蔡徐坤 S2", text:"[disdain] 旅行哪有那么多讲究！[yawn] 不用硬赶行程，想吃就吃想躺就躺，[laugh] 拍到好看的天空、遇到好玩的小事，[whisper] 这趟就已经值回票价啦～", nat:4.0, ovr:4.25, eff:0.55, audio:"已有数据/副语言-8-S2-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"P1-32", voice:"蔡徐坤 S2", text:"[whisper] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-10-S2-蔡徐坤-whisper.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"P1-33", voice:"jay S2", text:"[紧张干笑] …突然点我名，还真有点紧张哈哈，[咳嗽] 那我就随便说两句，大家多担待哈。", nat:3.75, ovr:4.0, eff:0.20, audio:"已有数据/副语言-11-S2-jay-紧张干笑+咳嗽.mp3", comment:"呃不自然，没有咳嗽", ver:"S2"},
-    {id:"100", voice:"蔡徐坤 S2", text:"[yawn] [呻吟]好困啊，今天的会议怎么还没结束，我快撑不住了。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/副语言-100-S2-蔡徐坤.mp3", comment:"呻吟不自然，语气缺少困感", ver:"S2"},
-    {id:"102", voice:"蔡徐坤 S2", text:"[crying] 为什么每次都是这样，我真的好累，不想再坚持了。", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/副语言-102-S2-蔡徐坤.mp3", comment:"哭的音有点短，语气有点夹", ver:"S2"},
-    {id:"104", voice:"蔡徐坤 S2", text:"[shouting] 站住！你给我回来！这件事没完！", nat:4.25, ovr:4.5, eff:0.85, audio:"S2/副语言-104-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"106", voice:"蔡徐坤 S2", text:"[clear throat] 各位同事，今天的会议正式开始，请大家安静。", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/副语言-106-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"P1-23", voice:"蔡徐坤 S1", text:"（chuckling）旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ （clear throat）（crowd laughing）", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-1-S1-蔡徐坤-chuckling.mp3", comment:"音效不融合，特别是最后的，但是单标签效果还可以。", ver:"S1"},
+    {id:"P1-26", voice:"蔡徐坤 S1", text:"(soft)(sad) 我把我们的聊天记录翻了又翻，(sighing) 原来从什么时候开始，你连回复都变得断断续续了。(sobbing) 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:4.25, ovr:4.25, eff:0.55, audio:"已有数据/副语言-4-S1-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"韵律停顿比较固化，没有动态变化。句中两个标签未生效。", ver:"S1"},
+    {id:"P1-29", voice:"蔡徐坤 S1", text:"(disdain) 旅行哪有那么多讲究！(yawn) 不用硬赶行程，想吃就吃想躺就躺，(laugh) 拍到好看的天空、遇到好玩的小事，(whisper) 这趟就已经值回票价啦～", nat:4, ovr:4, eff:0.55, audio:"已有数据/副语言-7-S1-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"[laugh] [whisper] 标签效果不好，子句间的的情感过度，", ver:"S1"},
+    {id:"P1-31", voice:"蔡徐坤 S1", text:"(whisper) 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.25, ovr:4, eff:0.3, audio:"已有数据/副语言-9-S1-蔡徐坤-whisper.mp3", comment:"只有开头有一点点气声，后面就恢复正常语音 ", ver:"S1"},
+    {id:"P1-24", voice:"蔡徐坤 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-2-S2-蔡徐坤-chuckling.mp3", comment:"最后标签未生效变成杂音", ver:"S2"},
+    {id:"P1-25", voice:"桃子 S2", text:"[chuckling] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～ [clear throat] [crowd laughing]", nat:4.25, ovr:4, eff:0.55, audio:"已有数据/副语言-3-S2-桃子-chuckling.mp3", comment:"笑声有点尖，结尾的标签效果生效但比较割裂。", ver:"S2"},
+    {id:"P1-27", voice:"蔡徐坤 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:4.25, ovr:4.25, eff:0.55, audio:"已有数据/副语言-5-S2-蔡徐坤-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣，情感比较淡，语调比较低，但是整体是自然真实的。", ver:"S2"},
+    {id:"P1-28", voice:"桃子 S2", text:"[soft][sad] 我把我们的聊天记录翻了又翻，[sighing] 原来从什么时候开始，你连回复都变得断断续续了。[sobbing] 那些说过要一起走的路，现在只剩我一个人站在原地。", nat:4, ovr:4, eff:0.55, audio:"已有数据/副语言-6-S2-桃子-soft+sad+sighing+sobbing.mp3", comment:"有叹气，没有啜泣，但是发音和韵律比较单一固话，无情感动态起伏。", ver:"S2"},
+    {id:"P1-30", voice:"蔡徐坤 S2", text:"[disdain] 旅行哪有那么多讲究！[yawn] 不用硬赶行程，想吃就吃想躺就躺，[laugh] 拍到好看的天空、遇到好玩的小事，[whisper] 这趟就已经值回票价啦～", nat:4.25, ovr:4.25, eff:0.55, audio:"已有数据/副语言-8-S2-蔡徐坤-disdain+yawn+laugh+whisper.mp3", comment:"结尾语调降低，不自然", ver:"S2"},
+    {id:"P1-32", voice:"蔡徐坤 S2", text:"[whisper] 旅行哪有那么多讲究！不用硬赶行程，想吃就吃想躺就躺，拍到好看的天空、遇到好玩的小事，这趟就已经值回票价啦～", nat:4.5, ovr:4.5, eff:0.55, audio:"已有数据/副语言-10-S2-蔡徐坤-whisper.mp3", comment:"", ver:"S2"},
+    {id:"P1-33", voice:"jay S2", text:"[紧张干笑] 呃…突然点我名，还真有点紧张哈哈，[咳嗽] 那我就随便说两句，大家多担待哈。", nat:4, ovr:4, eff:0.2, audio:"已有数据/副语言-11-S2-jay-紧张干笑+咳嗽.mp3", comment:"呃不自然，没有咳嗽，整体自然单平淡。", ver:"S2"},
+    {id:"100", voice:"蔡徐坤 S2", text:"[yawn] [呻吟]好困啊，今天的会议怎么还没结束，我快撑不住了。", nat:4, ovr:4, eff:0.55, audio:"S2/副语言-100-S2-蔡徐坤.mp3", comment:"呻吟不自然，语气缺少困感", ver:"S2"},
+    {id:"102", voice:"蔡徐坤 S2", text:"[crying] 为什么每次都是这样，我真的好累，不想再坚持了。", nat:4.5, ovr:4.25, eff:0.55, audio:"S2/副语言-102-S2-蔡徐坤.mp3", comment:"哭的音有点短，语气有点夹，整体是自然的，但是有点假", ver:"S2"},
+    {id:"104", voice:"蔡徐坤 S2", text:"[shouting] 站住！你给我回来！这件事没完！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-104-S2-蔡徐坤.mp3", comment:"环境音较重", ver:"S2"},
+    {id:"106", voice:"蔡徐坤 S2", text:"[clear throat] 各位同事，今天的会议正式开始，请大家安静。", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/副语言-106-S2-蔡徐坤.mp3", comment:"", ver:"S2"},
     {id:"108", voice:"蔡徐坤 S2", text:"[gasp] 天哪！你怎么突然出现在这里？吓死我了！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-108-S2-蔡徐坤.mp3", comment:"普通吸气感，缺少惊吓感", ver:"S2"},
-    {id:"110", voice:"蔡徐坤 S2", text:"[pitch up] 真的吗？你确定？这也太不可思议了吧！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-110-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"112", voice:"蔡徐坤 S2", text:"[fast] 快快快，来不及了，赶紧收拾东西，出租车已经在楼下等了！", nat:4.0, ovr:4.25, eff:0.55, audio:"S2/副语言-112-S2-蔡徐坤.mp3", comment:"不是很快", ver:"S2"},
-    {id:"114", voice:"蔡徐坤 S2", text:"[slow] 慢慢来，不着急，我们有的是时间，一步一步把事情理清楚。", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-114-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"116", voice:"蔡徐坤 S2", text:"[laugh loud] 哈哈哈哈！这个笑话太好笑了，我肚子都笑疼了！", nat:4.25, ovr:4.75, eff:0.85, audio:"S2/副语言-116-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"118", voice:"蔡徐坤 S2", text:"[sigh] 算了，事已至此，再纠结也没用了，往前看吧。", nat:3.75, ovr:4.0, eff:0.55, audio:"S2/副语言-118-S2-蔡徐坤.mp3", comment:"叹气不明显", ver:"S2"}
+    {id:"110", voice:"蔡徐坤 S2", text:"[pitch up] 真的吗？你确定？这也太不可思议了吧！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-110-S2-蔡徐坤.mp3", comment:"", ver:"S2"},
+    {id:"112", voice:"蔡徐坤 S2", text:"[fast] 快快快，来不及了，赶紧收拾东西，出租车已经在楼下等了！", nat:4.25, ovr:4.25, eff:0.55, audio:"S2/副语言-112-S2-蔡徐坤.mp3", comment:"不是很快", ver:"S2"},
+    {id:"114", voice:"蔡徐坤 S2", text:"[slow] 慢慢来，不着急，我们有的是时间，一步一步把事情理清楚。", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-114-S2-蔡徐坤.mp3", comment:"", ver:"S2"},
+    {id:"116", voice:"蔡徐坤 S2", text:"[laugh loud] 哈哈哈哈！这个笑话太好笑了，我肚子都笑疼了！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/副语言-116-S2-蔡徐坤.mp3", comment:"", ver:"S2"},
+    {id:"118", voice:"蔡徐坤 S2", text:"[sigh] 算了，事已至此，再纠结也没用了，往前看吧。", nat:4, ovr:4, eff:0.55, audio:"S2/副语言-118-S2-蔡徐坤.mp3", comment:"叹气不明显", ver:"S2"}
   ]
 });
 
 modules.push({id:"free-tag", emoji:"✨", name:"自由自然语言标签", plan:19, done:19, pending:0, s2Only:true,
-  nat:4.14, ovr:4.24, eff:0.4789,
+  nat:4.28, ovr:4.20, eff:0.5200,
   nat_s1:null, ovr_s1:null, eff_s1:null,
-  nat_s2:4.14, ovr_s2:4.24, eff_s2:0.4789,
+  nat_s2:4.28, ovr_s2:4.20, eff_s2:0.5200,
   tier:"良好",
   find:"S2 独占，excited 最稳",
   detail:"Sarah 英文 excited/urgent/sarcastic/whisper + AD学姐 / 女大学生 / AMSR 复杂中文描述",
   s1:{score:"—", text:"S1 未覆盖此模块"},
-  s2:{score:"4.24", text:"S2-Pro 自然度 4.14 / 总体 4.24 / 生效率 48%（n=19）"},
+  s2:{score:"4.20", text:"S2-Pro 自然度 4.28 / 总体 4.20 / 生效率 52%（n=19）"},
   findingKey:"S2-Pro 独占能力。Sarah 英文 [excited] 生效率最高，[sarcastic] 最难体现。中文复刻音色（AD学姐 / AMSR）对复杂中文自然语言描述响应优于平台已有音色，验证「复刻音色 > 平台音色」的标签生效偏序",
   samples:[
-    {id:"P1-34", voice:"amx S2", text:"[语速停顿][强调][偷笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/自由标签-1-S2-amx-多标签.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"P1-35", voice:"amx S2", text:"[偷偷的笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.75, ovr:4.75, eff:0.85, audio:"已有数据/自由标签-2-S2-amx-偷笑.mp3", comment:"生效且效果好", ver:"S2"},
+    {id:"P1-34", voice:"amx S2", text:"[语速停顿][强调][偷笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.5, ovr:4.5, eff:0.85, audio:"已有数据/自由标签-1-S2-amx-多标签.mp3", comment:"", ver:"S2"},
+    {id:"P1-35", voice:"amx S2", text:"[偷偷的笑] 小妹，哥哥也很想快点回去陪你，等这边的工作一结束，哥哥马上就回来。", nat:4.75, ovr:4.75, eff:0.85, audio:"已有数据/自由标签-2-S2-amx-偷笑.mp3", comment:"", ver:"S2"},
     {id:"120", voice:"Sarah S2", text:"[excited] Oh my god, I cannot believe we finally made it! This is the best day ever!", nat:4.75, ovr:4.5, eff:0.55, audio:"S2/自由标签-120-S2-Sarah.mp3", comment:"情绪表达一般，不是很激动", ver:"S2"},
-    {id:"121", voice:"Sarah S2", text:"[urgent] Listen to me carefully, we do not have much time, we need to leave right now!", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/自由标签-121-S2-Sarah.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"122", voice:"Sarah S2", text:"[sarcastic] Oh sure, that is a brilliant idea. What could possibly go wrong?", nat:4.5, ovr:4.5, eff:0.20, audio:"S2/自由标签-122-S2-Sarah.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"123", voice:"Sarah S2", text:"[whispers sweetly] Come closer, I have something special to tell you.", nat:4.5, ovr:4.5, eff:0.30, audio:"S2/自由标签-123-S2-Sarah.mp3", comment:"生效但效果差", ver:"S2"},
-    {id:"124", voice:"AMSR S2", text:"[激动] 我做到了！我真的做到了！这一刻我等了整整三年！", nat:4.0, ovr:4.5, eff:0.55, audio:"S2/自由标签-124-S2-AMSR男声.mp3", comment:"语调较低，激动的情绪不真实", ver:"S2"},
-    {id:"125", voice:"AMSR S2", text:"[恍然大悟] 啊！原来是这样，我之前怎么都没想明白，现在一下子全通了。", nat:3.75, ovr:4.0, eff:0.55, audio:"S2/自由标签-125-S2-AMSR男声.mp3", comment:"不匹配语境", ver:"S2"},
-    {id:"126", voice:"AMSR S2", text:"[不屑一顾] 就这？我还以为有多厉害呢，不过如此而已。", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/自由标签-126-S2-AMSR男声.mp3", comment:"情感不够饱满", ver:"S2"},
-    {id:"180", voice:"Sarah S2", text:"[Murmuring to oneself alone in the quiet night]I wish we’d never met in the first place.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-180-S2-Sarah英.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"181", voice:"Sarah S2", text:"[深夜独处自言自语般低语]要是当初没有遇见就好了。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-181-S2-Sarah中.mp3", comment:"生效但效果差", ver:"S2"},
-    {id:"182", voice:"Sarah S2", text:"[Turning face away and avoiding eye contact while talking]Don’t stare at me, I feel embarrassed to say it.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-182-S2-Sarah英.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"183", voice:"Sarah S2", text:"[侧过脸小声回避眼神说话]别盯着我看，我不好意思讲。", nat:3.5, ovr:3.75, eff:0.10, audio:"S2/自由标签-183-S2-Sarah中.mp3", comment:"语速快", ver:"S2"},
-    {id:"184", voice:"AD学姐 S2", text:"[紧张尴尬地苦笑] 那个…… 我真的不是故意添麻烦的。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-184-S2-AD学姐.mp3", comment:"生效但效果差", ver:"S2"},
-    {id:"185", voice:"AD学姐 S2", text:"[温柔轻声私语] 过来一点，我有悄悄话想跟你说。", nat:4.5, ovr:4.0, eff:0.55, audio:"S2/自由标签-185-S2-AD学姐.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"186", voice:"AD学姐 S2", text:"[带着无奈轻轻叹气] 有些事，再努力也没办法改变。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/自由标签-186-S2-AD学姐.mp3", comment:"有点像笑", ver:"S2"},
-    {id:"187", voice:"AD学姐 S2", text:"[又惊喜又不敢相信] 真的是你吗？我还以为再也见不到了。", nat:3.75, ovr:3.75, eff:0.30, audio:"S2/自由标签-187-S2-AD学姐.mp3", comment:"惊喜感不足", ver:"S2"},
-    {id:"188", voice:"AD学姐 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:3.75, ovr:4.25, eff:0.55, audio:"S2/自由标签-188-S2-AD学姐.mp3", comment:"生效但效果一般", ver:"S2"},
-    {id:"189", voice:"女大学生 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:3.5, ovr:4.0, eff:0.10, audio:"S2/自由标签-189-S2-女大学生.mp3", comment:"没有傲娇感", ver:"S2"}
+    {id:"121", voice:"Sarah S2", text:"[urgent] Listen to me carefully, we do not have much time, we need to leave right now!", nat:4.75, ovr:4.75, eff:0.85, audio:"S2/自由标签-121-S2-Sarah.mp3", comment:"", ver:"S2"},
+    {id:"122", voice:"Sarah S2", text:"[sarcastic] Oh sure, that is a brilliant idea. What could possibly go wrong?", nat:4.5, ovr:4.5, eff:0.2, audio:"S2/自由标签-122-S2-Sarah.mp3", comment:"", ver:"S2"},
+    {id:"123", voice:"Sarah S2", text:"[whispers sweetly] Come closer, I have something special to tell you.", nat:4.5, ovr:4.5, eff:0.3, audio:"S2/自由标签-123-S2-Sarah.mp3", comment:"", ver:"S2"},
+    {id:"124", voice:"AMSR S2", text:"[激动] 我做到了！我真的做到了！这一刻我等了整整三年！", nat:4.25, ovr:4, eff:0.55, audio:"S2/自由标签-124-S2-AMSR男声.mp3", comment:"开头有激动，但语调较低，激动的情绪不真实", ver:"S2"},
+    {id:"125", voice:"AMSR S2", text:"[恍然大悟] 啊！原来是这样，我之前怎么都没想明白，现在一下子全通了。", nat:4, ovr:4, eff:0.55, audio:"S2/自由标签-125-S2-AMSR男声.mp3", comment:"整体不匹配语境，标签微生效，可能是受复刻原声的风格限制", ver:"S2"},
+    {id:"126", voice:"AMSR S2", text:"[不屑一顾] 就这？我还以为有多厉害呢，不过如此而已。", nat:4.5, ovr:4.25, eff:0.85, audio:"S2/自由标签-126-S2-AMSR男声.mp3", comment:"情感匹配但不够饱满", ver:"S2"},
+    {id:"180", voice:"Sarah S2", text:"[Murmuring to oneself alone in the quiet night]I wish we’d never met in the first place.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-180-S2-Sarah英.mp3", comment:"", ver:"S2"},
+    {id:"181", voice:"Sarah S2", text:"[深夜独处自言自语般低语]要是当初没有遇见就好了。", nat:3.75, ovr:3.75, eff:0.3, audio:"S2/自由标签-181-S2-Sarah中.mp3", comment:"", ver:"S2"},
+    {id:"182", voice:"Sarah S2", text:"[Turning face away and avoiding eye contact while talking]Don’t stare at me, I feel embarrassed to say it.", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/自由标签-182-S2-Sarah英.mp3", comment:"", ver:"S2"},
+    {id:"183", voice:"Sarah S2", text:"[侧过脸小声回避眼神说话]别盯着我看，我不好意思讲。", nat:4, ovr:3.75, eff:0.1, audio:"S2/自由标签-183-S2-Sarah中.mp3", comment:"语速快", ver:"S2"},
+    {id:"184", voice:"AD学姐 S2", text:"[紧张尴尬地苦笑] 那个…… 我真的不是故意添麻烦的。", nat:3.75, ovr:3.75, eff:0.3, audio:"S2/自由标签-184-S2-AD学姐.mp3", comment:"", ver:"S2"},
+    {id:"185", voice:"AD学姐 S2", text:"[温柔轻声私语] 过来一点，我有悄悄话想跟你说。", nat:4.5, ovr:4, eff:0.55, audio:"S2/自由标签-185-S2-AD学姐.mp3", comment:"", ver:"S2"},
+    {id:"186", voice:"AD学姐 S2", text:"[带着无奈轻轻叹气] 有些事，再努力也没办法改变。", nat:4, ovr:4, eff:0.55, audio:"S2/自由标签-186-S2-AD学姐.mp3", comment:"有点像笑", ver:"S2"},
+    {id:"187", voice:"AD学姐 S2", text:"[又惊喜又不敢相信] 真的是你吗？我还以为再也见不到了。", nat:3.75, ovr:3.75, eff:0.3, audio:"S2/自由标签-187-S2-AD学姐.mp3", comment:"惊喜感不足", ver:"S2"},
+    {id:"188", voice:"AD学姐 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:4, ovr:4, eff:0.55, audio:"S2/自由标签-188-S2-AD学姐.mp3", comment:"略带傲娇，程度很低", ver:"S2"},
+    {id:"189", voice:"女大学生 S2", text:"[带着几分傲娇小声嘟囔]我才没有特意等你呢，别多想", nat:4, ovr:4, eff:0.55, audio:"S2/自由标签-189-S2-女大学生.mp3", comment:"略有傲娇感，但是比较刻意，不够自然流露", ver:"S2"}
   ]
 });
 
 modules.push({id:"multi-speaker", emoji:"👥", name:"多角色对话", plan:3, done:3, pending:0,
-  nat:3.75, ovr:3.75, eff:0.4667,
+  nat:3.75, ovr:3.75, eff:0.4700,
   nat_s1:3.75, ovr_s1:3.75, eff_s1:0.5500,
-  nat_s2:3.75, ovr_s2:3.75, eff_s2:0.4250,
+  nat_s2:3.75, ovr_s2:3.75, eff_s2:0.4300,
   tier:"一般",
   find:"3 角色对话切换清晰",
   detail:"jay 2 角色 + S1/S2 各 1 条 3 角色对话（jay/元気/蔡徐坤）",
   s1:{score:"3.75", text:"S1 自然度 3.75 / 总体 3.75 / 生效率 55%（n=1）"},
   s2:{score:"3.75", text:"S2-Pro 自然度 3.75 / 总体 3.75 / 生效率 43%（n=2）"},
-  findingKey:"3 角色对话 <speaker:N> 语法可用，角色辨识度较高；情感标签在多角色上仍受单音色限制",
+  findingKey:"3 角色对话 <speaker:N> 语法可用，角色辨识度较高；S2 单音色 jay 2 角色（3.5/3.5）情感切换略平，多音色 jay/元気/蔡徐坤 3 角色（4.0/4.0）表现更佳，说明多音色场景下角色辨识度优于单音色情感对比；S2 比 S1 同 3 角色样本（3.75/3.75）有微弱提升；如需达到可用，需要针对性复刻所需的音色风格或者选择符合画像的音色，可提升对话的融合度和自然度",
   samples:[
     {id:"127", voice:"jay/元气/蔡徐坤 S1", text:"<speaker:0> (笑着说)宝宝，我今晚不回家吃饭了。<speaker:1> (生气)又不回家？你这个月都第几次了？<speaker:2> 姐妹，(生气)别管他了，别管他了，(兴奋)我们自己来吃大餐。", nat:3.75, ovr:3.75, eff:0.55, audio:"S1/多角色-127.mp3", comment:"speaker1发音不自然，第二句语调无起伏，口音不自然", ver:"S1"},
-    {id:"P1-36", voice:"jay(2角色) S2", text:"<speaker:0> [轻快上扬] 告诉你个超棒的消息，你中奖啦，一等奖！\n<speaker:1> [震惊拔高+倒吸一口气] 真的假的？！[雀跃欢呼+拍手] 天呐，我居然中了，也太幸运了吧！", nat:3.5, ovr:3.5, eff:0.30, audio:"已有数据/多角色-1-S2-jay-2角色.mp3", comment:"[雀跃欢呼+拍手]噪音，效果不佳", ver:"S2"},
-    {id:"128", voice:"jay/元气/蔡徐坤 S2", text:"<speaker:0> [哄人]宝宝，我今晚不回家吃饭了。<speaker:1> [生气]又不回家？你这个月都[强调]第几次了？<speaker:2> 姐妹，[嫌弃的劝解]别管他了，别管他了，[兴奋]我们自己来吃大餐。", nat:4.0, ovr:4.0, eff:0.55, audio:"S2/多角色-128-S2.mp3", comment:"强调处不自然，很生硬", ver:"S2"}
+    {id:"P1-36", voice:"jay(2角色) S2", text:"<speaker:0> [轻快上扬] 告诉你个超棒的消息，你中奖啦，一等奖！\n<speaker:1> [震惊拔高+倒吸一口气] 真的假的？！[雀跃欢呼+拍手] 天呐，我居然中了，也太幸运了吧！", nat:3.5, ovr:3.5, eff:0.3, audio:"已有数据/多角色-1-S2-jay-2角色.mp3", comment:"[雀跃欢呼+拍手]噪音，效果不佳", ver:"S2"},
+    {id:"128", voice:"jay/元气/蔡徐坤 S2", text:"<speaker:0> [哄人]宝宝，我今晚不回家吃饭了。<speaker:1> [生气]又不回家？你这个月都[强调]第几次了？<speaker:2> 姐妹，[嫌弃的劝解]别管他了，别管他了，[兴奋]我们自己来吃大餐。", nat:4, ovr:4, eff:0.55, audio:"S2/多角色-128-S2.mp3", comment:"强调处不自然，很生硬", ver:"S2"}
   ]
 });
 
 modules.push({id:"long-text", emoji:"📄", name:"长文本一致性", plan:2, done:2, pending:0,
-  nat:4.625, ovr:4.625, eff:null,
-  nat_s1:4.5, ovr_s1:4.5, eff_s1:null,
+  nat:4.62, ovr:4.62, eff:null,
+  nat_s1:4.50, ovr_s1:4.50, eff_s1:null,
   nat_s2:4.75, ovr_s2:4.75, eff_s2:null,
   tier:"优秀",
   find:"500 字节硬上限，S2 略优于 S1",
   detail:"150 字+长文本新闻稿（央视配音 / 默认）S1 / S2 各 1 条对比",
   s1:{score:"4.50", text:"S1 自然度 4.50 / 总体 4.50（n=1）"},
   s2:{score:"4.75", text:"S2-Pro 自然度 4.75 / 总体 4.75（n=1）"},
-  findingKey:"官方对长文本有 500 字节单次合成上限；S2 在长新闻稿上发音更自然真实，S1 韵律略生硬；两者音色基本一致，偶有微弱漂移，但都是较好效果的语音",
+  findingKey:"免费体验对长文本有 500 字节单次合成上限，2000 字小说无法直接合成；S2 在 150 字+长新闻稿上发音更自然真实（4.75/4.75 vs S1 4.50/4.50），S1 韵律略生硬；两者音色基本一致但偶有微弱漂移，基本不影响听感",
   samples:[
     {id:"—", voice:"央视配音/默认 S1", text:"近日，国务院办公厅印发《关于进一步加强人工智能产业发展的指导意见》，提出到二零三零年，我国要全面建成具有国际影响力的人工智能创新策源地和产业集聚区。意见明确，要加大基础研究投入，突破大模型、具身智能、脑机接口等前沿技术；同时推动人工智能与实体经济深度融合，在智能制造、智慧医疗、智能交通、智慧城市等领域打造一批标杆应用。", nat:4.5, ovr:4.5, eff:null, audio:"S1/长文本-72-央视配音-S1.mp3", comment:"当前效果基本较好，会有细微的韵律发音不够自然真实，但效果可用。", ver:"S1"},
-    {id:"134", voice:"央视配音/默认 S2", text:"近日，国务院办公厅印发《关于进一步加强人工智能产业发展的指导意见》，提出到二零三零年，我国要全面建成具有国际影响力的人工智能创新策源地和产业集聚区。意见明确，要加大基础研究投入，突破大模型、具身智能、脑机接口等前沿技术；同时推动人工智能与实体经济深度融合，在智能制造、智慧医疗、智能交通、智慧城市等领域打造一批标杆应用。", nat:4.75, ovr:4.75, eff:null, audio:"S2/长文本-72-央视配音-S2.mp3", comment:"当前效果较好，发音更自然真实，但存在细微韵律问题。如：提出到，我国要，停顿不自然", ver:"S2"}
+    {id:"134", voice:"央视配音/默认 S2", text:"近日，国务院办公厅印发《关于进一步加强人工智能产业发展的指导意见》，提出到二零三零年，我国要全面建成具有国际影响力的人工智能创新策源地和产业集聚区。意见明确，要加大基础研究投入，突破大模型、具身智能、脑机接口等前沿技术；同时推动人工智能与实体经济深度融合，在智能制造、智慧医疗、智能交通、智慧城市等领域打造一批标杆应用。", nat:4.75, ovr:4.75, eff:null, audio:"S2/长文本-72-央视配音-S2.mp3", comment:"当前效果较好，发音更自然真实，但存在细微韵律问题。\n如：提出到，我国要，停顿不自然", ver:"S2"}
   ]
 });
 
-modules.push({id:"word-emotion", emoji:"🎚️", name:"词级情感切换", plan:9, done:9, pending:0,
-  nat:4.14, ovr:4.36, eff:0.7056,
-  nat_s1:4.06, ovr_s1:4.25, eff_s1:0.8500,
-  nat_s2:4.20, ovr_s2:4.45, eff_s2:0.5900,
+modules.push({id:"word-emotion", emoji:"🎚️", name:"词级情感切换", plan:10, done:10, pending:0,
+  nat:4.48, ovr:4.36, eff:0.6650,
+  nat_s1:4.40, ovr_s1:4.21, eff_s1:0.5400,
+  nat_s2:4.56, ovr_s2:4.51, eff_s2:0.7900,
   tier:"良好",
-  find:"S2 Sarah 英文最稳，中文偏弱",
-  detail:"S1 / S2 各 4-5 条单句内 2-3 次情感切换",
-  s1:{score:"4.25", text:"S1 自然度 4.06 / 总体 4.25 / 生效率 85%（n=4）"},
-  s2:{score:"4.45", text:"S2-Pro 自然度 4.20 / 总体 4.45 / 生效率 59%（n=5）"},
-  findingKey:"S2-Pro Sarah 英文 [gasp]/[laugh] 词级切换生效率较高；S2 中文 jay/AMSR/蔡徐坤 上中等；S1 词级标签生效率较低，与 S2 拉开明显差距。这是 S2-Pro 相对 S1 最显著的能力提升之一",
+  find:"S2 生效率 79% 优于 S1 54%（+25pp），S2 情感更自然真实",
+  detail:"S1 / S2 各 5 条单句内 2-3 次情感切换",
+  s1:{score:"4.21", text:"S1 自然度 4.40 / 总体 4.21 / 生效率 54%（n=5）"},
+  s2:{score:"4.51", text:"S2-Pro 自然度 4.56 / 总体 4.51 / 生效率 79%（n=5）"},
+  findingKey:"S2-Pro Sarah 英文 [gasp]/[laugh] 词级切换生效率较高（此为官方默认发音人）；S2 中文 jay/AMSR/蔡徐坤上中等（此为个人用 10s 音频复刻的音色）；词级标签生效相差不大，但 S2 的生效情感表现会更自然真实。这是 S2-Pro 相对 S1 最显著的能力提升之一",
   samples:[
-    {id:"137", voice:"Sarah S1", text:"I cannot believe it (gasp) you actually did it (大笑声) that is amazing!", nat:4.5, ovr:4.25, eff:0.85, audio:"S1/词级情感-137-S1-Sarah.mp3", comment:"生效且效果好", ver:"S1"},
-    {id:"141", voice:"AMSR S1", text:"嗯？(疑惑）你刚才说什么？（生气）凭什么要我做这个？我又不是你的下属！", nat:3.75, ovr:4.25, eff:0.85, audio:"S1/词级情感-141-S1-AMSR男声cc.mp3", comment:"嗯不自然", ver:"S1"},
-    {id:"143", voice:"jay S1", text:"我（悲伤）已经尽力了，真的（哽咽）没办法了……（无奈）你也不用再劝我了。", nat:4.0, ovr:4.25, eff:0.85, audio:"S1/词级情感-143-S1-jay.mp3", comment:"哽咽未体现", ver:"S1"},
-    {id:"145", voice:"jay S1", text:"（happy）Great news everyone! （gasp） Wait, what is that? （laugh） Oh come on, you scared me!", nat:4.0, ovr:4.25, eff:0.85, audio:"S1/词级情感-145-S1-jay.mp3", comment:"吸气有点夸张", ver:"S1"},
-    {id:"138", voice:"Sarah S2", text:"I cannot believe it [gasp] you actually did it [laugh loud] that is amazing!", nat:4.5, ovr:4.5, eff:0.20, audio:"S2/词级情感-138-S2-Sarah.mp3", comment:"未生效但效果正常", ver:"S2"},
-    {id:"140", voice:"蔡徐坤 S2", text:"这事太[震惊]突然了，我[苦笑]也想不到会是这样的结局，[叹气]真是造化弄人啊。", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/词级情感-140-S2-蔡徐坤.mp3", comment:"生效且效果好", ver:"S2"},
-    {id:"142", voice:"AMSR S2", text:"嗯？[疑惑]你刚才说什么？[生气][吼叫]凭什么要我做这个？我又不是你的下属！", nat:4.0, ovr:4.5, eff:0.85, audio:"S2/词级情感-142-S2-AMSR男声cc.mp3", comment:"吼叫未充分体现，但效果可接受", ver:"S2"},
-    {id:"144", voice:"jay S2", text:"我[悲伤]已经尽力了，真的[哽咽]没办法了……[无奈]你也不用再劝我了。", nat:3.75, ovr:4.0, eff:0.20, audio:"S2/词级情感-144-S2-jay.mp3", comment:"哽咽未体现", ver:"S2"},
-    {id:"146", voice:"jay S2", text:"[happy] Great news everyone! [gasp] Wait, what is that? [laugh] Oh come on, you scared me!", nat:4.25, ovr:4.75, eff:0.85, audio:"S2/词级情感-146-S2-jay.mp3", comment:"生效且效果好", ver:"S2"}
+    {id:"137", voice:"Sarah S1", text:"I cannot believe it (gasp) you actually did it (大笑声) that is amazing!", nat:4.5, ovr:4.25, eff:0.85, audio:"S1/词级情感-137-S1-Sarah.mp3", comment:"", ver:"S1"},
+    {id:"140", voice:"蔡徐坤 S1", text:"这事太（震惊）突然了，我（苦笑）也想不到会是这样的结局，（叹气）真是造化弄人啊。", nat:4.5, ovr:4.3, eff:0.2, audio:"S1/词级情感-140-S1-蔡徐坤.mp3", comment:"感情很低", ver:"S1"},
+    {id:"141", voice:"AMSR S1", text:"嗯？(疑惑）你刚才说什么？（生气）凭什么要我做这个？我又不是你的下属！", nat:4.25, ovr:4.25, eff:0.55, audio:"S1/词级情感-141-S1-AMSR男声cc.mp3", comment:"嗯不自然，其余较自然", ver:"S1"},
+    {id:"143", voice:"jay S1", text:"我（悲伤）已经尽力了，真的（哽咽）没办法了……（无奈）你也不用再劝我了。", nat:4.25, ovr:4, eff:0.55, audio:"S1/词级情感-143-S1-jay.mp3", comment:"哽咽未体现", ver:"S1"},
+    {id:"145", voice:"jay S1", text:"（happy）Great news everyone! （gasp） Wait, what is that? （laugh） Oh come on, you scared me!", nat:4.5, ovr:4.25, eff:0.55, audio:"S1/词级情感-145-S1-jay.mp3", comment:"生效良好，但是吸气有点夸张", ver:"S1"},
+    {id:"138", voice:"Sarah S2", text:"I cannot believe it [gasp] you actually did it [laugh loud] that is amazing!", nat:4.5, ovr:4.5, eff:0.55, audio:"S2/词级情感-138-S2-Sarah.mp3", comment:"均生效，但是情感强度较低", ver:"S2"},
+    {id:"140", voice:"蔡徐坤 S2", text:"这事太[震惊]突然了，我[苦笑]也想不到会是这样的结局，[叹气]真是造化弄人啊。", nat:4.8, ovr:4.8, eff:0.85, audio:"S2/词级情感-140-S2-蔡徐坤.mp3", comment:"很自然", ver:"S2"},
+    {id:"142", voice:"AMSR S2", text:"嗯？[疑惑]你刚才说什么？[生气]凭什么要我做这个？我又不是你的下属！", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/词级情感-142-S2-AMSR男声cc.mp3", comment:"整体程度较低，效果可接受", ver:"S2"},
+    {id:"144", voice:"jay S2", text:"我[悲伤]已经尽力了，真的[哽咽]没办法了……[无奈]你也不用再劝我了。", nat:4.5, ovr:4.25, eff:0.85, audio:"S2/词级情感-144-S2-jay.mp3", comment:"哽咽未体现，更偏迟疑", ver:"S2"},
+    {id:"146", voice:"jay S2", text:"[happy] Great news everyone! [gasp] Wait, what is that? [laugh] Oh come on, you scared me!", nat:4.5, ovr:4.5, eff:0.85, audio:"S2/词级情感-146-S2-jay.mp3", comment:"更融合", ver:"S2"}
   ]
 });
 
@@ -1157,38 +1163,38 @@ modules.push({id:"multilang", emoji:"🌍", name:"多语言覆盖", plan:32, don
   detail:"8 语言 × 2 条（陈述 + 情感）：日 / 韩 / 德 / 法 / 西 / 葡 / 俄 / 阿",
   s1:{score:"4.62", text:"S1 自然度 3.52 / 发音准确度 4.62 / 共情度 3.41 / 生效率 32%（n=16）"},
   s2:{score:"4.90", text:"S2-Pro 自然度 3.97 / 发音准确度 4.90 / 共情度 3.88 / 生效率 40%（n=16）"},
-  findingKey:"陈述句发音准确度：日/德/法/西 ≥ 韩 ≥ 葡/俄/阿；情感标签生效率：常见语言较好，小语种衰减明显。S2-Pro 80+ 语言宣传成立，但小语种情感控制能力明显衰减",
+  findingKey:"基于人工校对：S2 在日/韩/西/俄四种常见语种上自然度与发音准确度均明显优于 S1（+0.5 左右）；德/法/葡小语种在 S1/S2 上仍存在机械感、电流呲音、咬字不准等问题；情感标签生效率 S2 47% 高于 S1 36%，但小语种情感衰减依然明显（阿语本批用机测分，待人工补测）。德/法/葡小语种效果可能受限于平台复刻音色的质量，后续如有需要，可使用对应语种的高质量原声复刻音色进行效果验证",
   samples:[
-    {id:"147", voice:"日语默认 S1", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:4.5, ovr:5, sim:4.67, eff:null, audio:"S1/多语言-147-日S1-元気な女性.mp3", comment:"发音标准地道，韵律自然流畅，语气温和亲切，完美契合日常问候与邀请的陈述语境，整体听感极佳。开头情感不自然。", ver:"S1"},
-    {id:"149", voice:"日语默认 S1", text:"(兴奋) やったー！ついに合格したよ！本当に嬉しい！", nat:4.5, ovr:5, sim:5, eff:0.85, audio:"S1/多语言-149-日S1-元気な女性.mp3", comment:"发音标准，情感表达生动自然，完美呈现兴奋与喜悦的情绪，极具感染力。但是开头情感略显刻意。", ver:"S1"},
-    {id:"151", voice:"韩语默认 S1", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.5, ovr:5, sim:4.33, eff:null, audio:"S1/多语言-151-韩S1-ngày.mp3", comment:"韩语发音标准清晰，节奏平稳自然，整体听感舒适流畅，但情感起伏与语调过渡略显平淡。", ver:"S1"},
-    {id:"153", voice:"韩语默认 S1", text:"（sad） 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:3.5, ovr:5, sim:2.5, eff:0.2, audio:"S1/多语言-153-韩S1-ngày.mp3", comment:"发音标准清晰，但未能有效传达文本所需的悲伤与无力感，情感表达过于平淡。", ver:"S1"},
-    {id:"155", voice:"德语默认 S1", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:1.83, ovr:3.67, sim:2.33, eff:null, audio:"S1/多语言-155-德S1-Metal-Sonic.mp3", comment:"德语发音基本准确，但机械感严重，存在明显的拼接卡顿与重复错读，整体听感生硬不自然。", ver:"S1"},
-    {id:"157", voice:"德语默认 S1", text:"(生气)  Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:2, ovr:2.5, sim:2, eff:0.1, audio:"S1/多语言-157-德S1-Metal-Sonic.mp3", comment:"音频机械感极强，存在电子失真、语速过快与发音含糊问题，完全未能演绎生气情感，听感极差。", ver:"S1"},
-    {id:"159", voice:"法语默认 S1", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:3.67, ovr:4.5, sim:3.67, eff:null, audio:"S1/多语言-149-法S1-Féminine.mp3", comment:"法语发音清晰准确，但语调偏平淡、语速偏快，缺乏日常交流的自然韵律与情感温度。", ver:"S1"},
-    {id:"161", voice:"法语默认 S1", text:"(开心)  Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:3.5, ovr:5, sim:3, eff:0.2, audio:"S1/多语言-151-法S1Féminine.mp3", comment:"法语发音标准清晰，但整体表达过于平淡，未能传达文本要求的开心与激动情绪，缺乏情感感染力。", ver:"S1"},
-    {id:"163", voice:"西班牙语默认 S1", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:4.33, ovr:5, sim:4.33, eff:null, audio:"S1/多语言-163-西S1-Farid-Dieck.mp3", comment:"三次结果不稳定:两次评价指出句间停顿略仓促、语调偏平淡、缺乏对话温度,一次则认为发音极其标准、韵律自然流畅、整体表现极佳;发音清晰标准是共识。", ver:"S1"},
-    {id:"165", voice:"西班牙语默认 S1", text:"(whispering) Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:2.5, ovr:5, sim:1.67, eff:0.1, audio:"S1/多语言-165-西S1-Farid-Dieck.mp3", comment:"发音清晰准确,但完全未实现文本要求的耳语效果,情感表达与分享秘密的语境严重脱节。", ver:"S1"},
-    {id:"167", voice:"葡萄牙 S1", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:4, ovr:5, sim:4, eff:null, audio:"S1/多语言-167-葡语S1.mp3", comment:"巴西葡语发音标准清晰,整体表达流畅平稳,若邀请部分能增加些许热情,听感会更生动自然。", ver:"S1"},
-    {id:"168", voice:"葡萄牙 S1", text:"(shouting) Que incrível notícia! Não acredito no que ouvi!", nat:3.5, ovr:5, sim:3.5, eff:0.2, audio:"S1/多语言-168-葡语S1.mp3", comment:"发音准确清晰,基本传达了文本要求的激动情绪,但情感表达略显生硬刻意,缺乏真实爆发力与自然节奏变化。", ver:"S1"},
-    {id:"169", voice:"俄语 S1", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:4, ovr:4.33, sim:4, eff:null, audio:"S1/多语言-169-俄语S1.mp3", comment:"三次结果不一致:两次指出语速过快、节奏生硬、存在吞音与重音偏差、机械感强,一次则认为发音标准、表达流畅自然,整体稳定性较差。", ver:"S1"},
-    {id:"170", voice:"俄语 S1", text:"(laughing) Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.67, ovr:5, sim:5, eff:0.85, audio:"S1/多语言-170-俄语S1.mp3", comment:"俄语发音纯正标准,情感表达真实生动,笑声与语音结合自然流畅,出色还原欢乐情境,极具感染力。", ver:"S1"},
+    {id:"147", voice:"日语默认 S1", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:4.5, ovr:5.0, sim:4.67, eff:null, audio:"S1/多语言-147-日S1-元気な女性.mp3", comment:"发音标准地道，韵律自然流畅，语气温和亲切，完美契合日常问候与邀请的陈述语境，整体听感极佳。", ver:"S1"},
+    {id:"149", voice:"日语默认 S1", text:"(兴奋) やったー！ついに合格したよ！本当に嬉しい！", nat:4.5, ovr:5.0, sim:4.8, eff:0.85, audio:"S1/多语言-149-日S1-元気な女性.mp3", comment:"发音标准，情感表达生动自然，完美呈现兴奋与喜悦的情绪，极具感染力。但是开头情感略显刻意。", ver:"S1"},
+    {id:"151", voice:"韩语默认 S1", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.5, ovr:5.0, sim:4.33, eff:null, audio:"S1/多语言-151-韩S1-ngày.mp3", comment:"韩语发音标准清晰，节奏平稳自然，整体听感舒适流畅，但情感起伏与语调过渡略显平淡。", ver:"S1"},
+    {id:"153", voice:"韩语默认 S1", text:"（sad） 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:4.0, ovr:4.8, sim:3.0, eff:0.2, audio:"S1/多语言-153-韩S1-ngày.mp3", comment:"发音标准清晰，但未能有效传达文本所需的悲伤与无力感，情感表达过于平淡。", ver:"S1"},
+    {id:"155", voice:"德语默认 S1", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:3.0, ovr:4.0, sim:2.0, eff:null, audio:"S1/多语言-155-德S1-Metal-Sonic.mp3", comment:"电流音非常重，纯播报风格，TTS，没有感情", ver:"S1"},
+    {id:"157", voice:"德语默认 S1", text:"(生气)  Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:2.0, ovr:2.0, sim:2.0, eff:0.1, audio:"S1/多语言-157-德S1-Metal-Sonic.mp3", comment:"标签乱读。音质非常差，有电流呲音，没有生气，纯播报", ver:"S1"},
+    {id:"159", voice:"法语默认 S1", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:3.0, ovr:3.0, sim:2.0, eff:null, audio:"S1/多语言-149-法S1-Féminine.mp3", comment:"发音不准、韵律不自然，影响理解", ver:"S1"},
+    {id:"161", voice:"法语默认 S1", text:"(开心)  Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:4.0, ovr:5.0, sim:3.0, eff:0.4, audio:"S1/多语言-151-法S1Féminine.mp3", comment:"发音准确，语调略微上扬能体现一些高兴的情感", ver:"S1"},
+    {id:"163", voice:"西班牙语默认 S1", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:4.5, ovr:4.5, sim:4.5, eff:null, audio:"S1/多语言-163-西S1-Farid-Dieck.mp3", comment:"认可机测结论，但不认可5分打分（过高）\n自然度:4.3 整体自然,但缺乏必要停顿，语速略快\n发音准确度:4.3 无明显问题,但语速过快,发音略模糊\n共情度:4.3 语气轻松,与文本相符,但是语气略平淡", ver:"S1"},
+    {id:"165", voice:"西班牙语默认 S1", text:"(whispering) Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:4.5, ovr:4.5, sim:4.0, eff:0.2, audio:"S1/多语言-165-西S1-Farid-Dieck.mp3", comment:"不认可机测自然度、共情度极低的结论，因为音频本身不存在严重问题，\n自然度:4.3 无明显问题,但语速过快\n发音准确度:4.3 \n共情度:4 未体现情感标签whispering的耳语感,听感类似日常轻松讲话。", ver:"S1"},
+    {id:"167", voice:"葡萄牙 S1", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:2.5, ovr:5.0, sim:2.5, eff:0.1, audio:"S1/多语言-167-葡语S1.mp3", comment:"发音清晰准确，语速稍慢，情感表达不自然，有严肃刻意的朗读感", ver:"S1"},
+    {id:"168", voice:"葡萄牙 S1", text:"(shouting) Que incrível notícia! Não acredito no que ouvi!", nat:2.5, ovr:5.0, sim:2.5, eff:0.1, audio:"S1/多语言-168-葡语S1.mp3", comment:"发音清晰准确，语速稍慢，情感表达不自然，有严肃刻意的朗读感", ver:"S1"},
+    {id:"169", voice:"俄语 S1", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:3.5, ovr:3.5, sim:3.5, eff:0.75, audio:"S1/多语言-169-俄语S1.mp3", comment:"存在重音错误，语调错误，疑问句感情色彩没有体现出来", ver:"S1"},
+    {id:"170", voice:"俄语 S1", text:"(laughing) Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.0, ovr:3.0, sim:4.5, eff:0.75, audio:"S1/多语言-170-俄语S1.mp3", comment:"机侧评分偏高，语速过快，导致存在严重的吞音问题。情感表现能力较好，语气语调生动自然。", ver:"S1"},
     {id:"171", voice:"阿语 S1", text:"الجو جميل اليوم، هل تريد الخروج للتنزه؟", nat:2.5, ovr:4.67, sim:2.5, eff:null, audio:"S1/多语言-171-阿语S1.mp3", comment:"三次表现严重不稳定:两次出现极度亢奋的嘶吼语气朗读日常陈述文本,情感严重错位、听感极不自然,一次则认为发音标准、节奏流畅。", ver:"S1"},
     {id:"172", voice:"阿语 S1", text:"(regretful)(sincere) أنا آسف بصدق وأشعر بالندم الشديد على ما فعلته.", nat:2, ovr:4.33, sim:2, eff:0.1, audio:"S1/多语言-172-阿语S1.mp3", comment:"阿语发音基本准确,但采用极度高亢的喊叫方式,与文本要求的真诚道歉与后悔情感完全背道而驰,自然度与共情度极差。", ver:"S1"},
-    {id:"148", voice:"日语默认 S2", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:5, ovr:5, sim:5, eff:null, audio:"S2/多语言-148-日S2-元気な女性.mp3", comment:"发音地道标准,韵律自然流畅,语气温和亲切,完美契合日常问候与邀请的语境,整体表现达到母语者水平,听感极佳。", ver:"S2"},
-    {id:"150", voice:"日语默认 S2", text:"[excited] やったー！ついに合格したよ！本当に嬉しい！", nat:5, ovr:5, sim:5, eff:0.85, audio:"S2/多语言-150-日S2-元気な女性.mp3", comment:"发音标准,情感表达生动自然,开头笑声完美契合兴奋与喜悦的语境,情感真实生效且极具感染力。", ver:"S2"},
-    {id:"152", voice:"韩语默认 S2", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.67, ovr:5, sim:4.67, eff:null, audio:"S2/多语言-152-韩S2-ngày.mp3", comment:"韩语发音标准清晰,音色温和舒适,韵律自然流畅,是一段契合日常邀请语境的高质量陈述音频。", ver:"S2"},
-    {id:"154", voice:"韩语默认 S2", text:"[sad] 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:4.33, ovr:5, sim:4.33, eff:0.55, audio:"S2/多语言-154-韩S2-ngày.mp3", comment:"三次结果存在差异:两次指出具备基础悲伤色彩但语速偏快、疲惫无力感表达不够深入,一次则认为韵律流畅、情绪真实且极具感染力,情感呈现稳定性不足。", ver:"S2"},
-    {id:"156", voice:"德语默认 S2", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:4, ovr:5, sim:4, eff:null, audio:"S2/多语言-156-德S2-Metal-Sonic.mp3", comment:"德语发音标准,整体表达清晰平稳,但在自然韵律的微调与声音亲和力上仍有提升空间。", ver:"S2"},
-    {id:"158", voice:"德语默认 S2", text:"[angry] Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:2.5, ovr:4.5, sim:2.5, eff:0.1, audio:"S2/多语言-158-德S2-Metal-Sonic.mp3", comment:"德语发音基本准确,但声音机械感极强、韵律生硬,完全未能演绎文本所需的愤怒情感,毫无情绪感染力。", ver:"S2"},
-    {id:"160", voice:"法语默认 S2", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:4.33, ovr:4.33, sim:4, eff:null, audio:"S2/多语言-160-法S2-Féminine.mp3", comment:"法语发音清晰,整体表达流畅、语调平稳自然,较好契合陈述语境,但在发音细节(如联诵)与情绪感染力上仍有微调空间。", ver:"S2"},
-    {id:"162", voice:"法语默认 S2", text:"[happy] Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:2.5, ovr:5, sim:1.67, eff:0.1, audio:"S2/多语言-162-法S2-Féminine.mp3", comment:"法语发音地道准确,但情感表达严重偏离文本标签与语境,未能展现应有的喜悦与兴奋,整体共情体验较差。", ver:"S2"},
-    {id:"164", voice:"西班牙语默认 S2", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:5, ovr:5, sim:5, eff:null, audio:"S2/多语言-164-西S2-Farid-Dieck.mp3", comment:"西语发音标准地道,韵律自然流畅,语气亲切友好且带有自然的询问语调,完美契合日常对话邀请的语境,整体表现极佳。", ver:"S2"},
-    {id:"166", voice:"西班牙语默认 S2", text:"[whisper] Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:5, ovr:5, sim:5, eff:0.55, audio:"S2/多语言-166-西S2-Farid-Dieck.mp3", comment:"完美运用耳语技巧,发音标准清晰,成功营造分享秘密的私密氛围,情感真实生效,代入感与共情力极强。", ver:"S2"},
-    {id:"167", voice:"葡萄牙 S2", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:3.83, ovr:5, sim:3.83, eff:null, audio:"S2/多语言-167-葡语S2.mp3", comment:"葡萄牙语发音清晰准确,音色稳定听感舒适,但整体语调偏向正式播报,缺乏日常对话的自然韵律与轻松愉悦的共情感。", ver:"S2"},
-    {id:"168", voice:"葡萄牙 S2", text:"[shouting] Que incrível notícia! Não acredito no que ouvi!", nat:2.5, ovr:5, sim:2.5, eff:0.1, audio:"S2/多语言-168-葡语S2.mp3", comment:"葡语发音清晰准确,但情感表达完全失效,未能呈现文本要求的呼喊与激动情绪,整体听感平淡生硬如机器朗读。", ver:"S2"},
-    {id:"169", voice:"俄语 S2", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:3.5, ovr:5, sim:3.33, eff:null, audio:"S2/多语言-169-俄语S2.mp3", comment:"俄语发音准确清晰,但整体韵律平淡略显机械,缺乏日常交流的自然感与人际互动温度,未能展现邀请的轻松氛围。", ver:"S2"},
-    {id:"170", voice:"俄语 S2", text:"[laughing] Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.83, ovr:5, sim:4.83, eff:0.85, audio:"S2/多语言-170-俄语S2.mp3", comment:"俄语发音标准地道,开头笑声真实自然且与后续说话过渡流畅,完美呈现文本中欢乐与好笑的情感,极具感染力,整体表现极佳。", ver:"S2"},
+    {id:"148", voice:"日语默认 S2", text:"こんにちは、今日はとてもいい天気ですね。公園に散歩に行きませんか。", nat:5.0, ovr:5.0, sim:5.0, eff:null, audio:"S2/多语言-148-日S2-元気な女性.mp3", comment:"发音地道标准,韵律自然流畅,语气温和亲切,完美契合日常问候与邀请的语境,整体表现达到母语者水平,听感极佳。", ver:"S2"},
+    {id:"150", voice:"日语默认 S2", text:"[excited] やったー！ついに合格したよ！本当に嬉しい！", nat:5.0, ovr:5.0, sim:5.0, eff:0.85, audio:"S2/多语言-150-日S2-元気な女性.mp3", comment:"发音标准,情感表达生动自然,开头笑声完美契合兴奋与喜悦的语境,情感真实生效且极具感染力。", ver:"S2"},
+    {id:"152", voice:"韩语默认 S2", text:"안녕하세요, 오늘 날씨가 정말 좋네요. 산책하러 갈까요?", nat:4.67, ovr:5.0, sim:4.67, eff:null, audio:"S2/多语言-152-韩S2-ngày.mp3", comment:"韩语发音标准清晰,音色温和舒适,韵律自然流畅,是一段契合日常邀请语境的高质量陈述音频。", ver:"S2"},
+    {id:"154", voice:"韩语默认 S2", text:"[sad] 왜 이렇게 힘들까요... 정말 포기하고 싶어요.", nat:4.33, ovr:5.0, sim:4.33, eff:0.55, audio:"S2/多语言-154-韩S2-ngày.mp3", comment:"具备基础悲伤色彩但疲惫无力感表达不够深入,情感呈现稳定性不足。", ver:"S2"},
+    {id:"156", voice:"德语默认 S2", text:"Guten Tag, das Wetter ist heute wirklich schön. Sollen wir einen Spaziergang machen?", nat:4.0, ovr:5.0, sim:4.0, eff:0.75, audio:"S2/多语言-156-德S2-Metal-Sonic.mp3", comment:"音质有回声混响。发音清楚自然。能听出语气比较硬和重，符合生气的表现", ver:"S2"},
+    {id:"158", voice:"德语默认 S2", text:"[angry] Das ist inakzeptabel! Ich werde mich beim Manager beschweren!", nat:4.0, ovr:4.0, sim:2.0, eff:0.1, audio:"S2/多语言-158-德S2-Metal-Sonic.mp3", comment:"发音正确但是有单词发音不够清晰，没有生气的情感和表现力", ver:"S2"},
+    {id:"160", voice:"法语默认 S2", text:"Bonjour, il fait vraiment beau aujourd hui. Voulez-vous aller vous promener?", nat:3.0, ovr:3.0, sim:3.0, eff:null, audio:"S2/多语言-160-法S2-Féminine.mp3", comment:"音质差，听感模糊，发音不准、咬字有气无力，影响理解", ver:"S2"},
+    {id:"162", voice:"法语默认 S2", text:"[happy] Oh mon Dieu, c est incroyable! Je suis tellement contente pour toi!", nat:4.0, ovr:4.0, sim:3.0, eff:0.4, audio:"S2/多语言-162-法S2-Féminine.mp3", comment:"音质差，听感模糊，发音准确，语调略微上扬能体现一些高兴的情感", ver:"S2"},
+    {id:"164", voice:"西班牙语默认 S2", text:"Hola, hace muy buen tiempo hoy. Quieres ir a dar un paseo?", nat:4.7, ovr:4.7, sim:4.7, eff:null, audio:"S2/多语言-164-西S2-Farid-Dieck.mp3", comment:"认可机测意见,但不认可打分5分,即与人类完全相同", ver:"S2"},
+    {id:"166", voice:"西班牙语默认 S2", text:"[whisper] Escucha, tengo que contarte un secreto, pero no se lo digas a nadie.", nat:4.7, ovr:4.7, sim:4.7, eff:0.75, audio:"S2/多语言-166-西S2-Farid-Dieck.mp3", comment:"认可机测意见,但不认可打分5分,即与人类完全相同\n体现情感标签whispering的耳语感", ver:"S2"},
+    {id:"167", voice:"葡萄牙 S2", text:"O dia está lindo e ensolarado. Vamos sair para caminhar?", nat:2.5, ovr:5.0, sim:2.5, eff:0.1, audio:"S2/多语言-167-葡语S2.mp3", comment:"发音清晰准确，语速稍慢，情感表达不自然，有严肃刻意的朗读感", ver:"S2"},
+    {id:"168", voice:"葡萄牙 S2", text:"[shouting] Que incrível notícia! Não acredito no que ouvi!", nat:2.5, ovr:5.0, sim:2.5, eff:0.1, audio:"S2/多语言-168-葡语S2.mp3", comment:"发音清晰准确，语速稍慢，情感表达不自然，有严肃刻意的朗读感", ver:"S2"},
+    {id:"169", voice:"俄语 S2", text:"Сегодня прекрасная погода. Хочешь прогуляться вместе?", nat:4.5, ovr:4.5, sim:4.5, eff:0.75, audio:"S2/多语言-169-俄语S2.mp3", comment:"发音准确自然，语调稍显平淡", ver:"S2"},
+    {id:"170", voice:"俄语 S2", text:"[laughing] Ха-ха, это просто смешно до слёз, очень забавно!", nat:4.5, ovr:4.0, sim:4.5, eff:0.75, audio:"S2/多语言-170-俄语S2.mp3", comment:"语调自然，语速适中，发音存在轻微错误", ver:"S2"},
     {id:"171", voice:"阿语 S2", text:"الجو جميل اليوم، هل تريد الخروج للتنزه؟", nat:4, ovr:5, sim:4, eff:null, audio:"S2/多语言-171-阿语S2.mp3", comment:"三次结果存在波动:两次表现良好,发音精准、表达清晰平稳,较好契合陈述语境,一次则出现夸张嘶吼语气与日常陈述严重脱节,整体稳定性有待提升。", ver:"S2"},
     {id:"172", voice:"阿语 S2", text:"[regretful][sincere] أنا آسف بصدق وأشعر بالندم الشديد على ما فعلته.", nat:2.5, ovr:4.5, sim:2.5, eff:0.1, audio:"S2/多语言-172-阿语S2.mp3", comment:"阿语发音基本准确,但音频以极其激昂高亢的语气演绎,与文本要求的真诚道歉与后悔情感完全背道而驰,整体听感极不协调。", ver:"S2"}
   ]
@@ -1210,7 +1216,7 @@ modules.push({id:"sfx", emoji:"🔔", name:"音效生成", plan:2, done:2, pendi
   ]
 });
 
-modules.push({id:"separation", emoji:"🎼", name:"音频分离", plan:2, done:2, pending:0, s2Only:true,
+modules.push({id:"separation", emoji:"🎼", name:"音频分离", plan:3, done:3, pending:0, s2Only:true,
   nat:null, ovr:null, eff:0.8500,
   nat_s1:null, ovr_s1:null, eff_s1:null,
   nat_s2:null, ovr_s2:null, eff_s2:0.8500,
@@ -1219,10 +1225,11 @@ modules.push({id:"separation", emoji:"🎼", name:"音频分离", plan:2, done:2
   detail:"上传含伴奏音频 → 分离人声 / 背景",
   s1:{score:"—", text:"S1 未覆盖此模块"},
   s2:{score:"—", text:"S2-Pro 生效率 85%（n=2）"},
-  findingKey:"S2-Pro 新增能力，干净音乐场景分离干净，复杂场景（带混响 / 多人）未测",
+  findingKey:"S2-Pro 新增能力，干净音乐场景分离干净，暂未测试复杂场景（如带混响 / 多人）",
   samples:[
-    {id:"P1-39", voice:"— S2", text:"上传一段含人声+伴奏的音频 → S2-Pro 分离出人声轨（对照原声：已有数据/音频分离-1-原声.wav）", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-2-S2-人声.mp3", comment:"人声分离干净", ver:"S2"},
-    {id:"P1-40", voice:"— S2", text:"上传一段含人声+伴奏的音频 → S2-Pro 分离出背景轨（对照原声：已有数据/音频分离-1-原声.wav）", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-3-S2-背景.mp3", comment:"背景伴奏保留，人声残留极少", ver:"S2"}
+    {id:"P1-38", voice:"— S2", text:"[原声] 输入音频（含人声+伴奏），用于对照分离效果", nat:null, ovr:null, eff:null, audio:"已有数据/音频分离-1-原声.wav", comment:"原始混合音频", ver:"S2"},
+    {id:"P1-39", voice:"— S2", text:"[人声分离] 上传含人声+伴奏的音频 → S2-Pro 分离出人声轨", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-2-S2-人声.mp3", comment:"人声分离干净", ver:"S2"},
+    {id:"P1-40", voice:"— S2", text:"[背景分离] 上传含人声+伴奏的音频 → S2-Pro 分离出背景轨", nat:null, ovr:null, eff:0.85, audio:"已有数据/音频分离-3-S2-背景.mp3", comment:"背景伴奏保留，人声残留极少", ver:"S2"}
   ]
 });
 
@@ -1280,15 +1287,15 @@ function renderBarChart(dim = 'ovr') {
     } else if (m.s2Only) {
       delta = `<span class="delta delta-na">S2 独占</span>`;
     } else if (s1 == null && s2 != null) {
-      delta = `<span class="delta delta-na">S1 待补</span>`;
+      delta = `<span class="delta delta-na">仅 S2</span>`;
     } else {
       delta = `<span class="delta delta-na">仅单边</span>`;
     }
     const makeRow = (label, val, cls, isS1) => {
       if (val == null) {
-        let placeholder = isEff ? '生效率不适用' : '待补测';
-        if (isS1 && m.s2Only) placeholder = 'S1 不支持此能力';
-        else if (isS1 && m.s1Pending) placeholder = 'S1 待补';
+        let placeholder = isEff ? '不适用' : '—';
+        if (isS1 && m.s2Only) placeholder = 'S1 不支持';
+        else if (isS1 && m.s1Pending) placeholder = '—';
         return `<div class="bar-row ${cls}"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill pending" style="width:100%">${placeholder}</div></div><div class="bar-score pending">—</div></div>`;
       }
       const w = isEff ? val * 100 : (val / 5) * 100;
@@ -1325,9 +1332,10 @@ function renderModuleCards(filter = 'all') {
       <div class="top-row"><div class="emoji-large">${m.emoji}</div><div class="medal ${tierMedal[m.tier]}">${m.tier}</div></div>
       <div class="name">${m.name}</div>
       <div class="meta">S1 ${m.nat_s1 != null ? m.nat_s1.toFixed(1) : '—'} / ${m.ovr_s1 != null ? m.ovr_s1.toFixed(1) : '—'} · S2 ${m.nat_s2 != null ? m.nat_s2.toFixed(1) : '—'} / ${m.ovr_s2 != null ? m.ovr_s2.toFixed(1) : '—'}${m.eff_s2 != null ? ' · 生效率 ' + (m.eff_s2*100).toFixed(0) + '%' : ''}</div>
-      <div class="scores-row">${scores.length ? scores.map(s=>`<span class="score-pill">${s}</span>`).join('') : '<span class="score-pill" style="color:#94A3B8">待补测</span>'}</div>
+      <div class="scores-row">${scores.length ? scores.map(s=>`<span class="score-pill">${s}</span>`).join('') : ''}</div>
       <div class="finding">${m.find}</div>
       <div class="detail">${m.detail}</div>
+      <div style="text-align:right;margin-top:8px;font-size:0.7rem;color:#7DD3FC;opacity:0.7">🎧 点击试听对比 →</div>
     </div>`;
   }).join('');
 }
@@ -1344,6 +1352,12 @@ function renderSampleTable(m) {
   const baseVoice = v => v ? v.replace(/\s+S[12]\s*$/i,'').trim() : '—';
   // 文本归一化（去标签、去空白）用于配对
   const normText = t => (t||'').replace(/\[[^\]]*\]/g,'').replace(/\([^\)]*\)/g,'').replace(/\s+/g,'').trim();
+  // 标签 key：提取首个 [xxx] 或 (xxx) 标签内容，去空白后归一化
+  const tagKey = t => {
+    if (!t) return '';
+    const m = t.match(/^\s*\[([^\]]+)\]/) || t.match(/^\s*\(([^\)]+)\)/);
+    return m ? m[1].replace(/\s+/g,'').toLowerCase() : '';
+  };
 
   const fmtScore = (label, v) => {
     if (v == null) return `<span class="sc sc-na">—</span>`;
@@ -1377,7 +1391,7 @@ function renderSampleTable(m) {
     groups[v].push(s);
   });
 
-  // 每组内按文本配对 S1/S2
+  // 每组内按"标签 + 归一化文本"配对 S1/S2，避免文本相同标签不同的误配
   function pairSamples(arr) {
     const s1s = arr.filter(s => s.ver === 'S1');
     const s2s = arr.filter(s => s.ver === 'S2');
@@ -1385,24 +1399,25 @@ function renderSampleTable(m) {
     const pairs = [];
     s1s.forEach(s1 => {
       const t1 = normText(s1.text);
+      const tag1 = tagKey(s1.text);
       let match = -1;
-      // 1) 完全匹配
+      // Tier 1: 标签 + 文本都完全匹配
       for (let i = 0; i < s2s.length; i++) {
         if (used2.has(i)) continue;
-        if (normText(s2s[i].text) === t1) { match = i; break; }
+        if (tagKey(s2s[i].text) === tag1 && normText(s2s[i].text) === t1) { match = i; break; }
       }
-      // 2) 包含/被包含
+      // Tier 2: 仅文本完全匹配（标签可能用了不同符号 [] vs ()）
       if (match < 0) {
         for (let i = 0; i < s2s.length; i++) {
           if (used2.has(i)) continue;
-          const t2 = normText(s2s[i].text);
-          if (t1 && t2 && (t1.includes(t2) || t2.includes(t1))) { match = i; break; }
+          if (normText(s2s[i].text) === t1 && t1) { match = i; break; }
         }
       }
-      // 3) 顺序兜底（取第一个未使用）
-      if (match < 0) {
+      // Tier 3: 仅标签完全匹配（同标签不同文本，仍可对比能力）
+      if (match < 0 && tag1) {
         for (let i = 0; i < s2s.length; i++) {
-          if (!used2.has(i)) { match = i; break; }
+          if (used2.has(i)) continue;
+          if (tagKey(s2s[i].text) === tag1) { match = i; break; }
         }
       }
       if (match >= 0) { used2.add(match); pairs.push({s1, s2: s2s[match]}); }
@@ -1512,7 +1527,7 @@ function openDetail(id) {
       </div>
     </div>
     <h3 style="color:#F1F5F9;font-size:1rem;margin:22px 0 10px">📋 样本详情</h3>
-    ${m.eff != null ? '<div style="margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:0.72rem;color:#94A3B8;line-height:1.7"><strong style="color:#7DD3FC">生效率映射规则：</strong>生效且效果好 → 85% ｜ 生效但效果一般 → 55% ｜ 生效但效果差 → 30% ｜ 未生效但效果正常 → 20% ｜ 未生效且存在效果问题 → 10% ｜ 陈述类（/）不参与计算</div>' : ''}
+    ${m.eff != null ? '<div style="margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:0.72rem;color:#94A3B8;line-height:1.7"><strong style="color:#7DD3FC">生效率映射规则：</strong>生效且效果好 → 85% ｜ 生效 → 75% ｜ 生效但效果一般 → 55% ｜ 微生效 → 40% ｜ 生效但效果差 → 30% ｜ 未生效但效果正常 → 20% ｜ 未生效 / 标签未生效 / 未生效且存在效果问题 → 10% ｜ 陈述类（/）不参与计算</div>' : ''}
     ${m.refAudios ? '<div style="margin-bottom:16px;padding:12px 16px;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:10px"><div style="font-size:0.78rem;font-weight:700;color:#C4B5FD;margin-bottom:8px">🎤 原声参考音频（用于声音复刻对比）</div>' + m.refAudios.map(r => '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:0.75rem;color:#E2E8F0;min-width:130px">'+r.label+'</span><audio controls preload="none" style="height:28px"><source src="'+r.audio+'"></audio></div>').join('') + '</div>' : ''}
     ${renderSampleTable(m)}
   `;
@@ -1524,6 +1539,7 @@ function openDetail(id) {
 function closeDetail() {
   document.getElementById('detailModal').classList.remove('active');
   document.body.style.overflow = '';
+  document.querySelectorAll('#detailBody audio').forEach(a => { a.pause(); a.currentTime = 0; });
 }
 function handleOverlayClick(e) {
   if (e.target.id === 'detailModal') closeDetail();
@@ -1534,6 +1550,18 @@ document.addEventListener('DOMContentLoaded', () => {
   renderBarChart();
   renderModuleCards();
   initQuickNav();
+  // 音频互斥：同时只播放一条
+  document.addEventListener('play', e => {
+    if (e.target.tagName === 'AUDIO') {
+      document.querySelectorAll('audio').forEach(a => { if (a !== e.target) { a.pause(); a.currentTime = 0; } });
+    }
+  }, true);
+  // 快速导航默认收起，hint 先展示 5s 后自动消失
+  const hint = document.getElementById('navHint');
+  if (hint) {
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 5000);
+  }
 });
 
 function toggleNav() {
