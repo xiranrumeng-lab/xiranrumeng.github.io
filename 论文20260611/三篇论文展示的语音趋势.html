@@ -1,1 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音AI的"下一步" - 科技版</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    line-height: 1.8;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(83,178,140,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(83,178,140,0.2);
+    color: #53b28c;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, #53b28c, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .section {
+    padding: 40px 32px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .icon-green { background: rgba(83,178,140,0.12); }
+  .icon-blue { background: rgba(99,102,241,0.12); }
+  .icon-purple { background: rgba(168,85,247,0.12); }
+  .card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .card {
+    background: #fafbfc;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: #53b28c;
+    box-shadow: 0 4px 20px rgba(83,178,140,0.08);
+    transform: translateY(-2px);
+  }
+  .card-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+  .badge-tts { background: rgba(83,178,140,0.12); color: #3d8b6e; }
+  .badge-asr { background: rgba(99,102,241,0.12); color: #4f46e5; }
+  .badge-realtime { background: rgba(168,85,247,0.12); color: #9333ea; }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .card p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+  }
+  .card-highlight {
+    background: linear-gradient(90deg, rgba(83,178,140,0.08), transparent);
+    border-left: 3px solid #53b28c;
+    padding-left: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #53b28c;
+    font-weight: 500;
+  }
+  .signal {
+    background: linear-gradient(135deg, #f8fafb 0%, #f0f4f8 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1px solid #e8ecf0;
+  }
+  .signal-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .num-green { background: #53b28c; color: #fff; }
+  .num-blue { background: #6366f1; color: #fff; }
+  .num-purple { background: #a855f7; color: #fff; }
+  .signal h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  .signal p {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.8;
+  }
+  .trend-box {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    border-radius: 16px;
+    padding: 32px;
+    color: #fff;
+    text-align: center;
+    margin: 8px 0;
+  }
+  .trend-flow {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 2.2;
+  }
+  .trend-flow .past { color: rgba(255,255,255,0.4); }
+  .trend-flow .now { color: #53b28c; }
+  .trend-flow .next { 
+    background: linear-gradient(90deg, #53b28c, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 22px;
+  }
+  .trend-flow .arrow { 
+    color: rgba(255,255,255,0.3); 
+    margin: 0 8px;
+    font-size: 14px;
+  }
+  .trend-desc {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    margin-top: 16px;
+    line-height: 1.7;
+  }
+  .footer {
+    padding: 32px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .footer-label {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .ref-list {
+    list-style: none;
+  }
+  .ref-list li {
+    font-size: 12px;
+    color: #888;
+    padding: 4px 0;
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .ref-list li::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: #53b28c;
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .ref-list a {
+    color: #6366f1;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+  .compare-table th {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e8ecf0;
+  }
+  .compare-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #444;
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .tag-sm {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .tag-green { background: rgba(83,178,140,0.1); color: #3d8b6e; }
+  .tag-blue { background: rgba(99,102,241,0.1); color: #4f46e5; }
+  .tag-purple { background: rgba(168,85,247,0.1); color: #9333ea; }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e8ecf0, transparent);
+    margin: 0 32px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <div class="hero-tag">SPEECH AI · 趋势洞察</div>
+    <h1>语音AI的<span>"下一步"</span></h1>
+    <div class="hero-sub">从能听到能说，从能说到说好 —— 三篇论文勾勒的新方向</div>
+  </div>
+  <div class="section">
+    <div class="section-title">
+      <span class="icon icon-green">📋</span>
+      一句话看懂三篇论文
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-badge badge-tts">TTS · 波形直生成</span>
+        <h3>WavTTS</h3>
+        <p>不要Codec，不要Vocoder，直接在原始波形上做扩散生成</p>
+        <div class="card-highlight">上海交大 + 字节跳动 · 零样本TTS媲美SOTA</div>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-asr">Audio · 统一理解</span>
+        <h3>MOSS-Audio</h3>
+        <p>语音、音乐、环境声，一个模型全听懂，还支持时间戳定位</p>
+        <div class="card-highlight">OpenMOSS · 开源音频理解新底座</div>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-realtime">TTS · 实时合成</span>
+        <h3>dots.TTS</h3>
+        <p>连续自回归替代离散token，首包54ms，语音合成开始接近实时</p>
+        <div class="card-highlight">2B参数 · MeanFlow蒸馏至2-4步采样</div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-title">
+      <span class="icon icon-blue">📊</span>
+      核心对比
+    </div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>WavTTS</th>
+          <th>MOSS-Audio</th>
+          <th>dots.TTS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>任务</strong></td>
+          <td>语音合成</td>
+          <td>音频理解</td>
+          <td>语音合成</td>
+        </tr>
+        <tr>
+          <td><strong>建模空间</strong></td>
+          <td><span class="tag-sm tag-green">原始波形</span></td>
+          <td><span class="tag-sm tag-blue">音频编码器</span></td>
+          <td><span class="tag-sm tag-purple">连续潜在空间</span></td>
+        </tr>
+        <tr>
+          <td><strong>生成方式</strong></td>
+          <td>Flow Matching + DiT</td>
+          <td>Encoder + LLM Decoder</td>
+          <td>连续AR + DiT Head</td>
+        </tr>
+        <tr>
+          <td><strong>延迟</strong></td>
+          <td>50步采样，较慢</td>
+          <td>非流式</td>
+          <td><strong>首包54ms</strong></td>
+        </tr>
+        <tr>
+          <td><strong>落地场景</strong></td>
+          <td>离线高品质合成</td>
+          <td>会议纪要、质检</td>
+          <td>实时对话、配音</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-title">
+      <span class="icon icon-purple">💡</span>
+      三个关键信号
+    </div>
+    <div class="signal">
+      <div class="signal-num num-green">1</div>
+      <h3>波形直生成，天花板被打开了</h3>
+      <p>WavTTS证明：跳过所有中间层，直接在原始波形上做扩散生成，效果能媲美主流SOTA。TTS的"最后一公里"——从频谱到波形——可能不再是瓶颈。</p>
+    </div>
+    <div class="signal">
+      <div class="signal-num num-blue">2</div>
+      <h3>音频理解，终于有开源底座了</h3>
+      <p>MOSS-Audio用一个统一模型处理语音、音乐、环境声，还支持时间戳定位。在Gemini和Qwen3.5-Omni都是闭源的今天，开源阵营终于有了能打的选择。</p>
+    </div>
+    <div class="signal">
+      <div class="signal-num num-purple">3</div>
+      <h3>连续AR，语音合成开始"实时化"</h3>
+      <p>dots.TTS用连续潜在空间替代离散token，首包延迟压到54ms，流式生成不再是奢望。语音克隆、实时对话，正在从demo走向产品。</p>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section">
+    <div class="section-title">
+      <span class="icon icon-green">🚀</span>
+      趋势总结
+    </div>
+    <div class="trend-box">
+      <div class="trend-flow">
+        <span class="past">过去：能听</span>
+        <span class="arrow">→</span>
+        <span class="now">现在：听懂</span>
+        <span class="arrow">→</span>
+        <span class="next">下一步：听懂 + 说好 + 实时</span>
+      </div>
+      <div class="trend-desc">
+        语音AI正在从"单点突破"走向"系统能力"<br>
+        理解要统一 · 生成要高质量 · 交互要低延迟
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <div class="footer-label">参考论文</div>
+    <ul class="ref-list">
+      <li>WavTTS: Direct Waveform Generation for TTS — <a href="https://arxiv.org/pdf/2606.03455v1">arxiv.org/abs/2606.03455</a></li>
+      <li>MOSS-Audio: Unified Audio-Language Model — <a href="https://arxiv.org/pdf/2606.01802v3">arxiv.org/abs/2606.01802</a></li>
+      <li>dots.TTS: Continuous Autoregressive TTS — <a href="https://arxiv.org/pdf/2606.07080">arxiv.org/abs/2606.07080</a></li>
+    </ul>
+  </div>
+</div>
+  <section style="text-align:center;padding:32px 0">
+  <hr style="border:none;border-top:2px solid #e0e0;margin-bottom:24px">
+  <a href="http://172.31.101.179:6001/" target="_blank">
+    <img src="./promo-banner.png" style="max-width:100%;border-radius:12px;cursor:pointer">
+    <div style="margin-top:8px;font-size:14px;color:#666">👆 点击图片跳转体验</div>
+  </a>
+</section>
 
+</body>
+</html>
