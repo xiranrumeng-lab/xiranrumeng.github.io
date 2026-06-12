@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>语音AI的"下一步" - 科技版</title>
+<title>AI语音的"下一步" - 科技版</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -142,6 +142,23 @@
     font-size: 13px;
     color: #53b28c;
     font-weight: 500;
+  }
+  .card-link {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    font-size: 12px;
+    color: #999;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+  }
+  .card-link:hover { color: #6366f1; }
+  .card-link svg {
+    width: 14px;
+    height: 14px;
   }
   .signal {
     background: linear-gradient(135deg, #f8fafb 0%, #f0f4f8 100%);
@@ -286,8 +303,8 @@
 <body>
 <div class="container">
   <div class="hero">
-    <div class="hero-tag">SPEECH AI · 趋势洞察</div>
-    <h1>语音AI的<span>"下一步"</span></h1>
+    <div class="hero-tag">SPEECH AI 技术论文· 趋势洞察 </div>
+    <h1>AI语音的<span>"下一步"</span></h1>
     <div class="hero-sub">从能听到能说，从能说到说好 —— 三篇论文勾勒的新方向</div>
   </div>
   <div class="section">
@@ -296,23 +313,35 @@
       一句话看懂三篇论文
     </div>
     <div class="card-grid">
-      <div class="card">
+      <div class="card" style="padding-bottom:40px;">
         <span class="card-badge badge-tts">TTS · 波形直生成</span>
         <h3>WavTTS</h3>
         <p>不要Codec，不要Vocoder，直接在原始波形上做扩散生成</p>
         <div class="card-highlight">上海交大 + 字节跳动 · 零样本TTS媲美SOTA</div>
+        <a href="https://arxiv.org/pdf/2606.03455v1" target="_blank" class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          论文详情
+        </a>
       </div>
-      <div class="card">
+      <div class="card" style="padding-bottom:40px;">
         <span class="card-badge badge-asr">Audio · 统一理解</span>
         <h3>MOSS-Audio</h3>
         <p>语音、音乐、环境声，一个模型全听懂，还支持时间戳定位</p>
         <div class="card-highlight">OpenMOSS · 开源音频理解新底座</div>
+        <a href="https://arxiv.org/pdf/2606.01802v3" target="_blank" class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          论文详情
+        </a>
       </div>
-      <div class="card">
+      <div class="card" style="padding-bottom:40px;">
         <span class="card-badge badge-realtime">TTS · 实时合成</span>
         <h3>dots.TTS</h3>
         <p>连续自回归替代离散token，首包54ms，语音合成开始接近实时</p>
         <div class="card-highlight">2B参数 · MeanFlow蒸馏至2-4步采样</div>
+        <a href="https://arxiv.org/pdf/2606.07080" target="_blank" class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          论文详情
+        </a>
       </div>
     </div>
   </div>
