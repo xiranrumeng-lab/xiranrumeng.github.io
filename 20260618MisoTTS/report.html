@@ -1,1 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MisoTTS 8B 深度解读</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background:#eceef1; color:#1a1a1a; line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:600px; margin:0 auto; background:#fff; }
+  .pad { padding:26px 20px; }
+
+  /* 封面 */
+  .hero {
+    background:linear-gradient(140deg,#1e3a8a 0%,#1e5fa8 50%,#2389a6 100%);
+    color:#fff; padding:48px 22px 40px; text-align:center; position:relative; overflow:hidden;
+  }
+  .hero::after{content:"";position:absolute;top:-50px;right:-50px;width:180px;height:180px;
+    background:rgba(255,255,255,.1);border-radius:50%;}
+  .hero::before{content:"";position:absolute;bottom:-60px;left:-40px;width:150px;height:150px;
+    background:rgba(255,255,255,.07);border-radius:50%;}
+  .hero .tag{display:inline-block;font-size:11.5px;letter-spacing:2px;
+    background:rgba(255,255,255,.22);padding:5px 14px;border-radius:20px;margin-bottom:18px;}
+  .hero h1{font-size:25px;font-weight:800;line-height:1.4;position:relative;z-index:1;}
+  .hero .sub{font-size:13.5px;opacity:.92;margin-top:14px;position:relative;z-index:1;line-height:1.6;}
+
+  /* 数据卡 */
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .stat{border-radius:14px;padding:18px 14px;text-align:center;color:#fff;}
+  .stat .n{font-size:28px;font-weight:800;line-height:1;}
+  .stat .l{font-size:11.5px;opacity:.92;margin-top:8px;}
+  .s1{background:linear-gradient(135deg,#667eea,#764ba2);}
+  .s2{background:linear-gradient(135deg,#f093fb,#f5576c);}
+  .s3{background:linear-gradient(135deg,#43cea2,#185a9d);}
+  .s4{background:linear-gradient(135deg,#fa8c4f,#ff5e62);}
+
+  h2.sec{font-size:19px;font-weight:800;margin:6px 0 16px;display:flex;align-items:center;gap:9px;}
+  h2.sec .bar{width:5px;height:19px;background:linear-gradient(#3b3ff0,#d6249f);border-radius:3px;}
+  .sephint{font-size:12.5px;color:#8a8f99;margin:-8px 0 16px;}
+  .divider{height:8px;background:#eceef1;}
+
+  p.body{font-size:14.5px;color:#33373d;margin-bottom:14px;}
+  .quote{background:#f6f7ff;border-left:4px solid #3b3ff0;border-radius:0 10px 10px 0;
+    padding:13px 16px;margin:14px 0;font-size:13.5px;}
+  .quote .en{color:#5b5f8a;font-style:italic;}
+  .quote .cn{color:#1a1a1a;font-weight:600;margin-top:6px;}
+
+  /* 命名澄清 */
+  .nameflip{display:flex;align-items:center;justify-content:center;gap:14px;
+    background:#fffdf5;border:1px solid #fde68a;border-radius:14px;padding:18px 14px;margin:6px 0;}
+  .namebox{text-align:center;}
+  .namebox .big{font-size:18px;font-weight:800;color:#d97706;}
+  .namebox .small{font-size:11px;color:#999;margin-top:3px;}
+  .nameflip .eq{font-size:22px;color:#f59e0b;}
+
+  /* 架构流程 */
+  .flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;
+    background:#f6f7ff;border-radius:14px;padding:22px 12px;}
+  .node{background:#fff;border:2px solid #3b3ff0;border-radius:10px;padding:9px 11px;
+    text-align:center;min-width:72px;box-shadow:0 2px 8px rgba(59,63,240,.12);}
+  .node .t{font-size:12.5px;font-weight:700;color:#3b3ff0;}
+  .node .d{font-size:10px;color:#999;margin-top:2px;}
+  .arrow{color:#7b2ff7;font-size:16px;font-weight:700;}
+
+  /* 延迟对比条 */
+  .latrow{margin-bottom:14px;}
+  .latrow .top{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:6px;}
+  .latrow .top .name{font-weight:700;}
+  .latrow .top .ms{font-weight:800;}
+  .track{height:26px;background:#eef0f2;border-radius:13px;overflow:hidden;}
+  .fill{height:100%;border-radius:13px;display:flex;align-items:center;padding-left:12px;
+    color:#fff;font-size:11.5px;font-weight:700;white-space:nowrap;}
+
+  /* 验证标记 */
+  .verify{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;}
+  .v-ok{background:#dcfce7;color:#16a34a;}
+  .v-warn{background:#fef3c7;color:#d97706;}
+
+  /* 成本条 */
+  .costrow{margin-bottom:14px;}
+  .costrow .top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+  .costrow .top .gpu{font-weight:700;}
+  .costrow .top .price{color:#7b2ff7;font-weight:700;}
+  .ctrack{height:23px;background:#eef0f2;border-radius:12px;overflow:hidden;}
+  .cfill{height:100%;border-radius:12px;display:flex;align-items:center;padding-left:10px;
+    color:#fff;font-size:10.5px;font-weight:600;white-space:nowrap;}
+
+  /* 决策卡 */
+  .pick{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .pcol{border-radius:14px;padding:16px;}
+  .pcol.go{background:#f0fdf4;border:1.5px solid #bbf7d0;}
+  .pcol.no{background:#fef2f2;border:1.5px solid #fecaca;}
+  .pcol h3{font-size:14px;margin-bottom:11px;}
+  .pcol.go h3{color:#16a34a;}
+  .pcol.no h3{color:#dc2626;}
+  .pcol li{font-size:12.5px;list-style:none;margin-bottom:9px;padding-left:17px;position:relative;line-height:1.5;}
+  .pcol.go li::before{content:"✓";position:absolute;left:0;color:#16a34a;font-weight:700;}
+  .pcol.no li::before{content:"✕";position:absolute;left:0;color:#dc2626;font-weight:700;}
+
+  /* 核查表 */
+  .vtable{width:100%;border-collapse:collapse;font-size:12.5px;border-radius:12px;overflow:hidden;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .vtable th{background:#1f2937;color:#fff;padding:10px 8px;font-weight:600;text-align:left;font-size:11.5px;}
+  .vtable td{padding:10px 8px;border-bottom:1px solid #eef0f2;vertical-align:top;}
+  .vtable tr:last-child td{border-bottom:none;}
+
+  .highlight{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 16px;
+    font-size:13.5px;margin-top:14px;}
+  .highlight b{color:#d97706;}
+  .info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px 16px;
+    font-size:13.5px;margin-top:14px;}
+  .info b{color:#2563eb;}
+
+  .qbox{background:linear-gradient(135deg,#1f2937,#374151);color:#fff;border-radius:16px;padding:24px 20px;}
+  .qbox .q{display:flex;gap:12px;margin-bottom:15px;align-items:flex-start;}
+  .qbox .q:last-child{margin-bottom:0;}
+  .qbox .num{background:linear-gradient(135deg,#3b3ff0,#d6249f);width:28px;height:28px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:14px;}
+  .qbox .qt{font-size:14px;line-height:1.55;padding-top:2px;}
+
+  .footer{background:#1a1a1a;color:#999;padding:26px 20px;text-align:center;font-size:12px;}
+  .footer a{color:#8b9dff;text-decoration:none;display:block;margin:5px 0;font-size:11.5px;word-break:break-all;}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .pill{background:#f0f1ff;color:#3b3ff0;font-size:11px;padding:5px 12px;border-radius:14px;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 封面 -->
+  <div class="hero">
+    <span class="tag">AI · 开源语音大模型 · 深度解读</span>
+    <h1>MisoTTS 深度解读<br>110ms、全球最强情感语音<br>哪些是真，哪些是营销</h1>
+    <div class="sub">权重已开源 · 本文经多源交叉核实<br>标注每个数据的真实出处与水分</div>
+  </div>
+
+  <!-- 核心数据 -->
+  <div class="pad">
+    <div class="grid4">
+      <div class="stat s1"><div class="n">~8.2B</div><div class="l">参数（7.7B+0.3B+其他）</div></div>
+      <div class="stat s2"><div class="n">110<span style="font-size:15px">ms</span></div><div class="l">延迟（云端 H100 TTFB）</div></div>
+      <div class="stat s3"><div class="n">EN</div><div class="l">仅支持英文</div></div>
+      <div class="stat s4"><div class="n">开源</div><div class="l">modified MIT 权重</div></div>
+    </div>
+    <div class="highlight" style="margin-top:18px">
+      📌 <b>一句话：</b>技术路线押对了（Sesame CSM 路线 + 情感对话），开源诚意足；但「110ms 全球最快」是<b>云端理想值</b>，且<b>暂不支持中文</b>。
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 发布事件 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>① 一次「四标签拉满」的发布</h2>
+    <p class="body">6 月 4 日，斯坦福两人团队 Miso Labs（YC 2026 春季批次）的 Aoden Teo 在 X 上官宣 Miso One，帖子浏览量超 <b>200 万</b>、点赞 6500+。</p>
+    <div class="quote">
+      <div class="en">"the most emotive voice model in the world… responds faster than a human, with just 110 milliseconds of latency."</div>
+      <div class="cn">「全球最具情感表现力的语音模型……响应快于人类，延迟仅 110 毫秒。」</div>
+    </div>
+    <p class="body" style="margin-bottom:0">四个关键词一次摆上台面：<b>80 亿参数 · 110ms 延迟 · 情感表现力 · 权重开源</b>。技术媒体 MarkTechPost 同日跟进报道（2026-06-04），发布已触达技术圈层。</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 命名澄清 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>② 先搞清命名：两个名字同一套模型</h2>
+    <div class="nameflip">
+      <div class="namebox"><div class="big">Miso One</div><div class="small">对外发布名</div></div>
+      <div class="eq">=</div>
+      <div class="namebox"><div class="big">MisoTTS</div><div class="small">技术 / 开源资产名</div></div>
+    </div>
+    <p class="body" style="margin-top:14px;margin-bottom:0">去 GitHub 搜「Miso One」搜不到——仓库叫 <b>MisoLabsAI/MisoTTS</b>，HuggingFace 是 <b>MisoLabs/MisoTTS</b>，官方博客标题《Releasing the MisoTTS》。搞清这点就不会对着仓库一脸茫然。</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 架构 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>③ 架构：层级 RVQ Transformer</h2>
+    <div class="flow">
+      <div class="node"><div class="t">文本+音频</div><div class="d">上下文输入</div></div>
+      <span class="arrow">→</span>
+      <div class="node"><div class="t">7.7B Backbone</div><div class="d">Llama style</div></div>
+      <span class="arrow">→</span>
+      <div class="node"><div class="t">300M Decoder</div><div class="d">autoregressive</div></div>
+      <span class="arrow">→</span>
+      <div class="node"><div class="t">RVQ / Mimi</div><div class="d">32 codebooks</div></div>
+      <span class="arrow">→</span>
+      <div class="node" style="border-color:#d6249f"><div class="t" style="color:#d6249f">情感语音</div></div>
+    </div>
+    <div class="info">
+      🔍 <b>关键设计：</b>模型不只吃文本，<b>同时把音频上下文作为输入</b>——生成时能「听到」前文对话，从而在语气和情绪上做适配。这正是它定位 <b>text-to-dialogue</b>（而非单纯朗读）的底气，灵感来自 Sesame CSM。
+    </div>
+    <div class="sephint" style="margin-top:14px;margin-bottom:0">
+      参数口径：7.7B backbone + 300M decoder ≈ 8.0B；含 embeddings/heads 全量 ~8.2B。官方未公布精确到个位的数字。
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 延迟 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>④ 110ms：踩中了语音交互的痛点</h2>
+    <p class="body">语音对话有条铁律：<b>停顿超过 300ms，用户就觉得在跟机器说话</b>。文字聊天能等几秒，语音不行。</p>
+    <div class="latrow">
+      <div class="top"><span class="name">ElevenLabs 等商用方案</span><span class="ms" style="color:#dc2626">~700ms</span></div>
+      <div class="track"><div class="fill" style="width:100%;background:linear-gradient(90deg,#fb7185,#dc2626)">明显尴尬停顿</div></div>
+    </div>
+    <div class="latrow">
+      <div class="top"><span class="name">Sesame CSM</span><span class="ms" style="color:#f59e0b">~300ms</span></div>
+      <div class="track"><div class="fill" style="width:46%;background:linear-gradient(90deg,#fbbf24,#f59e0b)">体验临界</div></div>
+    </div>
+    <div class="latrow">
+      <div class="top"><span class="name">Miso（官方主张）</span><span class="ms" style="color:#16a34a">110ms</span></div>
+      <div class="track"><div class="fill" style="width:18%;background:linear-gradient(90deg,#34d399,#16a34a)">几乎无感</div></div>
+    </div>
+    <div class="highlight">
+      ⚠️ <b>必须看清：</b>110ms 是<b>云端托管 API 在 H100 上的首字节延迟（TTFB）</b>，官方明确「本地未优化推理会 materially slower」。<b>开源自部署 ≠ 110ms</b>。该数字暂无第三方独立复现。
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 部署成本 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>⑤ 部署成本：开源 ≠ 免费</h2>
+    <div class="sephint">云端 GPU 按需价（美元/小时）· 延迟随显存递增</div>
+    <div class="costrow">
+      <div class="top"><span class="gpu">H100 80GB</span><span class="price">$4-5/h</span></div>
+      <div class="ctrack"><div class="cfill" style="width:100%;background:linear-gradient(90deg,#667eea,#764ba2)">~110ms · 对标官方</div></div>
+    </div>
+    <div class="costrow">
+      <div class="top"><span class="gpu">A100 40GB</span><span class="price">$2-3/h</span></div>
+      <div class="ctrack"><div class="cfill" style="width:72%;background:linear-gradient(90deg,#43cea2,#185a9d)">~200-300ms · 生产首选</div></div>
+    </div>
+    <div class="costrow">
+      <div class="top"><span class="gpu">RTX 4090 24GB</span><span class="price">自购 ~$3.5k</span></div>
+      <div class="ctrack"><div class="cfill" style="width:48%;background:linear-gradient(90deg,#fa8c4f,#ff5e62)">中小团队 · 约 6 月回本</div></div>
+    </div>
+    <div class="info">
+      💡 <b>显存门槛：</b>8B BF16 权重约 <b>16GB</b>，建议 24GB 起步；社区 int4 量化版可降至 <b>~8GB</b>（速度/质量有损）。<br>
+      📜 <b>许可：</b>权重为 modified MIT（低于 5000 万 MAU / 月营收 1000 万美元可免署名商用），推理代码为 Apache 2.0。
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 该不该选 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>⑥ 该不该选它</h2>
+    <div class="pick">
+      <div class="pcol go">
+        <h3>👍 适合</h3>
+        <ul>
+          <li>数据不能出境（金融/医疗）</li>
+          <li>需 fine-tune 定制英文音色</li>
+          <li>纯英文对话 agent</li>
+          <li>研究 CSM / RVQ 架构</li>
+          <li>日调用量大，长期自部署</li>
+        </ul>
+      </div>
+      <div class="pcol no">
+        <h3>👎 不适合</h3>
+        <ul>
+          <li>需要中文 / 方言</li>
+          <li>追求极致低延迟又怕运维</li>
+          <li>多语言支持</li>
+          <li>想快速上线免运维</li>
+          <li>日调用 &lt;1 万次（云 API 更省）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 数据核查 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>⑦ 本文数据核查台账</h2>
+    <table class="vtable">
+      <tr><th>关键 claim</th><th>核查结论</th></tr>
+      <tr><td>7.7B backbone + 300M decoder</td><td><span class="verify v-ok">证实</span> 官博+MarkTechPost</td></tr>
+      <tr><td>modified MIT 许可</td><td><span class="verify v-ok">证实</span> 非标准 MIT</td></tr>
+      <tr><td>English only</td><td><span class="verify v-ok">证实</span> 官方 model card</td></tr>
+      <tr><td>110ms = H100 TTFB</td><td><span class="verify v-ok">证实</span> README 明示</td></tr>
+      <tr><td>Sesame CSM 启发 / text-to-dialogue</td><td><span class="verify v-ok">证实</span></td></tr>
+      <tr><td>参数精确值 8,188,122,112</td><td><span class="verify v-warn">存疑</span> 无官方来源</td></tr>
+      <tr><td>「人类反应 160ms」三联对比图</td><td><span class="verify v-warn">存疑</span> 官网未证实</td></tr>
+      <tr><td>「多数 agent 700ms+」</td><td><span class="verify v-warn">修正</span> 实指 ElevenLabs</td></tr>
+    </table>
+    <div class="sephint" style="margin-top:12px;margin-bottom:0">
+      已尽量多源互证；huggingface 全站、官网首页等不可直读来源用第三方解读替代。
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 三问 -->
+  <div class="pad">
+    <h2 class="sec"><span class="bar"></span>⑧ 选型前问自己三个问题</h2>
+    <div class="qbox">
+      <div class="q"><div class="num">1</div><div class="qt">我的用户<b>说什么语言</b>？（中文直接出局）</div></div>
+      <div class="q"><div class="num">2</div><div class="qt">我的<b>日调用量和延迟</b>要求是什么？</div></div>
+      <div class="q"><div class="num">3</div><div class="qt">我有没有<b>预算和能力</b>运维开源模型？</div></div>
+    </div>
+    <div class="highlight" style="margin-top:16px">
+      🎯 语音 AI 的下一战场，正从「能开口」转向「像真人对话」。MisoTTS 是这个方向上<b>最值得盯紧的开源新面孔</b>——但技术决策的本质是<b>场景匹配</b>，不是追逐参数和延迟数字。
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+
+  <!-- 推广横幅 -->
+  <div style="padding:28px 20px 32px;background:#fff;text-align:center;">
+    <hr style="border:none;border-top:1px solid #ececec;margin:0 0 22px;">
+    <a href="http://172.31.101.179:6001/" target="_blank" style="text-decoration:none;display:block;">
+      <img src="./promo-banner.png" alt="体验入口"
+           style="width:100%;display:block;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.08);cursor:pointer;">
+      <div style="margin-top:10px;font-size:13.5px;color:#888;">👆 点击图片跳转体验</div>
+    </a>
+  </div>
+
+  <div class="footer">
+    <div class="pills">
+      <span class="pill">#开源</span><span class="pill">#TTS</span>
+      <span class="pill">#情感语音</span><span class="pill">#事实核查</span>
+    </div>
+    <div style="margin-top:18px;color:#ccc;font-size:13px;font-weight:600">来源 & 延伸阅读</div>
+    <a href="https://github.com/MisoLabsAI/MisoTTS">GitHub · MisoLabsAI/MisoTTS</a>
+    <a href="https://huggingface.co/MisoLabs/MisoTTS">HuggingFace · MisoLabs/MisoTTS</a>
+    <a href="https://www.marktechpost.com/2026/06/04/">MarkTechPost 报道（2026-06-04）</a>
+    <a href="https://github.com/QwenLM/Qwen3-TTS">中文替代方案 · Qwen3-TTS</a>
+    <div style="margin-top:18px;font-size:11px;color:#666">关注我们 · AI 技术深度解读 · 不吹不黑只讲事实</div>
+  </div>
+
+</div>
+</body>
+</html>
 
