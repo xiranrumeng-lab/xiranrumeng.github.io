@@ -1,1 +1,2210 @@
 
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doubao-音频生成-1.0 体验报告</title>
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #60716d;
+      --paper: #faf8f2;
+      --panel: #fffdf8;
+      --line: #ded8ca;
+      --green: #0c756f;
+      --green-soft: #e0f0ec;
+      --amber: #b7791f;
+      --amber-soft: #f5e7c8;
+      --red: #a94438;
+      --blue: #315a78;
+      --shadow: 0 18px 52px rgba(24, 32, 31, 0.12);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: "Aptos", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --serif: Georgia, "Times New Roman", "Songti SC", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(12, 117, 111, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(12, 117, 111, 0.045) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      font-family: var(--sans);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.35);
+    }
+
+    a:hover {
+      border-bottom-color: var(--green);
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      gap: 36px;
+      align-items: center;
+      padding: 18px 0 44px;
+    }
+
+    .kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.82);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin-bottom: 22px;
+      font-family: var(--serif);
+      font-size: clamp(44px, 7vw, 92px);
+      line-height: 0.98;
+      font-weight: 650;
+      letter-spacing: 0;
+      text-wrap: pretty;
+    }
+
+    .hero-title {
+      display: grid;
+      gap: 6px;
+      max-width: 920px;
+    }
+
+    .hero-title span {
+      display: block;
+    }
+
+    .hero-title .title-model {
+      white-space: nowrap;
+      font-size: clamp(40px, 5.2vw, 74px);
+    }
+
+    .hero-title .title-report {
+      justify-self: start;
+      font-size: clamp(40px, 5.8vw, 82px);
+    }
+
+    .lead {
+      max-width: 760px;
+      color: #33413e;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    button,
+    .button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fffdf8;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 10px 16px;
+      font: 700 14px/1 var(--sans);
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    button:hover,
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    button.secondary,
+    .button.secondary {
+      background: rgba(255, 253, 248, 0.76);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .signal-board {
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .signal-board h2 {
+      margin-bottom: 18px;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 120px 1fr 44px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .meter:first-of-type {
+      border-top: 0;
+    }
+
+    .meter-name {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 9px;
+      background: #efe9dc;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--value);
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .meter-score {
+      font-family: var(--mono);
+      color: var(--muted);
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .section {
+      padding: 52px 0;
+      border-top: 1px solid rgba(99, 112, 109, 0.28);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.42fr 1fr;
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.04;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 760px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255, 253, 248, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 19px;
+      min-height: 210px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0a514c;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .tag.warn {
+      background: var(--amber-soft);
+      color: #76500f;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .step {
+      min-height: 250px;
+      padding: 22px;
+      border-left: 1px solid var(--line);
+    }
+
+    .step:first-child {
+      border-left: 0;
+    }
+
+    .step-number {
+      font-family: var(--mono);
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .step h3 {
+      margin: 20px 0 10px;
+      font-size: 22px;
+      line-height: 1.18;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .lab {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 560px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.9);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(24, 32, 31, 0.08);
+    }
+
+    .lab-nav {
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(250, 248, 242, 0.76);
+    }
+
+    .lab-tab {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 9px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      border-radius: var(--radius);
+      min-height: 58px;
+      padding: 12px;
+      text-align: left;
+      font-weight: 750;
+    }
+
+    .lab-tab:hover,
+    .lab-tab.active {
+      background: var(--panel);
+      border-color: var(--line);
+      transform: none;
+    }
+
+    .lab-tab span {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .lab-panel {
+      display: none;
+      padding: 28px;
+    }
+
+    .lab-panel.active {
+      display: block;
+    }
+
+    .prompt-box {
+      margin: 18px 0 20px;
+      padding: 18px;
+      background: #1f2927;
+      color: #fffdf8;
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .check {
+      min-height: 72px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(250, 248, 242, 0.64);
+      font-size: 14px;
+    }
+
+    .audio-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .demo-group {
+      margin-top: 20px;
+      display: grid;
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.62);
+    }
+
+    .demo-group + .demo-group {
+      margin-top: 28px;
+    }
+
+    .demo-group-head {
+      display: grid;
+      grid-template-columns: 0.32fr 1fr;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 0;
+      padding: 18px;
+      border-right: 0;
+      border-bottom: 1px solid rgba(99, 112, 109, 0.22);
+      background: rgba(250, 248, 242, 0.76);
+    }
+
+    .demo-group-head h3 {
+      margin-bottom: 0;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    .demo-group-head p {
+      margin-top: 0;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .demo-group .audio-grid {
+      padding: 18px;
+    }
+
+    .sample-picker {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid rgba(221, 214, 199, 0.86);
+      border-radius: var(--radius);
+      background: rgba(247, 244, 237, 0.72);
+    }
+
+    .sample-picker strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .sample-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 8px;
+    }
+
+    .sample-option {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 12px;
+      border: 1px solid rgba(99, 112, 109, 0.18);
+      border-radius: 10px;
+      background: rgba(255, 253, 248, 0.86);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .sample-option span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sample-option.active {
+      border-color: rgba(0, 121, 112, 0.42);
+      background: #dcefeb;
+      color: var(--accent);
+    }
+
+    .audio-card.sample-panel {
+      display: none;
+    }
+
+    .audio-card.sample-panel.active {
+      display: grid;
+    }
+
+    .audio-card {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 30px rgba(24, 32, 31, 0.07);
+      align-self: start;
+    }
+
+    .audio-card.featured {
+      grid-column: auto;
+      background: #1f2927;
+      color: #fffdf8;
+      border-color: #1f2927;
+    }
+
+    .audio-card h3 {
+      margin-bottom: 0;
+      font-size: 21px;
+      line-height: 1.18;
+    }
+
+    .audio-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .audio-card.featured p {
+      color: rgba(255, 253, 248, 0.72);
+    }
+
+    .demo-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-height: 28px;
+    }
+
+    .demo-meta span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .audio-card.featured .demo-meta span {
+      background: rgba(220, 239, 235, 0.16);
+      color: #dcefeb;
+    }
+
+    .demo-eval {
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      border: 1px solid rgba(221, 214, 199, 0.8);
+      border-radius: var(--radius);
+      background: rgba(250, 248, 242, 0.68);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .demo-eval div {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+    }
+
+    .demo-eval strong {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .audio-card.featured .demo-eval {
+      border-color: rgba(255, 253, 248, 0.18);
+      background: rgba(255, 253, 248, 0.07);
+    }
+
+    .audio-card.featured .demo-eval strong {
+      color: #dcefeb;
+    }
+
+    audio {
+      width: 100%;
+      min-height: 42px;
+    }
+
+    .audio-compare {
+      display: grid;
+      grid-template-columns: minmax(210px, 0.24fr) 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .audio-compare.three {
+      grid-template-columns: minmax(150px, 0.72fr) minmax(150px, 0.72fr) minmax(320px, 1.7fr);
+    }
+
+    .reference-box {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(15, 118, 110, 0.22);
+      border-radius: var(--radius);
+      background: rgba(220, 239, 235, 0.34);
+    }
+
+    .result-box {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.68);
+    }
+
+    .reference-box strong,
+    .result-box strong {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .reference-box span,
+    .result-box span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .audio-card.featured .reference-box,
+    .audio-card.featured .result-box {
+      border-color: rgba(220, 239, 235, 0.34);
+      background: rgba(255, 253, 248, 0.08);
+    }
+
+    .audio-card.featured .reference-box strong,
+    .audio-card.featured .result-box strong {
+      color: #9de7d5;
+    }
+
+    .audio-card.featured .reference-box span,
+    .audio-card.featured .result-box span {
+      color: rgba(255, 253, 248, 0.74);
+    }
+
+    .demo-prompt {
+      border: 1px solid rgba(221, 214, 199, 0.9);
+      border-radius: var(--radius);
+      background: rgba(250, 248, 242, 0.7);
+      overflow: hidden;
+    }
+
+    .demo-prompt summary {
+      min-height: 38px;
+      padding: 9px 12px;
+      cursor: pointer;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .demo-prompt pre {
+      margin: 0;
+      padding: 12px;
+      max-height: 300px;
+      overflow: auto;
+      border-top: 1px solid var(--line);
+      background: #1f2927;
+      color: #fffdf8;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .audio-card.featured .demo-prompt {
+      border-color: rgba(255, 253, 248, 0.2);
+      background: rgba(255, 253, 248, 0.07);
+    }
+
+    .audio-card.featured .demo-prompt summary {
+      color: #dcefeb;
+    }
+
+    .missing {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+      color: #76500f;
+      font-size: 13px;
+    }
+
+    .audio-card.featured .missing {
+      background: rgba(245, 231, 200, 0.14);
+      color: #f5e7c8;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .score-row span {
+      padding-top: 7px;
+      border-top: 1px solid rgba(99, 112, 109, 0.24);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .score-row strong {
+      display: block;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    .audio-card.featured .score-row span {
+      border-top-color: rgba(255, 253, 248, 0.18);
+      color: rgba(255, 253, 248, 0.68);
+    }
+
+    .audio-card.featured .score-row strong {
+      color: #fffdf8;
+    }
+
+    .risk-board {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 16px;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.82);
+    }
+
+    .risk-board h3 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .risk-item {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .risk-item:first-child {
+      border-top: 0;
+    }
+
+    .risk-item code {
+      color: var(--red);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .selection-panel {
+      display: grid;
+      grid-template-columns: 0.72fr 1.28fr;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.86);
+    }
+
+    .selection-panel h3 {
+      margin-bottom: 8px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .selection-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .selection-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .selection-item:first-child {
+      border-top: 0;
+    }
+
+    .selection-item strong {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .test-suite {
+      display: grid;
+      gap: 12px;
+    }
+
+    .test-case {
+      display: grid;
+      grid-template-columns: 116px minmax(180px, 0.72fr) minmax(0, 1.28fr) minmax(190px, 0.8fr);
+      gap: 14px;
+      align-items: stretch;
+      padding: 15px;
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .test-id {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .test-id strong {
+      color: var(--green);
+      font-size: 16px;
+    }
+
+    .test-title h3 {
+      margin-bottom: 8px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .test-title p,
+    .test-metric p,
+    .test-prompt p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .test-prompt {
+      padding: 13px;
+      background: #1f2927;
+      color: #fffdf8;
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .test-prompt p {
+      color: rgba(255, 253, 248, 0.78);
+    }
+
+    .test-metric {
+      display: grid;
+      align-content: start;
+      gap: 10px;
+    }
+
+    .metric-line {
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(221, 214, 199, 0.85);
+      font-size: 13px;
+    }
+
+    .metric-line strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .source-list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .source-list li {
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .score-table {
+      display: grid;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(255, 253, 248, 0.72);
+    }
+
+    .score-table .score-row-head,
+    .score-table .score-line {
+      display: grid;
+      grid-template-columns: 0.22fr 0.18fr 0.42fr 0.18fr;
+      gap: 0;
+    }
+
+    .score-table .score-row-head {
+      background: #1f2927;
+      color: #fffdf8;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .score-table span {
+      padding: 13px 14px;
+      border-left: 1px solid rgba(99, 112, 109, 0.18);
+      border-top: 1px solid rgba(99, 112, 109, 0.16);
+      line-height: 1.55;
+    }
+
+    .score-table span:first-child {
+      border-left: 0;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .score-table .score-row-head span {
+      border-top: 0;
+      color: inherit;
+    }
+
+    .score-table strong {
+      color: var(--ink);
+    }
+
+    .score-table .score-line span:nth-child(2) {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .score-table .score-line span:nth-child(3) strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .score-table .score-line span:nth-child(3) {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .score-table .score-line span:nth-child(4) strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 16px;
+    }
+
+    .score-table small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .score-table .dimension {
+      display: grid;
+      gap: 5px;
+    }
+
+    .score-table .dimension small {
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    .footer {
+      padding: 34px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .promo-banner {
+      display: block;
+      margin: 0 0 22px;
+      overflow: hidden;
+      border: 1px solid rgba(102, 120, 115, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, rgba(224, 240, 236, 0.7), rgba(234, 246, 251, 0.86));
+      box-shadow: 0 14px 34px rgba(22, 32, 30, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .promo-banner:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 126, 168, 0.32);
+      box-shadow: 0 18px 42px rgba(22, 32, 30, 0.12);
+    }
+
+    .promo-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .quick-nav {
+      position: fixed;
+      left: 18px;
+      top: 50%;
+      z-index: 20;
+      display: grid;
+      gap: 10px;
+      width: 168px;
+      padding: 14px;
+      border: 1px solid rgba(102, 120, 115, 0.16);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.46);
+      box-shadow: 0 12px 28px rgba(22, 32, 30, 0.08);
+      transform: translateY(-50%);
+      transition: width 0.18s ease, padding 0.18s ease, box-shadow 0.18s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .quick-nav.collapsed {
+      width: 46px;
+      padding: 10px 8px;
+      cursor: pointer;
+      background: rgba(255, 253, 248, 0.9);
+      box-shadow: 0 14px 32px rgba(22, 32, 30, 0.12);
+    }
+
+    .quick-nav-toggle {
+      appearance: none;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid rgba(12, 117, 111, 0.2);
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font: 800 13px/1 var(--sans);
+      cursor: pointer;
+    }
+
+    .quick-nav-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .quick-nav-list a {
+      display: block;
+      padding: 8px 9px;
+      border-radius: 999px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 0;
+    }
+
+    .quick-nav-list a:hover {
+      color: var(--green);
+      background: rgba(224, 240, 236, 0.72);
+    }
+
+    .quick-nav.collapsed .quick-nav-list {
+      display: none;
+    }
+
+    .quick-nav.collapsed .quick-nav-toggle {
+      writing-mode: vertical-rl;
+      min-height: 96px;
+      padding: 10px 6px;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .section-head,
+      .lab,
+      .selection-panel,
+      .risk-board,
+      .demo-group {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.four,
+      .grid.three,
+      .timeline,
+      .test-case {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .lab-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .demo-group-head {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .audio-compare {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-nav {
+        left: 12px;
+        width: 150px;
+      }
+    }
+
+    @media (min-width: 921px) and (max-width: 1320px) {
+      .hero {
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+        gap: 36px;
+        align-items: center;
+      }
+
+      .hero-title {
+        max-width: 100%;
+      }
+
+      .hero-title .title-model {
+        font-size: clamp(40px, 4.15vw, 54px);
+      }
+
+      .hero-title .title-report {
+        font-size: clamp(42px, 4.5vw, 58px);
+      }
+
+      .lead {
+        max-width: 680px;
+      }
+
+      .signal-board {
+        width: auto;
+        justify-self: stretch;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 22px, 1180px);
+        padding-top: 20px;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .grid.four,
+      .grid.three,
+      .timeline,
+      .checklist,
+      .test-case {
+        grid-template-columns: 1fr;
+      }
+
+      .step {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+        min-height: auto;
+      }
+
+      .step:first-child {
+        border-top: 0;
+      }
+
+      .audio-card.featured {
+        grid-column: span 1;
+      }
+
+      .selection-item,
+      .risk-item,
+      .score-table .score-row-head,
+      .score-table .score-line,
+      .score-row {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-nav {
+        top: auto;
+        left: 12px;
+        bottom: 12px;
+        transform: none;
+      }
+
+      .quick-nav:not(.collapsed) {
+        width: min(210px, calc(100vw - 24px));
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="quick-nav" aria-label="快速导航">
+    <button class="quick-nav-toggle" type="button" aria-expanded="true">快速导航</button>
+    <div class="quick-nav-list">
+      <a href="#top">首屏概览</a>
+      <a href="#capability">能力拆解</a>
+      <a href="#path">体验路径</a>
+      <a href="#lab">体验方法</a>
+      <a href="#suite">测试集设计</a>
+      <a href="#audio">样片评测</a>
+      <a href="#score">评分维度</a>
+      <a href="#sources">信息来源</a>
+    </div>
+  </nav>
+  <main class="shell">
+    <section class="hero" id="top">
+      <div>
+        <div class="kicker">
+          <span class="chip">调研体验报告</span>
+          <span class="chip">2026-06-23</span>
+          <span class="chip">Doubao-音频生成-1.0</span>
+        </div>
+        <h1 class="hero-title"><span class="title-model">Doubao-音频生成-1.0</span><span class="title-report">体验报告</span></h1>
+        <p class="lead">从 TTS 工具到音频导演：它的核心看点不是“把一句话念出来”，而是把对白、角色、环境声、拟音和配乐放进同一条创作指令里，生成一段可评估的完整音频作品。</p>
+        <div class="hero-actions">
+          <a class="button" href="#lab">查看体验方法</a>
+          <a class="button secondary" href="#audio">查看样片评测</a>
+        </div>
+      </div>
+      <aside class="signal-board" aria-label="能力信号">
+        <h2>能力信号</h2>
+        <div class="meter">
+          <div class="meter-name">多角色对白</div>
+          <div class="bar"><span style="--value: 92%"></span></div>
+          <div class="meter-score">高</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">混音成片</div>
+          <div class="bar"><span style="--value: 88%"></span></div>
+          <div class="meter-score">高</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">长段音色一致</div>
+          <div class="bar"><span style="--value: 76%"></span></div>
+          <div class="meter-score">待测</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">开放体验</div>
+          <div class="bar"><span style="--value: 38%"></span></div>
+          <div class="meter-score">邀测</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="capability">
+      <div class="section-head">
+        <div class="eyebrow">01 / 能力拆解</div>
+        <div>
+          <h2>它该被当作“音频作品生成器”来测。</h2>
+          <p class="sub">公开信息显示，它支持文本及参考音频等多模态输入，目标是端到端生成包含多角色对白、背景音乐和环境音效的完整音频作品。单句 TTS 不是主战场。</p>
+        </div>
+      </div>
+      <div class="grid four">
+        <article class="card">
+          <span class="tag">核心能力</span>
+          <h3>Prompt 统筹多轨</h3>
+          <p>把对白、场景、情绪、音效、配乐、转场写进同一条指令，验证模型是否能自动安排时间线和声场层次。</p>
+        </article>
+        <article class="card">
+          <span class="tag">创作价值</span>
+          <h3>角色声音保持</h3>
+          <p>重点观察长段生成中角色是否串音、音色是否漂移、情绪变化是否仍保留同一个人的身份感。</p>
+        </article>
+        <article class="card">
+          <span class="tag">输入形态</span>
+          <h3>文本 + 参考音频</h3>
+          <p>参考音频是验证零样本复刻与长段音色一致性的关键材料，干净单人声样本直接影响复刻稳定性。</p>
+        </article>
+        <article class="card">
+          <span class="tag warn">当前限制</span>
+          <h3>API 开放节奏仍需确认</h3>
+          <p>当前个人用户可在体验中心进行创作测试；API 侧据内部员工口径预计 2026 年 7 月中开放，最终以火山方舟官方公告和控制台入口为准。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="path">
+      <div class="section-head">
+        <div class="eyebrow">02 / 体验路径</div>
+        <div>
+          <h2>体验路径先确认可用入口和额度，再测成片质量。</h2>
+          <p class="sub">为了避免把它测成普通配音工具，体验按“入口与额度确认 → 样本准备 → 分场景生成 → 打分复盘”推进。</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <article class="step">
+          <div class="step-number">Step 01</div>
+          <h3>入口与额度</h3>
+          <p>优先查看体验中心是否可用；API 测试需等待火山方舟控制台正式出现豆包音频生成 1.0 调用入口。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">Step 02</div>
+          <h3>准备素材</h3>
+          <p>准备 3 类 Prompt 与 1 段 10-20 秒干净参考人声；先不用复杂后期，避免干扰模型质量判断。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">Step 03</div>
+          <h3>生成样片</h3>
+          <p>分别生成广播剧、广告音频、参考音色一致性样片。每类至少跑 2 次，观察稳定性而非只看最好一次。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">Step 04</div>
+          <h3>复盘评分</h3>
+          <p>按角色区分度、指令遵循、混音平衡、情绪控制、可上线程度打分，再决定是否进入生产工作流。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="lab">
+      <div class="section-head">
+        <div class="eyebrow">03 / 体验方法</div>
+        <div>
+          <h2>评测方法围绕“输入方式、输出效果、边界记录”展开。</h2>
+          <p class="sub">体验不是只听哪条更好听，而是把每次生成拆成可复盘的评测单元：输入条件、生成目标、实际效果和失败原因都要记录。</p>
+        </div>
+      </div>
+      <div class="lab">
+        <nav class="lab-nav" aria-label="体验方法">
+          <button class="lab-tab active" data-tab="method-input">输入分层 <span>文本 / 参考音</span></button>
+          <button class="lab-tab" data-tab="method-listen">试听路径 <span>主样片 / 对照</span></button>
+          <button class="lab-tab" data-tab="method-score">效果评价 <span>效果 / 能力 / 边界</span></button>
+        </nav>
+        <section class="lab-panel active" id="method-input">
+          <h3>先按输入方式分层，不把所有样片混在一起比较</h3>
+          <p class="sub">纯文本生成和参考音生成回答的是不同问题：前者看模型能否从 Prompt 直接调度多轨声音，后者看音色和风格能否迁移。</p>
+          <div class="prompt-box">评测记录字段：
+输入方式：纯文本 / 参考音
+目标能力：全要素直出 / 音色迁移 / 高表现力 / 边界测试
+目标时长：生成前标注
+实际时长：生成后记录
+样片编号：P / H / R / XQ / D / 错误日志</div>
+          <div class="checklist">
+            <div class="check">纯文本样片重点看角色、环境、音效、配乐是否能一次性编排。</div>
+            <div class="check">参考音样片重点看音色一致、风格迁移和长段是否漂移。</div>
+            <div class="check">高表现力样片单独看节奏、方言、戏腔、叫卖、纯音效等特殊表达。</div>
+            <div class="check">错误日志不丢弃，作为可用性边界的一部分。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="method-listen">
+          <h3>先听主样片，再按问题展开其他样片</h3>
+          <p class="sub">体验路径不追求把所有音频一次铺开，而是先用主样片判断能力上限，再根据具体问题展开补充样片和参考音对照。</p>
+          <div class="prompt-box">试听顺序：
+1. 先听每组主样片，判断这一类能力是否成立
+2. 纯文本样片重点听角色、音效、配乐是否共同服务叙事
+3. 参考音样片先听参考音，再听成品音频，比较音色、语速和风格迁移
+4. 补充样片只在需要验证某个细分问题时展开，不把播放器全部堆在页面上</div>
+          <div class="checklist">
+            <div class="check">主样片直接展示，承担报告的第一层证据。</div>
+            <div class="check">其他样片用列表筛选，避免页面变成素材堆叠。</div>
+            <div class="check">参考音生成必须同时呈现参考音和成品音频，才方便判断迁移效果。</div>
+            <div class="check">切换播放时自动暂停上一条音频，保证试听判断不被干扰。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="method-score">
+          <h3>每条样片用“效果、能力、边界”三段评价</h3>
+          <p class="sub">报告不直接写“好/不好”，而是说明听到了什么效果、它证明了什么能力、还暴露了什么边界。</p>
+          <div class="prompt-box">评价模板：
+效果：这条音频实际听起来怎样
+能力：它证明了模型哪项能力
+边界：这条样片仍然需要注意什么
+适用场景：它能进入哪类真实工作流
+错误记录：如触发风控、额度、超时、参考音长度限制，单独记录</div>
+          <div class="checklist">
+            <div class="check">成功样片用于证明能力上限。</div>
+            <div class="check">失败日志用于说明产品边界和使用成本。</div>
+            <div class="check">Demo 从完整测试集中抽取，不等同于全量测试。</div>
+            <div class="check">评价语言面向最终报告，不保留过程草稿口吻。</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" id="suite">
+      <div class="section-head">
+        <div class="eyebrow">04 / 测试集设计</div>
+        <div>
+          <h2>测试集按“全量覆盖 + 实测校准”设计。</h2>
+          <p class="sub">完整测试集先围绕官方能力主张拆成纯文本生成、参考音生成、长段音色一致性、高表现力表达和边界稳定性，再根据实际生成结果校准内容密度、参考音限制和风控边界。后面的样片评测只是从完整测试集中抽取代表案例，不等同于测试集全量。</p>
+        </div>
+      </div>
+      <div class="lab">
+        <nav class="lab-nav" aria-label="测试集方向">
+          <button class="lab-tab active" data-tab="suite-production">全要素成片 <span>P01-P06</span></button>
+          <button class="lab-tab" data-tab="suite-reference">参考音生成 <span>R01-R10</span></button>
+          <button class="lab-tab" data-tab="suite-expressive">高表现力 <span>H01-H13</span></button>
+          <button class="lab-tab" data-tab="suite-dialect">方言专项 <span>D 系列</span></button>
+          <button class="lab-tab" data-tab="suite-opera">戏曲唱腔 <span>XQ01-XQ02</span></button>
+          <button class="lab-tab" data-tab="suite-format">格式规范 <span>可粘贴</span></button>
+        </nav>
+        <section class="lab-panel active" id="suite-production">
+          <h3>全要素成片：从一条 Prompt 直出完整音频片段</h3>
+          <p class="sub">覆盖科幻短剧、悬疑广播剧、古装客栈、动作逃生、纪录片等场景，用来验证“音频导演”式生成是否成立。</p>
+          <div class="prompt-box">覆盖编号：P01-P06
+输入方式：纯文本生成
+核心变量：人声对白、环境声、拟音、配乐、转场
+代表抽样：P02 悬疑广播剧、P01 科幻短剧、P06 古装客栈</div>
+          <div class="checklist">
+            <div class="check">设计依据：一条样片必须同时验证角色、环境、拟音、配乐和转场，才能证明不是普通 TTS。</div>
+            <div class="check">实测校准：P02 最能体现音效作为剧情线索，P01 声场复杂度最高。</div>
+            <div class="check">评估重点：对白清晰度、音效是否服务剧情、音乐是否自动避让人声。</div>
+            <div class="check">主要边界：复杂声效越多，越容易遮挡对白或让声场变成噪音墙。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="suite-reference">
+          <h3>参考音生成：从“像不像”扩展到“能不能迁移”</h3>
+          <p class="sub">参考音测试不能只听音色相似，还要看参考音能否迁移到播客、有声书、对话、方言适配等语境。</p>
+          <div class="prompt-box">覆盖编号：R01-R10
+输入方式：文本 Prompt + 15-25 秒干净单人参考音
+核心变量：音色一致、风格迁移、长段稳定、多角色区分
+代表抽样：R03 参考音播客、R08 长段参考音、R10 多参考/多角色</div>
+          <div class="checklist">
+            <div class="check">设计依据：参考音生成要同时测试音色、语速、气息、口音和内容风格。</div>
+            <div class="check">实测校准：参考音模块对文本密度很敏感，内容不足会出现静寂段补时长。</div>
+            <div class="check">评估重点：参考音是否漂移，情绪变化时是否换人，媒介声是否可区分。</div>
+            <div class="check">主要边界：参考音整体效果弱于纯文本样片，环境音与对白更容易不融合；方言口音参考有时只迁移音色，不体现口音。</div>
+            <div class="check">多参考融合三次实验均暴露明显问题：声音混乱、空白段变多、生成未要求内容，当前基本不建议作为可用能力展示。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="suite-expressive">
+          <h3>高表现力：用专项测试压测“会不会演”</h3>
+          <p class="sub">高表现力测试覆盖搞笑、早市叫卖、情绪争吵、脱口秀、快板、体育解说、耳语惊悚、新闻连线、冥想和无对白叙事。</p>
+          <div class="prompt-box">覆盖编号：H01-H13
+输入方式：纯文本生成
+核心变量：节奏、气口、情绪曲线、生活场景、纯音效事件链
+代表抽样：H02 早市叫卖、H05 快板相声、H10 无对白纯音效</div>
+          <div class="checklist">
+            <div class="check">设计依据：高表现力样片比普通对白更能暴露节奏、气口、场景调度和情绪控制能力。</div>
+            <div class="check">实测校准：早市叫卖、快板和纯音效叙事最有区分度。</div>
+            <div class="check">评估重点：是否像真实表演，是否靠停顿和反应成立，而不是朗读文本。</div>
+            <div class="check">主要边界：方言能力需要单独测试，不能用未生成方言效果的样片替代。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="suite-dialect">
+          <h3>方言专项：融合压力与单方言稳定性分开评估</h3>
+          <p class="sub">多方言融合用于看口音切换，单方言用于看地道度和稳定性，两者回答的问题不同。</p>
+          <div class="prompt-box">覆盖编号：D 系列
+输入方式：纯文本生成
+核心变量：四川、东北、粤语、天津、河南等地域表达
+测试策略：融合压力测试 + 单方言专项测试</div>
+          <div class="checklist">
+            <div class="check">设计依据：地道方言、可懂度和不刻板化必须同时评估。</div>
+            <div class="check">实测校准：复杂方言、多角色、长文本叠加时解析稳定性下降。</div>
+            <div class="check">评估重点：口音是否自然、是否能听懂、是否被环境声遮挡。</div>
+            <div class="check">主要边界：单方言更适合做可复现评估，多方言融合更适合做压力测试。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="suite-opera">
+          <h3>戏曲唱腔：单独展示模型的强风格上限</h3>
+          <p class="sub">戏腔不是两句唱词能展示的能力，必须包含引子、念白、慢板、转快、情绪拔高和收腔。</p>
+          <div class="prompt-box">覆盖编号：XQ01-XQ02
+输入方式：纯文本生成
+核心变量：板眼、拖腔、转音、唱念转换、收腔
+展示结论：XQ02 更完整、更惊艳，适合作为正式展示样片；XQ01 作为短唱腔对照。</div>
+          <div class="checklist">
+            <div class="check">设计依据：戏曲唱腔需要足够时长展示板眼、拖腔和情绪层次。</div>
+            <div class="check">实测校准：XQ02 的表现更完整，更适合单独展示。</div>
+            <div class="check">评估重点：是否有戏曲韵味，是否滑向普通国风歌曲。</div>
+            <div class="check">主要边界：纯戏腔、强风格女声、唱念类文本更容易触发风控或流式中断。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="suite-format">
+          <h3>平台可粘贴格式：只把生成指令交给模型</h3>
+          <p class="sub">测试集不是越复杂越好，关键是让平台能读懂哪些内容要朗读、哪些只是动作或评测说明。格式规范可以显著减少误读、少读和把说明念出来的问题。</p>
+          <div class="prompt-box">推荐写法：
+对白引号：所有实际要说出来的台词都使用中文引号，例如：店员说：“欢迎光临。”
+角色标注：角色名放在引号外，用“某某说 / 某某问 / 某某低声说”表达。
+动作提示：停顿、叹息、笑声、背景音放在引号外，例如：她停顿一秒后说：“我想起来了。”
+时间提示：可以写“第 30 秒左右出现敲门声”，但不要让角色读出时间码。
+安全粘贴：只粘贴“测试 Prompt”列，不粘贴通过标准、失败信号、测试点标记和评分说明。</div>
+          <div class="checklist">
+            <div class="check">避免写成“店员：欢迎光临”，平台更容易把角色名和对白边界混在一起。</div>
+            <div class="check">避免把动作写进引号，例如“停顿一秒 我想起来了”，否则可能被当作台词朗读。</div>
+            <div class="check">避免把测试编号、评分规则、通过标准一起粘贴进输入框，防止模型生成无关内容。</div>
+            <div class="check">脚本必须提前预估目标时长；内容不足以撑满时长时，模型容易用大段沉默、环境声或重复停顿补时长。</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" id="audio">
+      <div class="section-head">
+        <div class="eyebrow">05 / 样片评测</div>
+        <div>
+          <h2>用代表样例回答：它能把声音做到什么程度。</h2>
+          <p class="sub">这一组样片从完整测试集中抽取，按能力证据组织：先展示成片直出，再展示参考音迁移、高表现力表达和边界样例。每条音频都对应一个明确问题，而不是单纯陈列播放器。</p>
+        </div>
+      </div>
+      <div class="selection-panel">
+        <div>
+          <span class="tag">选择逻辑</span>
+          <h3>样例选择遵循“能力证明”而非“听感偏好”。</h3>
+          <p class="sub">最终入选样例覆盖官方主张里的三类核心能力：全要素直出、参考音生成与长段音色一致性，以及非语言表达和复杂声场控制。</p>
+        </div>
+        <div class="selection-list">
+          <div class="selection-item"><strong>成片直出</strong><span>样例必须同时包含对白、环境、拟音、配乐或转场，能体现“一条 Prompt 生成完整音频作品”。</span></div>
+          <div class="selection-item"><strong>可听差异</strong><span>非技术听众也应能听出角色分离、声场层次、叫卖节奏、参考音迁移或纯音效叙事。</span></div>
+          <div class="selection-item"><strong>生产价值</strong><span>样例对应真实工作流：广播剧、短剧、播客、有声书、本地生活内容、短视频音效设计。</span></div>
+          <div class="selection-item"><strong>边界呈现</strong><span>报告保留风控、参考音时长、额度和复杂 Prompt 解析失败，避免只呈现成功样例。</span></div>
+        </div>
+      </div>
+      <div class="demo-group">
+        <div class="demo-group-head">
+          <h3>纯文本生成样片</h3>
+          <p>只输入文字 Prompt，不上传参考音。重点评估模型能否直接生成角色对白、环境声、配乐、叫卖节奏和纯音效叙事；方言能力另设专项测试。</p>
+        </div>
+        <div class="audio-grid">
+          <article class="audio-card featured">
+          <div class="demo-meta"><span>主样片</span><span>悬疑广播剧</span><span>音效叙事</span></div>
+          <h3>悬疑广播剧：声音线索推动剧情</h3>
+          <p>钟摆停顿、录音机质感和三下敲击承担叙事功能，不只是背景装饰。这条最能代表“音频导演”能力：模型需要同时处理角色、场景、线索和转场。</p>
+          <audio controls preload="none" src="音频生成/P02.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 90 秒左右的悬疑广播剧。场景是旧书房，背景有风声、钟摆声、木地板轻响。需要低频悬疑配乐，但对白出现时音乐自动降低。角色有侦探、委托人、老式录音机里的死者声音。
+
+委托人说：“门是从里面锁上的，窗户也没开。”
+侦探说：“先别急着下结论。”
+委托人说：“可警察也说，这是自杀。”
+侦探说：“自杀的人不会把椅子摆回原位。”
+纸张翻动。侦探说：“地毯上有四个浅印，旁边还有新的拖痕。”
+钟摆声忽然停半秒又恢复。委托人说：“钟刚才是不是停了？”
+侦探说：“不是停，是有人碰过。”
+录音机启动。死者的声音说：“如果你听到这段录音，说明他已经回来了。”
+委托人发抖说：“他是谁？”
+录音机里传来三下敲击。死者说：“一短，两长。”
+侦探低声说：“不是求救，是暗号。”
+书柜后面也传来三下敲击。结尾音乐停下，只保留钟摆声。</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>密室氛围完整，录音机与现场人声有媒介差异，关键敲击声具备剧情提示作用。</span></div>
+            <div><strong>能力</strong><span>全要素混合、音效叙事、多角色对白、悬疑节奏控制。</span></div>
+            <div><strong>边界</strong><span>复杂音效越多，越需要检查对白清晰度和线索音效是否被音乐遮挡。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>角色区分</strong>侦探 / 委托人 / 录音机</span>
+            <span><strong>音效融合</strong>钟摆、纸张、敲击</span>
+            <span><strong>适用场景</strong>广播剧 / 悬疑短剧</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/P02.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>全要素</span><span>科幻</span><span>多轨混音</span></div>
+          <h3>科幻短剧：警报、AI 与舱门反转</h3>
+          <p>低频、警报、金属门、AI 声和真人对白同时出现，适合检验模型能否在高密度声场中维持信息层级。</p>
+          <audio controls preload="none" src="音频生成/P01.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 100 秒左右的科幻短剧预告音频。需要低频紧张配乐、飞船环境声、金属门开启声、警报声、人声对白和结尾转场。音乐不能盖过对白。
+
+开头是飞船低频轰鸣，远处传来警报。女舰长压低声音说：“把主屏切到手动。”
+工程师说：“手动已经失效，核心舱不响应。”
+金属门缓慢开启。女舰长说：“那就断开核心舱。”
+工程师急促地说：“断开以后，里面的人就回不来了。”
+警报声变强。人工智能声音说：“检测到未知生命信号。”
+女舰长停顿一秒说：“位置？”
+人工智能说：“就在你们身后。”
+所有音乐短暂停顿，只保留呼吸声。工程师轻声说：“舰长，门是从外面开的。”
+女舰长说：“不要回头，先关门。”
+金属门卡住，发出刺耳摩擦声。人工智能重复说：“欢迎回家。”</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>科幻空间感明确，警报和舱门声能制造紧迫感，AI 声与真人角色形成差异。</span></div>
+            <div><strong>能力</strong><span>复杂声场、多轨混音、非真人角色声、结尾反转。</span></div>
+            <div><strong>边界</strong><span>警报类音效容易抢占人声频段，成片使用前仍需重点听对白可懂度。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>声场</strong>飞船环境</span>
+            <span><strong>转场</strong>音乐骤停</span>
+            <span><strong>适用场景</strong>科幻短剧 / 预告片</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/P01.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>全要素</span><span>古装群戏</span><span>多角色</span></div>
+          <h3>古装客栈：雨夜、客栈和群像调度</h3>
+          <p>雨声、木门、酒杯和古风配乐共同建立场景，能够观察模型是否具备跨题材的环境塑造能力。</p>
+          <audio controls preload="none" src="音频生成/P06.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 95 秒古风客栈群戏音频。使用普通原创角色声音。需要雨夜环境、古风低密度配乐、木门声、酒杯声、脚步声、楼上传来的动静和多人对白。配乐要有电影感，但不能盖住台词。整体是悬疑氛围，不要过度惊悚，不要夸张武侠腔。
+
+雨声中木门被推开。客栈掌柜说：“客官，打尖还是住店？”
+外乡客说：“等人。”
+角落里的女客人说：“这地方不适合等人。”
+外乡客说：“姑娘认识我？”
+女客人说：“不认识，但你进门以后，左手一直没离开包袱。”
+酒杯轻响。掌柜压低声音说：“二位要是有旧事，最好小声些，楼上还有客。”
+楼上小二喊：“掌柜的，天字号房的灯灭了。”
+女客人说：“他已经来了。”
+外乡客轻笑说：“你等的也是他？”
+远处雷声响起，楼上传来一声很轻的木板响。
+女客人放下酒杯说：“不，我等的是你先说实话。”
+掌柜停顿一下说：“客官，雨大，门先别开。”
+外乡客低声说：“已经晚了，门外那个人，不是跟我来的。”
+配乐短暂增强，随后只留下雨声、楼上脚步声和酒杯轻响。</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>客栈空间感成立，雨夜和古风配乐能托住群像对白，适合短剧或漫剧片段。</span></div>
+            <div><strong>能力</strong><span>多角色区分、古风环境、动作拟音、氛围配乐。</span></div>
+            <div><strong>边界</strong><span>古装语境容易滑向模板化腔调，角色个性仍需要通过 Prompt 精确约束。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>角色</strong>掌柜 / 女客 / 外乡客</span>
+            <span><strong>氛围</strong>雨声与古风配乐</span>
+            <span><strong>适用场景</strong>古风短剧 / 有声剧</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/P06.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>专项补充</span><span>短剧片头</span><span>S01</span></div>
+          <h3>短剧片头引导片：婚礼现场</h3>
+          <p>这条样片基本接近成品级短剧片头。婚礼现场、手机震动、旧录音、宾客议论和片头转场共同形成冲突钩子，适合作为“全要素成片直出”的补充展示。</p>
+          <audio controls preload="none" src="音频生成/S01.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 80 秒左右的都市短剧片头音频。需要婚礼现场环境声、低密度钢琴配乐、宾客低声议论、手机震动声、旧录音播放声和片头式转场。音乐不能盖住对白。
+
+婚礼进行曲很轻，宾客低声交谈。司仪说：“请新郎新娘交换戒指。”
+新娘低声说：“等一下。”
+新郎压低声音说：“你又怎么了？”
+新娘说：“我刚收到一段录音。”
+手机震动声。新郎说：“现在不是闹脾气的时候。”
+新娘说：“那你解释一下，为什么录音里是你的声音。”
+旧录音播放，男声说：“婚礼照常办，股份转完她就没用了。”
+宾客议论声变大。新郎急促地说：“那不是我。”
+新娘轻轻笑一下说：“我也希望不是。”
+钢琴音乐短暂停顿。新娘说：“可这段录音，是你母亲发给我的。”
+远处女人声音说：“戒指先别戴。”
+片头音乐推进，结尾只留下手机录音的电流声。</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>短剧钩子成立，旧录音作为媒介声推动反转，婚礼现场环境和片头转场能形成成片感。</span></div>
+            <div><strong>能力</strong><span>多角色对白、音乐转场、情绪冲突、媒介声区分、短剧片头结构。</span></div>
+            <div><strong>边界</strong><span>适合作为成功样片展示，但仍需检查宾客议论和配乐是否在不同生成轮次中遮挡对白。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>成熟度</strong>接近成片</span>
+            <span><strong>钩子</strong>婚礼反转</span>
+            <span><strong>适用场景</strong>短剧片头 / 漫剧预告</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/S01.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>表现力</span><span>叫卖</span><span>生活群像</span></div>
+          <h3>早市叫卖：生活场景和人群层次</h3>
+          <p>叫卖、人群反应和市场环境能快速暴露模型是否只会标准朗读，还是能处理生活化声音调度。</p>
+          <audio controls preload="none" src="音频生成/H02.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 75 秒早市群像音频。场景是清晨菜市场，背景有推车声、塑料袋声、切菜声、电动车经过声和人群远近变化。摊主、顾客、孩子、旁边摊主声音要能区分。
+
+摊主拖着节奏叫卖：“刚出锅的糖油饼，热的，脆的，拿回去还是香的。”
+顾客说：“老板，多少钱一个？”
+摊主笑着说：“两块五，您拿三个我给您算七块。”
+旁边小孩说：“我要那个最大的。”
+摊主说：“最大的留给会挑的人，小朋友眼光不错。”
+旁边摊主远远喊：“新鲜青菜，早上刚到。”
+顾客说：“能不能少点油？”
+摊主说：“少油就不叫糖油饼了，叫糖饼想象版。”
+周围有人笑。
+摊主又扬声叫卖：“热糖油饼，趁热拿，凉了它不认我这个师傅。”</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>早市环境具备生活感，叫卖、人群反应和摊位拟音共同支撑场景。</span></div>
+            <div><strong>能力</strong><span>叫卖节奏、多人反应、环境层次、生活化表达。</span></div>
+            <div><strong>边界</strong><span>该样片不作为方言能力证据；方言需要使用 D 系列单方言专项单独评估。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>表达</strong>叫卖节奏</span>
+            <span><strong>环境</strong>早市声场</span>
+            <span><strong>适用场景</strong>本地生活 / 营销短片</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/H02.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>表现力</span><span>快板</span><span>高语速</span></div>
+          <h3>快板相声：节奏、气口和清晰度</h3>
+          <p>快板要求高语速、强节奏、清楚咬字和捧逗配合同时成立，是表现力测试里的高压项。</p>
+          <audio controls preload="none" src="音频生成/H05.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 55 秒快板加相声风格音频。需要清脆竹板节奏，两位演员一捧一逗，语速快但咬字清楚，不能糊成一片。内容是用快板介绍 AI 音频工具，不要太广告腔。
+
+逗哏打板说：“竹板这么一打呀，别的咱不夸。”
+捧哏说：“您这又要夸谁？”
+逗哏说：“夸一夸声音进了新年画。”
+捧哏说：“声音怎么还能进画里？”
+逗哏快板说：“一行字，几句话，风声雨声都能搭；有人笑，有人怕，门一响，戏就拉。”
+捧哏说：“您慢点，我耳朵刚系上安全带。”
+逗哏说：“慢不了，节奏在这儿催着呢。”
+竹板加快。逗哏说：“不是念稿不是读，角色站住才算熟。”
+捧哏说：“这句有点东西。”
+逗哏收板说：“有东西也别急，先听清楚再鼓掌。”</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>如果节奏、板点和气口成立，说明模型具备超出普通朗读的表演控制能力。</span></div>
+            <div><strong>能力</strong><span>高语速、韵律控制、竹板节奏、双人互动。</span></div>
+            <div><strong>边界</strong><span>高语速内容容易糊字，评估时应优先检查信息是否听得清。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>语速</strong>快而不糊</span>
+            <span><strong>板点</strong>竹板节奏</span>
+            <span><strong>适用场景</strong>曲艺风格 / 短视频</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/H05.wav</code></div>
+          </article>
+          <article class="audio-card">
+          <div class="demo-meta"><span>边界</span><span>无对白</span><span>纯音效</span></div>
+          <h3>无对白叙事：只靠声音讲故事</h3>
+          <p>去掉所有台词后，模型只能依靠动作声和空间变化组织叙事，这是“声音导演”能力的边界样例。</p>
+          <audio controls preload="none" src="音频生成/H10.wav"></audio>
+          <details class="demo-prompt">
+            <summary>查看输入 Prompt</summary>
+            <pre>请生成 60 秒无对白纯音效叙事。不要出现任何人声台词，只用环境声和动作声讲一个人深夜回家发现家里有人来过的故事。需要楼道脚步声、钥匙开门声、门轴声、室内冰箱低频、灯开关、纸张被风吹动、手机震动、急促呼吸和最后的门外脚步声。
+
+音频开头是楼道远处脚步逐渐靠近，钥匙插入门锁，门打开。室内很安静，只有冰箱低频。灯开关按下，但灯没有亮。脚步慢慢进入房间，地板轻响。桌上的纸被风吹动。手机突然震动，停顿。呼吸声变急。抽屉被轻轻拉开，里面空了。窗帘轻轻摆动。最后，门外传来另一串脚步声，停在门口。</pre>
+          </details>
+          <div class="demo-eval">
+            <div><strong>效果</strong><span>脚步、钥匙、门、手机和呼吸组成事件链，能验证声音是否具备可理解的叙事顺序。</span></div>
+            <div><strong>能力</strong><span>纯音效叙事、空间调度、悬念建立。</span></div>
+            <div><strong>边界</strong><span>无对白内容对事件排序要求更高，一旦关键声缺失，听众很难补全剧情。</span></div>
+          </div>
+          <div class="score-row">
+            <span><strong>叙事</strong>无对白成立</span>
+            <span><strong>拟音</strong>动作链条</span>
+            <span><strong>适用场景</strong>悬疑音效 / 声音设计</span>
+          </div>
+          <div class="missing">音频文件：<code>音频生成/H10.wav</code></div>
+          </article>
+        </div>
+      </div>
+      <div class="demo-group">
+        <div class="demo-group-head">
+          <h3>方言能力样片</h3>
+          <p>方言专项单独展示，不再混在早市叫卖或生活群像里。D01 是多方言融合压力样片，用来观察地域口音切换、角色区分和对白可懂度。</p>
+        </div>
+        <div class="audio-grid">
+          <article class="audio-card featured">
+            <div class="demo-meta"><span>方言专项</span><span>多方言群像</span><span>D01</span></div>
+            <h3>D01：高铁候车厅多方言群像</h3>
+            <p>五位乘客分别带四川、东北、粤语、天津、河南地域方言特征，同处一个候车厅小吃店场景。它更适合验证模型能否做“方言区分和切换”，不是单方言地道度的最终结论。</p>
+            <audio controls preload="none" src="音频生成/D01.wav"></audio>
+            <details class="demo-prompt">
+              <summary>查看输入 Prompt</summary>
+              <pre>请生成 100 秒方言群像音频。使用普通原创角色声音，不模仿任何真实人物、主播、演员或影视角色。场景是高铁候车厅旁边的小吃店，背景有候车广播、人群脚步声、餐盘声、扫码提示音。需要五位角色，分别带四川、东北、粤语、天津、河南地域方言特征。方言要尽量地道，但不能影响理解；每个人只说两到三轮，语速自然，不要夸张表演。
+
+候车广播远处响起：“开往广州南方向的列车开始检票。”
+四川乘客说：“老板儿，给我来碗小面，少放点海椒哈，等哈儿还要赶车。”
+东北乘客说：“哎呀妈呀，这味儿挺冲啊，我闻着都精神了。”
+粤语乘客说：“唔该，我想要一杯冻柠茶，少冰，唔好太甜。”
+天津乘客说：“介地儿还挺热闹嘛，我就要个煎饼果子，薄脆多来点儿。”
+河南乘客说：“老板，给俺来碗胡辣汤，中不中？别太烫，俺马上进站。”
+店员普通话说：“大家别急，一个一个来。”
+四川乘客笑着说：“莫慌莫慌，我这个可以打包。”
+东北乘客说：“我也打包，车上吃，香味儿一出来，整个车厢都得看我。”
+粤语乘客轻笑说：“咁你要小心，旁边人可能会饿。”
+天津乘客接话说：“嗐，那不正好嘛，社交从一口饭开始。”
+河南乘客说：“中，出门在外，吃饱了心里才踏实。”
+远处广播再次响起。
+店员说：“五位的都好了，拿好别落下。”
+五个人同时但要清楚地回应：“谢谢。”
+结尾保留扫码提示音、人群脚步和候车广播。</pre>
+            </details>
+            <div class="demo-eval">
+              <div><strong>效果</strong><span>多方言角色放在同一声场内，能直接听出口音是否有差异、是否串音色、背景广播是否影响理解。</span></div>
+              <div><strong>能力</strong><span>方言/口音切换、多角色区分、候车厅环境声、多人群像调度。</span></div>
+              <div><strong>边界</strong><span>D01 是融合压力测试；若要判断某一种方言是否足够地道，还需要 D02-D07 单方言样片继续补充。</span></div>
+            </div>
+            <div class="score-row">
+              <span><strong>方言</strong>四川 / 东北 / 粤语 / 天津 / 河南</span>
+              <span><strong>重点</strong>区分度与可懂度</span>
+              <span><strong>适用场景</strong>地域群像 / 本地生活内容</span>
+            </div>
+            <div class="missing">音频文件：<code>音频生成/D01.wav</code></div>
+          </article>
+        </div>
+      </div>
+      <div class="demo-group">
+        <div class="demo-group-head">
+          <h3>戏曲唱腔专项样片</h3>
+          <p>戏曲样片单独展示，不混在普通高表现力里。XQ02 的结构更完整，能听到引子、念白、板眼、情绪抬升和收腔，是本组推荐展示样片。</p>
+        </div>
+        <div class="audio-grid">
+          <article class="audio-card featured">
+            <div class="demo-meta"><span>推荐展示</span><span>戏曲唱腔</span><span>XQ02</span></div>
+            <h3>XQ02：完整戏曲唱腔展示</h3>
+            <p>XQ02 比 XQ01 更适合单独展示模型的戏曲效果。它不是几句国风唱词，而是包含引子、念白、慢板、转快、情绪拔高和收腔的完整段落。</p>
+            <audio controls preload="none" src="音频生成/XQ02.wav"></audio>
+            <details class="demo-prompt">
+              <summary>查看输入 Prompt</summary>
+              <pre>请生成 110 秒原创国风戏曲唱腔展示音频。女声为原创戏曲角色。整体以戏曲唱腔为主，需要有引子、念白、慢板唱段、节奏转快、情绪拔高和漂亮收腔。伴奏使用古琴、笛子、轻锣鼓和板鼓，伴奏要有板眼，但不能盖住人声。人声要咬字清楚，有拖腔、转音、气口、亮音和收尾韵味。不要做成普通朗读，也不要做成流行歌曲。
+
+0-8 秒：古琴和笛子轻轻进入，远处一声轻锣。
+8-18 秒：女声用戏曲念白说：“一别经年，山河依旧，只是不见故人归。”
+18-34 秒：板鼓轻点，进入慢板。女声以戏曲唱腔唱：“一更风雪落长街，孤灯照影未成眠。”
+34-48 秒：短暂停顿，笛子接一句。女声继续唱：“旧梦藏在云水间，半卷残书写从前。”
+48-62 秒：锣鼓轻轻加密，情绪开始抬高。女声唱：“我曾踏月过千山，也曾临风问归帆。”
+62-76 秒：板鼓节奏稍快。女声唱：“问那江水东流去，可曾带我到君前。”
+76-84 秒：中段念白，语气坚定：“若此身仍在，便不负当年一诺。”
+84-96 秒：节奏转快，女声唱：“风起云开，关山路远，纵有霜雪不回还。”
+96-106 秒：鼓点更清晰，女声情绪拔高唱：“待到春雷惊天地，我把长灯照故园。”
+106-110 秒：最后放慢，女声拉开拖腔唱：“明月照关山，故人终相见。” 结尾保留古琴、笛子和轻锣余音。</pre>
+            </details>
+            <div class="demo-eval">
+              <div><strong>效果</strong><span>整体更有舞台感和戏曲韵味，拖腔、板眼、转音和收尾更完整，听感更惊艳。</span></div>
+              <div><strong>能力</strong><span>戏曲唱腔、唱念转换、节奏层次、情绪抬升、国风配器融合。</span></div>
+              <div><strong>边界</strong><span>戏腔属于高风险强风格任务，仍需关注风控、流式中断和是否滑向普通国风歌曲。</span></div>
+            </div>
+            <div class="score-row">
+              <span><strong>展示优先级</strong>高</span>
+              <span><strong>能力重点</strong>板眼 / 拖腔 / 收腔</span>
+              <span><strong>适用场景</strong>国风短片 / 戏曲风格 Demo</span>
+            </div>
+            <div class="missing">音频文件：<code>音频生成/XQ02.wav</code></div>
+          </article>
+          <article class="audio-card">
+            <div class="demo-meta"><span>对照样片</span><span>戏腔初版</span><span>XQ01</span></div>
+            <h3>XQ01：短唱腔对照</h3>
+            <p>XQ01 保留为对照样片，用来看短文本戏腔能否成立。相比 XQ02，它更像早期探索，展示完整度和惊艳感都弱一些。</p>
+            <audio controls preload="none" src="音频生成/XQ01.wav"></audio>
+            <details class="demo-prompt">
+              <summary>查看输入 Prompt</summary>
+              <pre>请生成 50 秒纯戏腔国风音频。使用原创女性角色声音。整体以戏腔唱念为主，不要普通朗读，不要流行歌唱腔。背景使用很轻的古琴、箫声和低密度鼓点，不能盖住人声。声音要有戏腔的拖腔、转音、气口和收尾韵味，但每个字要清楚。
+
+女声以戏腔唱念：“一盏孤灯照长街，半城风雪半城别。”
+短暂停顿，古琴轻响。
+女声继续戏腔唱念：“我把旧梦藏袖间，等你归来问从前。”
+鼓点轻轻进入。
+女声情绪抬高，戏腔唱念：“若此去山河无恙，便借东风寄人间。”
+箫声拉长。
+女声放慢，带拖腔收尾：“只愿明月知我意，照见归人过关山。”
+结尾保留两秒古琴余音。</pre>
+            </details>
+            <div class="demo-eval">
+              <div><strong>效果</strong><span>能体现一定戏腔质感，但结构较短，板眼和情绪层次展开不足。</span></div>
+              <div><strong>能力</strong><span>短唱腔、国风配器、基础拖腔。</span></div>
+              <div><strong>边界</strong><span>短样片不适合作为“戏曲效果上限”证明，只适合和 XQ02 做对比。</span></div>
+            </div>
+            <div class="score-row">
+              <span><strong>展示优先级</strong>低</span>
+              <span><strong>定位</strong>对照版本</span>
+              <span><strong>价值</strong>说明测试迭代</span>
+            </div>
+            <div class="missing">音频文件：<code>音频生成/XQ01.wav</code></div>
+          </article>
+        </div>
+      </div>
+      <div class="demo-group">
+        <div class="demo-group-head">
+          <h3>参考音生成样片</h3>
+          <p>输入文字 Prompt，同时上传 15-25 秒干净单人参考音。重点评估音色复刻、风格迁移和长段一致性；实测参考音效果弱于纯文本，尤其要关注环境音与对白融合、口音是否真实迁移。</p>
+        </div>
+        <div class="audio-grid">
+          <article class="audio-card">
+            <div class="demo-meta"><span>参考音</span><span>播客</span><span>风格迁移</span></div>
+            <h3>参考音播客：疲惫但克制的口播</h3>
+            <p>参考音能力的关键不只是音色相似，还包括语速、气息、停顿和内容风格的迁移。</p>
+            <div class="audio-compare">
+              <div class="reference-box">
+                <strong>参考音频</strong>
+                <span>用于提供播客口播质感和语速参考。</span>
+                <audio controls preload="none" src="参考音/播客风格.wav"></audio>
+              </div>
+              <div class="result-box">
+                <strong>成品音频</strong>
+                <span>模型根据参考音与 Prompt 生成的最终样片。</span>
+                <audio controls preload="none" src="音频生成/R03.wav"></audio>
+              </div>
+            </div>
+            <details class="demo-prompt">
+              <summary>查看输入 Prompt</summary>
+              <pre>参考 @音频1 的声音，生成 70 秒深夜播客独白。使用参考音色的说话质感和语速，但不要模仿任何真实公众人物。不要背景音乐。背景只有很轻的房间底噪和杯子放下的声音。语气疲惫但克制，有自然轻笑、吸气和短暂停顿，不能煽情。
+
+主持人轻笑一下说：“我以前以为，失败就是项目停了。”
+停顿半秒。主持人说：“后来才知道，真正的失败，是你开始假装自己不在乎。”
+杯子轻轻放下。主持人说：“那天晚上，我把团队群解散了。没有人问为什么，因为每个人都知道为什么。”
+主持人吸气后说：“最难受的不是钱没了，也不是办公室退租。”
+短暂停顿。主持人说：“是第二天早上，我还是习惯性地买了四杯咖啡。”
+主持人轻叹，说：“走到楼下才想起来，已经没人需要我带了。”
+主持人说：“但我还是打开电脑，把昨天没写完的文档写完。”
+结尾主持人说：“这可能就是创业最不体面的地方，你明明输了，还得继续像个成年人。”</pre>
+            </details>
+            <div class="demo-eval">
+              <div><strong>效果</strong><span>整体更接近播客独白，轻笑、吸气和短暂停顿能形成自然口播节奏。</span></div>
+              <div><strong>能力</strong><span>参考音色迁移、播客语气、非语言表达控制。</span></div>
+              <div><strong>边界</strong><span>参考音测试需要保证文本密度，否则模型容易用停顿和环境底噪补时长。</span></div>
+            </div>
+            <div class="score-row">
+              <span><strong>音色</strong>参考一致</span>
+              <span><strong>风格</strong>深夜播客</span>
+              <span><strong>适用场景</strong>播客 / 口播样片</span>
+            </div>
+            <div class="missing">音频文件：<code>音频生成/R03.wav</code></div>
+          </article>
+          <article class="audio-card">
+            <div class="demo-meta"><span>参考音</span><span>长段</span><span>一致性</span></div>
+            <h3>长段参考音：90 秒叙述稳定性</h3>
+            <p>长段叙述用于观察音色是否漂移，也能看出模型是否会用空白、环境声或重复语气硬撑时长。</p>
+            <div class="audio-compare three">
+              <div class="reference-box">
+                <strong>参考音频 A</strong>
+                <span>男声参考，用于观察长段生成中的音色保持。</span>
+                <audio controls preload="none" src="参考音/R08-自信男声.mp3"></audio>
+              </div>
+              <div class="reference-box">
+                <strong>参考音频 B</strong>
+                <span>女声参考，用于对照多参考/不同声线素材的可用性。</span>
+                <audio controls preload="none" src="参考音/R08-Lively Girl.mp3"></audio>
+              </div>
+              <div class="result-box">
+                <strong>成品音频</strong>
+                <span>模型根据参考音与 Prompt 生成的最终样片。</span>
+                <audio controls preload="none" src="音频生成/R08.wav"></audio>
+              </div>
+            </div>
+            <details class="demo-prompt">
+              <summary>查看输入 Prompt</summary>
+              <pre>参考 @音频1 的声音，生成 90 秒第一人称悬疑有声书片段。全程主叙述者声音接近参考音频，不能中途换音色。需要旧屋雨声、木地板脚步、抽屉声、老式录音机声和远处钟声。可以有少量对白，但主要是第一人称叙述。不要背景音乐。
+
+叙述者说：“我回到老宅的时候，雨已经下了三个小时。”
+木地板轻响。叙述者说：“门锁没有坏，坏的是我对这个家的记忆。”
+抽屉被拉开。叙述者说：“母亲说，父亲什么都没留下。可抽屉最里面，压着一盘老磁带。”
+录音机启动，父亲的旧录音声音说：“如果你听到这里，说明你终于回来了。”
+叙述者轻声说：“我差点把录音机关掉。”
+远处钟声响起。录音里的父亲说：“别相信楼上的房间，那里每晚都会多出一个人。”
+叙述者说：“我抬头看向楼梯，才发现二楼的灯是亮着的。”
+脚步声慢慢上楼。叙述者说：“那一刻，我忽然明白，母亲不是不让我回来，她是在等我足够大，能自己听完这段话。”
+录音里的父亲说：“钥匙在钟后面。”
+叙述者说：“我没有逃。我走向那座钟，伸手摸到了冰冷的钥匙。”
+结尾保留雨声和钟摆声。</pre>
+            </details>
+            <div class="demo-eval">
+              <div><strong>效果</strong><span>主叙述线完整，录音机声与现场叙述有区分，适合验证有声书类长段稳定性。</span></div>
+              <div><strong>能力</strong><span>长段音色一致、媒介声区分、叙事节奏保持。</span></div>
+              <div><strong>边界</strong><span>参考音频平台限制短于 30 秒，实际使用更适合 15-25 秒干净单人声源。</span></div>
+            </div>
+            <div class="score-row">
+              <span><strong>稳定</strong>长段音色</span>
+              <span><strong>结构</strong>三幕叙事</span>
+              <span><strong>限制</strong>参考音需小于 30s</span>
+            </div>
+            <div class="missing">音频文件：<code>音频生成/R08.wav</code></div>
+          </article>
+        </div>
+      </div>
+      <div class="risk-board">
+        <div>
+          <span class="tag warn">边界记录</span>
+          <h3>边界记录决定工具能否进入生产流程。</h3>
+          <p class="sub">成功样片证明上限，失败记录说明使用成本。实际体验中，脚本内容密度、参考音限制、多参考融合、额度和风控都会影响可用性。</p>
+        </div>
+        <div class="risk-list">
+          <div class="risk-item"><code>audio_duration_lifetime</code><span>累计创作额度会直接限制测试覆盖面，长音频压力测试需要提前规划顺序。</span></div>
+          <div class="risk-item"><code>reference duration &gt; 30s</code><span>参考音频存在硬性时长上限，实际准备素材时应控制在 15-25 秒干净单人声。</span></div>
+          <div class="risk-item"><code>script density</code><span>可以设定目标时长，但脚本内容不足时会出现大段沉默、环境声或重复停顿，影响最终音频整理。</span></div>
+          <div class="risk-item"><code>multi reference</code><span>多参考融合三次实验均不稳定，出现声音混乱、大段空白和生成未要求内容，当前基本不可用。</span></div>
+          <div class="risk-item"><code>emotion variants</code><span>同一句多情绪能保持音色并形成一定区分，但情感表达不够自然契合，且出现少读一遍的问题。</span></div>
+          <div class="risk-item"><code>sensitive voiceprint</code><span>强风格人声、戏腔或疑似名人声线可能触发声纹风控，即使是纯文本生成也可能被拦截。</span></div>
+          <div class="risk-item"><code>TextPromptAgentResultError</code><span>多方言、多角色、复杂格式同时出现时，前置 Prompt 解析稳定性会下降。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="score">
+      <div class="section-head">
+        <div class="eyebrow">06 / 评分维度</div>
+        <div>
+          <h2>按评分字段汇总本次体验结论。</h2>
+          <p class="sub">评分维度沿用测试表口径，这里不再重复解释字段，而是把本次样片的实际效果落到每个维度上。</p>
+        </div>
+      </div>
+      <div class="score-table">
+        <div class="score-row-head">
+          <span>评测维度</span>
+          <span>评分锚点</span>
+          <span>样片效果评价</span>
+          <span>体验结论</span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">指令遵循<small>是否完整执行角色、时间、音效、情绪要求</small></span>
+          <span>1=大部分遗漏；3=主要要求完成；5=细节完整且稳定。</span>
+          <span><strong>效果：角色、音效、配乐和转场大多能按 Prompt 出现。</strong>S01 短剧片头基本接近成品；P02、P01、P06、XQ02 的核心要求也能成立。个别细节音效可能缺失，但不影响主效果判断。</span>
+          <span><strong>较强</strong><small>适合展示全要素直出能力。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">角色 / 音色一致<small>角色或参考音色是否前后一致</small></span>
+          <span>1=明显漂移；3=基本一致；5=长段仍稳定。</span>
+          <span><strong>效果：纯文本多角色区分更稳定。</strong>参考音能迁移部分音色和语速，但整体效果弱于纯文本；方言口音参考有时只迁移音色，没有稳定体现口音。</span>
+          <span><strong>较强</strong><small>纯文本可信度更高，参考音需谨慎。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">对白自然<small>对白轮次、插话、停顿、情绪是否像真实对话</small></span>
+          <span>1=机械朗读；3=可接受；5=有表演和互动感。</span>
+          <span><strong>效果：纯文本广播剧和群戏更像真实对话。</strong>停顿、插话、情绪转折和角色反应较自然；参考音对话会受参考音表达风格影响，互动感下降。同一句多情绪有区分度，但情感不够贴合。</span>
+          <span><strong>良好</strong><small>可用于剧情类 Demo，情绪专项还需复测。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">声场与混音<small>人声、音乐、环境声是否层次清楚</small></span>
+          <span>1=互相遮挡；3=基本清楚；5=声场层次好。</span>
+          <span><strong>效果：纯文本样片声场层次更完整。</strong>雨夜、飞船、旧书房、婚礼现场等场景能建立空间感，人声、音乐、环境声基本清楚；参考音样片更容易出现环境音和对白不融合。</span>
+          <span><strong>较强</strong><small>成片直出优势明显，参考音混音需验证。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">非语言表达<small>笑、叹息、呼吸、沉默是否自然服务叙事</small></span>
+          <span>1=突兀；3=能听出；5=自然有效。</span>
+          <span><strong>效果：轻笑、吸气、叹息、沉默能服务叙事。</strong>P02 的敲击、R03 的轻笑和吸气、S01 的短暂停顿都能增强故事感；参考音和多情绪任务的自然度仍不稳定。</span>
+          <span><strong>良好</strong><small>可作为加分项，但不宜过度堆指令。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">可用性<small>是否接近可直接用于广告、播客、广播剧或视频配音</small></span>
+          <span>1=不可用；3=需明显后期；5=接近成片。</span>
+          <span><strong>效果：部分纯文本样片已经接近可直接展示的成片效果。</strong>短剧片头、悬疑广播剧和戏曲唱腔的叙事完整度较高，后期压力较小；参考音样片仍需筛选，多参考融合当前不具备可用性。</span>
+          <span><strong>部分接近成片</strong><small>适合 Demo 和创意验证，正式生产需挑选稳定样片。</small></span>
+        </div>
+        <div class="score-line">
+          <span class="dimension">稳定性<small>同一 Prompt 重跑 2-3 次质量是否稳定</small></span>
+          <span>1=抽奖；3=有波动；5=稳定可复现。</span>
+          <span><strong>效果：少量样本看，效果会有波动，但差异不是很大。</strong>成功样片的整体方向较稳定；复杂 Prompt、方言融合、戏腔、参考音和多参考任务更容易出现错误、空白、少读或风控，失败日志仍需保留。</span>
+          <span><strong>基本稳定</strong><small>常规样片可复现感尚可，边界任务需单独记录。</small></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section-head">
+        <div class="eyebrow">07 / 信息来源</div>
+        <div>
+          <h2>信息来源与可信度。</h2>
+          <p class="sub">产品处在刚发布/邀测阶段，报告里把“公开确认”“内部口径”和“需要实测验证”分开处理。</p>
+        </div>
+      </div>
+      <ul class="source-list">
+        <li><a href="https://finance.sina.cn/china/gjcj/2026-06-23/detail-iniekknw2058892.d.html?vt=4" target="_blank" rel="noreferrer">新浪科技：Seedance 2.5 将于 7 月上线，展示 Seed-Audio 1.0</a></li>
+        <li><a href="https://m.sohu.com/a/1040430256_130887" target="_blank" rel="noreferrer">搜狐 / 华尔街见闻转载：豆包音频生成模型 1.0 开启邀测，单次支持约 2 分钟音频创作</a></li>
+        <li><a href="https://mp.weixin.qq.com/s/Vnv68cHAWfcX2CnszWR6Qg" target="_blank" rel="noreferrer">微信公众号公开文章：豆包音频生成模型 1.0 相关介绍</a></li>
+        <li><a href="https://doubao.apifox.cn/" target="_blank" rel="noreferrer">豆包 API（火山方舟）快速入门：API Key 获取与调用入口</a></li>
+        <li>内部员工口径：豆包音频生成 1.0 API 预计 2026 年 7 月中开放，需等待官方公告或控制台入口确认。</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <a class="promo-banner" href="http://172.31.101.179:6001/" target="_blank" rel="noreferrer" aria-label="访问音视频生成之家">
+        <img src="assets/promo-banner.png" alt="音视频生成之家">
+      </a>
+      <p>本报告基于实际生成样片、错误日志和公开产品信息整理，重点呈现豆包音频生成 1.0 在成片直出、参考音生成与高表现力音频上的可用性边界。</p>
+    </footer>
+  </main>
+
+  <script>
+    const quickNav = document.querySelector(".quick-nav");
+    const quickNavToggle = document.querySelector(".quick-nav-toggle");
+
+    if (quickNav && quickNavToggle) {
+      const setQuickNav = (expanded) => {
+        quickNav.classList.toggle("collapsed", !expanded);
+        quickNavToggle.setAttribute("aria-expanded", String(expanded));
+      };
+
+      window.setTimeout(() => setQuickNav(false), 4200);
+      quickNavToggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setQuickNav(quickNav.classList.contains("collapsed"));
+      });
+      quickNav.addEventListener("click", () => {
+        if (quickNav.classList.contains("collapsed")) setQuickNav(true);
+      });
+      quickNav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => window.setTimeout(() => setQuickNav(false), 280));
+      });
+    }
+
+    document.querySelectorAll(".lab").forEach((lab) => {
+      const tabs = Array.from(lab.querySelectorAll(".lab-tab"));
+      const panels = Array.from(lab.querySelectorAll(".lab-panel"));
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.tab;
+          tabs.forEach((item) => item.classList.toggle("active", item === tab));
+          panels.forEach((panel) => panel.classList.toggle("active", panel.id === target));
+        });
+      });
+    });
+
+    document.querySelectorAll(".audio-grid").forEach((grid) => {
+      const cards = Array.from(grid.querySelectorAll(".audio-card"));
+      const mainCard = cards.find((card) => card.classList.contains("featured")) || cards[0];
+      const secondaryCards = cards.filter((card) => card !== mainCard);
+
+      if (!mainCard || !secondaryCards.length) return;
+
+      mainCard.classList.add("featured");
+      secondaryCards.forEach((card) => card.classList.add("sample-panel"));
+
+      const picker = document.createElement("div");
+      picker.className = "sample-picker";
+      picker.innerHTML = "<strong>其他样片</strong>";
+
+      const list = document.createElement("div");
+      list.className = "sample-list";
+      picker.appendChild(list);
+
+      secondaryCards.forEach((card, index) => {
+        const title = card.querySelector("h3")?.textContent?.trim() || `样片 ${index + 1}`;
+        const tags = Array.from(card.querySelectorAll(".demo-meta span"))
+          .map((tag) => tag.textContent.trim())
+          .join(" / ");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "sample-option";
+        button.innerHTML = `${title}<span>${tags}</span>`;
+        button.addEventListener("click", () => {
+          const willOpen = !card.classList.contains("active");
+          secondaryCards.forEach((item) => item.classList.remove("active"));
+          list.querySelectorAll(".sample-option").forEach((item) => item.classList.remove("active"));
+
+          document.querySelectorAll("audio").forEach((audio) => audio.pause());
+
+          if (willOpen) {
+            card.classList.add("active");
+            button.classList.add("active");
+          }
+        });
+        list.appendChild(button);
+      });
+
+      mainCard.insertAdjacentElement("afterend", picker);
+    });
+
+    document.querySelectorAll("audio").forEach((audio) => {
+      audio.addEventListener("play", () => {
+        document.querySelectorAll("audio").forEach((other) => {
+          if (other !== audio) other.pause();
+        });
+      });
+
+      audio.addEventListener("canplay", () => {
+        const note = audio.parentElement.querySelector(".missing");
+        if (note) note.textContent = "音频已载入，可直接播放评估。";
+      }, { once: true });
+    });
+  </script>
+</body>
+</html>
+
