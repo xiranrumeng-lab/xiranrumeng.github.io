@@ -7,15 +7,14 @@
 ```text
 index.html
 promo-banner.png
-audio/
-  01_参考原声-新闻播报.wav
-  02_生成结果-中性克隆.wav
-  03_原音频.wav
-  04_改后音频.wav
-  05_参考原声-女声口播.mp3
-  06_生成结果-悲伤.wav
-  07_生成结果-惊讶oh.wav
-  08_生成结果-粤语.wav
+audio/01_参考原声-新闻播报.mp3
+audio/02_生成结果-中性克隆.mp3
+audio/03_原音频.mp3
+audio/04_改后音频.mp3
+audio/05_参考原声-女声口播.mp3
+audio/06_生成结果-悲伤.mp3
+audio/07_生成结果-惊讶oh.mp3
+audio/08_生成结果-粤语.mp3
 ```
 
 ## 上传方式
