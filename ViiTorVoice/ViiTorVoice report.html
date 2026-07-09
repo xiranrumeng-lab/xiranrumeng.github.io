@@ -1,0 +1,1172 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ViiTorVoice 可编辑语音模型能力体验报告</title>
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #60716d;
+      --paper: #faf8f2;
+      --panel: #fffdf8;
+      --line: #ded8ca;
+      --green: #0c756f;
+      --green-soft: #e0f0ec;
+      --amber: #b7791f;
+      --amber-soft: #f5e7c8;
+      --red: #a94438;
+      --red-soft: #f2d9d4;
+      --blue: #315a78;
+      --shadow: 0 18px 52px rgba(24, 32, 31, 0.12);
+      --radius: 8px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: "Aptos", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --serif: Georgia, "Times New Roman", "Songti SC", serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(12, 117, 111, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(12, 117, 111, 0.045) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      font-family: var(--sans);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(15, 118, 110, 0.35);
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 36px;
+      align-items: center;
+      padding: 18px 0 44px;
+    }
+
+    .kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.82);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 22px;
+      font-family: var(--serif);
+      font-size: clamp(34px, 4.7vw, 56px);
+      line-height: 1.04;
+      font-weight: 650;
+      letter-spacing: 0;
+      text-wrap: pretty;
+    }
+
+    .hero-byline {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: -4px 0 18px;
+      padding: 7px 10px;
+      border: 1px solid rgba(12, 117, 111, 0.28);
+      border-radius: 6px;
+      background: rgba(255, 253, 248, 0.74);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .lead {
+      max-width: 780px;
+      color: #33413e;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fffdf8;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 10px 16px;
+      font: 700 14px/1 var(--sans);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      border-bottom: 0;
+    }
+
+    .button.secondary {
+      background: rgba(255, 253, 248, 0.76);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .signal-board {
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .signal-board h2 {
+      margin-bottom: 18px;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 122px 1fr 44px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .meter:first-of-type { border-top: 0; }
+    .meter-name { font-weight: 750; font-size: 14px; }
+
+    .bar {
+      height: 9px;
+      background: #efe9dc;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--value);
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .bar.warn span { background: var(--amber); }
+    .bar.risk span { background: var(--red); }
+    .meter-score { font-family: var(--mono); font-weight: 800; text-align: right; }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .mini-stat {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: rgba(250, 248, 242, 0.72);
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .mini-stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section {
+      padding: 52px 0;
+      border-top: 1px solid rgba(99, 112, 109, 0.28);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.42fr 1fr;
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.04;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 780px;
+    }
+
+    .highlight-position {
+      display: inline;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(245, 231, 200, 0.4), rgba(245, 231, 200, 0.95));
+      color: #76500f;
+      font-weight: 900;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      background: rgba(255, 253, 248, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 19px;
+      min-height: 210px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0a514c;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .tag.warn { background: var(--amber-soft); color: #76500f; }
+    .tag.risk { background: var(--red-soft); color: #7a2d23; }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .step {
+      min-height: 230px;
+      padding: 22px;
+      border-left: 1px solid var(--line);
+    }
+
+    .step:first-child { border-left: 0; }
+    .step-number { font-family: var(--mono); color: var(--amber); font-size: 12px; font-weight: 800; }
+    .step h3 { margin: 20px 0 10px; font-size: 22px; line-height: 1.18; }
+    .step p { color: var(--muted); font-size: 15px; }
+
+    .lab {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 440px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.9);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(24, 32, 31, 0.08);
+    }
+
+    .lab-nav {
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(250, 248, 242, 0.76);
+    }
+
+    .lab-nav::before {
+      content: "点击切换";
+      display: block;
+      margin: 0 0 12px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .lab-tab {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 9px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      border-radius: var(--radius);
+      min-height: 58px;
+      padding: 12px;
+      text-align: left;
+      font-weight: 750;
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+
+    .lab-tab:hover,
+    .lab-tab.active {
+      background: var(--panel);
+      border-color: rgba(12, 117, 111, 0.32);
+      box-shadow: inset 3px 0 0 var(--green);
+    }
+
+    .lab-tab span {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .lab-panel { display: none; padding: 28px; }
+    .lab-panel.active { display: block; }
+    .lab-panel h3 { font-size: 26px; margin-bottom: 12px; }
+    .lab-panel p { color: var(--muted); }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .check {
+      min-height: 72px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(250, 248, 242, 0.64);
+      font-size: 14px;
+    }
+
+    .audio-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .audio-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.9);
+      padding: 18px;
+      min-height: auto;
+    }
+
+    .audio-card.featured {
+      grid-column: auto;
+    }
+
+    .audio-card h3 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .audio-card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .sample-brief {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0 2px;
+      padding: 12px;
+      border: 1px solid rgba(49, 90, 120, 0.2);
+      border-radius: var(--radius);
+      background: #eef4f6;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .sample-brief div {
+      display: grid;
+      gap: 3px;
+    }
+
+    .sample-brief strong {
+      color: var(--blue);
+      font-size: 12px;
+    }
+
+    .sample-brief span {
+      color: #33413e;
+    }
+
+    .audio-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .player {
+      border: 1px solid rgba(183, 121, 31, 0.22);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: #fbf4e6;
+    }
+
+    .player label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    audio { width: 100%; height: 38px; }
+
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .score-pill.warn { background: var(--amber-soft); color: #76500f; }
+    .score-pill.risk { background: var(--red-soft); color: #7a2d23; }
+
+    .risk-board {
+      display: grid;
+      grid-template-columns: 0.42fr 1fr;
+      gap: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.9);
+      padding: 22px;
+    }
+
+    .risk-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .risk-item {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .risk-item:first-child { border-top: 0; }
+    code { font-family: var(--mono); color: var(--green); font-size: 12px; }
+    .risk-item span { color: var(--muted); font-size: 14px; }
+
+    .score-table {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .score-line,
+    .score-row-head {
+      display: grid;
+      grid-template-columns: 180px 80px 1fr;
+      gap: 14px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      align-items: center;
+    }
+
+    .score-row-head {
+      border-top: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(250, 248, 242, 0.76);
+    }
+
+    .score-value {
+      font-family: var(--mono);
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .score-note { color: var(--muted); font-size: 14px; }
+
+    .source-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-list li {
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.86);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 34px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .promo-banner {
+      display: block;
+      margin: 0 0 22px;
+      overflow: hidden;
+      border: 1px solid rgba(102, 120, 115, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, rgba(224, 240, 236, 0.7), rgba(234, 246, 251, 0.86));
+      box-shadow: 0 14px 34px rgba(22, 32, 30, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      border-bottom: 1px solid rgba(102, 120, 115, 0.22);
+    }
+
+    .promo-banner:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 126, 168, 0.32);
+      box-shadow: 0 18px 42px rgba(22, 32, 30, 0.12);
+    }
+
+    .promo-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .editor-meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 18px 0 0;
+    }
+
+    .editor-meta span {
+      display: grid;
+      align-content: start;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(250, 248, 242, 0.72);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .editor-meta strong {
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(99, 112, 109, 0.28);
+    }
+
+    .quick-nav {
+      position: fixed;
+      left: 14px;
+      bottom: 18px;
+      z-index: 30;
+      width: 150px;
+    }
+
+    .quick-nav-inner {
+      position: relative;
+    }
+
+    .quick-nav-toggle {
+      border: 1px solid rgba(12, 117, 111, 0.22);
+      border-radius: 999px;
+      background: #e4f4f0;
+      color: var(--green);
+      font-weight: 900;
+      letter-spacing: 0;
+      cursor: pointer;
+      font-family: var(--sans);
+      font-size: 13px;
+      min-height: 34px;
+      padding: 0 13px;
+      box-shadow: 0 8px 20px rgba(22, 32, 30, 0.12);
+    }
+
+    .quick-nav-links {
+      position: absolute;
+      left: 0;
+      bottom: 44px;
+      width: 150px;
+      display: grid;
+      gap: 2px;
+      padding: 9px;
+      border: 1px solid rgba(12, 117, 111, 0.2);
+      border-radius: 10px;
+      background: rgba(255, 253, 248, 0.96);
+      box-shadow: 0 10px 26px rgba(22, 32, 30, 0.12);
+      backdrop-filter: blur(10px);
+      transform: translateY(0);
+      opacity: 1;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .quick-nav.collapsed .quick-nav-links {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    .quick-nav-links a {
+      border: 0;
+      border-radius: 7px;
+      padding: 7px 8px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .quick-nav-links a:hover {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .section-head,
+      .grid.four,
+      .grid.three,
+      .grid.two,
+      .timeline,
+      .lab,
+      .audio-grid,
+      .audio-card.featured,
+      .risk-board,
+      .score-line,
+      .score-row-head {
+        grid-template-columns: 1fr;
+      }
+
+      .editor-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero { min-height: auto; }
+      .step { border-left: 0; border-top: 1px solid var(--line); }
+      .step:first-child { border-top: 0; }
+      .lab-nav { border-right: 0; border-bottom: 1px solid var(--line); }
+      .audio-card.featured { grid-column: auto; }
+      .audio-pair { grid-template-columns: 1fr; }
+      .risk-item { grid-template-columns: 1fr; }
+      .quick-nav { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .editor-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="quick-nav" aria-label="快速导航">
+    <div class="quick-nav-inner">
+      <button class="quick-nav-toggle" type="button" aria-expanded="true">导航</button>
+      <div class="quick-nav-links">
+        <a href="#top">首页</a>
+        <a href="#capability">能力结论</a>
+        <a href="#path">体验路径</a>
+        <a href="#method">评测方法</a>
+        <a href="#audio">代表样例</a>
+        <a href="#risks">风险边界</a>
+        <a href="#score">评分汇总</a>
+        <a href="#sources">来源编辑</a>
+      </div>
+    </div>
+  </nav>
+  <main class="shell">
+    <section class="hero" id="top">
+      <div>
+        <div class="kicker">
+          <span class="chip">ViiTorVoice</span>
+          <span class="chip">34 条样本</span>
+          <span class="chip">2026-07</span>
+        </div>
+        <h1>ViiTorVoice 可编辑语音模型能力体验报告</h1>
+        <div class="hero-byline">音视频生成资源部・音视频之家</div>
+        <p class="lead">这份报告围绕局部编辑、参考音克隆、情绪、副语言和跨语种五类能力，验证 ViiTorVoice 是否具备进入真实音频生产链路的价值。结论很清楚：局部编辑和音色保持是优势能力，副语言自然度、年轻女声情绪表演和跨语种发音是主要短板。</p>
+        <div class="hero-actions">
+          <a class="button" href="#audio">查看代表样例</a>
+        </div>
+      </div>
+
+      <aside class="signal-board" aria-label="能力信号">
+        <h2>能力信号</h2>
+        <div class="meter">
+          <div class="meter-name">局部编辑</div>
+          <div class="bar"><span style="--value:96%"></span></div>
+          <div class="meter-score">4.80</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">音色克隆</div>
+          <div class="bar"><span style="--value:96%"></span></div>
+          <div class="meter-score">4.80</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">情绪控制</div>
+          <div class="bar"><span style="--value:88%"></span></div>
+          <div class="meter-score">4.40</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">副语言</div>
+          <div class="bar warn"><span style="--value:72%"></span></div>
+          <div class="meter-score">3.59</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">跨语种</div>
+          <div class="bar risk"><span style="--value:62%"></span></div>
+          <div class="meter-score">3.12</div>
+        </div>
+        <div class="mini-stats">
+          <div class="mini-stat"><strong>34</strong><span>人工听评样本</span></div>
+          <div class="mini-stat"><strong>3.94</strong><span>整体均分</span></div>
+          <div class="mini-stat"><strong>7</strong><span>优势样本</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="capability">
+      <div class="section-head">
+        <div class="eyebrow">01 / 能力结论</div>
+        <div>
+          <h2>核心亮点集中在音频局部编辑与音色保持。</h2>
+          <p class="sub">公开体验入口偏参考音驱动：Voice Edit 需要原音频，Voice Clone、情绪、副语言和跨语种都需要参考音。报告因此把能力拆成“编辑、克隆、控制、迁移”四层，而不是按传统 TTS 评估。</p>
+        </div>
+      </div>
+      <div class="grid four">
+        <article class="card">
+          <span class="tag">核心优势</span>
+          <h3>局部编辑成立</h3>
+          <p>官方中英文 demo 均达到 4.8-5.0，多处替换后基本无痕，是当前最明确的差异化能力。</p>
+        </article>
+        <article class="card">
+          <span class="tag">稳定优势</span>
+          <h3>音色保持稳定</h3>
+          <p>新闻播报参考音的中性克隆拿到 5.0，跨语种失败时也常能保留音色轮廓。</p>
+        </article>
+        <article class="card">
+          <span class="tag warn">需挑样例</span>
+          <h3>情绪需要挑样例</h3>
+          <p>开心和愤怒更可用，悲伤与害怕在年轻女声上容易变成刻板表演。</p>
+        </article>
+        <article class="card">
+          <span class="tag risk">风险能力</span>
+          <h3>副语言和跨语种不稳</h3>
+          <p>副语言容易突兀或机械；英日韩粤跨语种发音问题明显，当前不建议生产承诺。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="path">
+      <div class="section-head">
+        <div class="eyebrow">02 / 体验路径</div>
+        <div>
+          <h2>体验路径从“入口可用”走到“生产边界”。</h2>
+          <p class="sub">体验路径使用三条参考音色、官方 demo 和重构测试集，形成对 ViiTorVoice 能力优劣势的完整判断。</p>
+        </div>
+      </div>
+      <div class="timeline">
+        <article class="step">
+          <div class="step-number">步骤 01</div>
+          <h3>确认入口</h3>
+          <p>公开 Space 主要提供 Voice Edit 与 Voice Clone 两个入口，未发现可选发音人库。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">步骤 02</div>
+          <h3>准备参考音</h3>
+          <p>使用新闻播报、年轻女声口播和官方预置 demo，避免只测单一音色导致误判。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">步骤 03</div>
+          <h3>生成样片</h3>
+          <p>覆盖局部编辑、克隆、4 类情绪、8 类副语言、组合控制和跨语种。</p>
+        </article>
+        <article class="step">
+          <div class="step-number">步骤 04</div>
+          <h3>人工评分</h3>
+          <p>每条按发音、自然度、音色、控制点、节奏和生产可用性评分并记录评语。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="method">
+      <div class="section-head">
+        <div class="eyebrow">03 / 评测方法</div>
+        <div>
+          <h2>评测方法围绕“参考音、控制点、生产可用性”展开。</h2>
+          <p class="sub">同一模型在不同参考音上的表现差异很大，所以报告不只看平均分，还看哪种输入条件下更稳定。</p>
+        </div>
+      </div>
+      <div class="lab" data-lab>
+        <nav class="lab-nav" aria-label="评测方法">
+          <button class="lab-tab active" data-target="method-input">输入分层 <span>01</span></button>
+          <button class="lab-tab" data-target="method-score">评分维度 <span>02</span></button>
+          <button class="lab-tab" data-target="method-decision">结论口径 <span>03</span></button>
+        </nav>
+        <section class="lab-panel active" id="method-input">
+          <h3>先按参考音和任务分层，不把所有样片混在一起比较。</h3>
+          <p>新闻播报更适合测中性克隆和跨语种，年轻女声更适合压测口语情绪和副语言，官方 demo 用来判断模型理想条件下的上限。</p>
+          <div class="checklist">
+            <div class="check">新闻播报参考音：负责稳定性和中性克隆。</div>
+            <div class="check">年轻女声参考音：负责自然口语和轻情绪。</div>
+            <div class="check">官方预置样例：负责能力上限对照。</div>
+            <div class="check">同一控制点必须能听到原声与结果，避免凭印象评分。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="method-score">
+          <h3>每条样片按六个维度打分。</h3>
+          <p>评分不是单纯听感分，而是拆成发音准确、自然度、音色一致、控制点、节奏连贯和生产可用六项。最后再归类为“优势能力、可挑样例能力、风险能力”。</p>
+          <div class="checklist">
+            <div class="check">发音准确：是否错读、漏读、不可理解。</div>
+            <div class="check">控制点：编辑、情绪、副语言或跨语种是否真的生效。</div>
+            <div class="check">生产可用：是否能进入真实流程，而不是只做 demo。</div>
+            <div class="check">评语记录：所有明显问题直接写在样本旁边。</div>
+          </div>
+        </section>
+        <section class="lab-panel" id="method-decision">
+          <h3>用“优势能力”和“风险能力”分开表达。</h3>
+          <p>局部编辑和音色克隆属于优势能力；情绪控制属于可挑样例能力；副语言和跨语种应归为风险能力，避免在生产场景中直接承诺。</p>
+          <div class="checklist">
+            <div class="check">优势能力：局部编辑、新闻播报中性克隆。</div>
+            <div class="check">可挑样例：开心、愤怒、清嗓子、部分笑声。</div>
+            <div class="check">风险区：咳嗽、叹气、呼吸、惊讶、倒吸气。</div>
+            <div class="check">暂不承诺：日韩粤跨语种生产可用。</div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" id="audio">
+      <div class="section-head">
+        <div class="eyebrow">04 / 代表样例</div>
+        <div>
+          <h2>用代表样例回答：它到底强在哪里，弱在哪里。</h2>
+          <p class="sub">这里不是列完整样本库，而是挑出能支撑结论的证据样片。完整评分仍在 CSV 中。</p>
+        </div>
+      </div>
+      <div class="audio-grid">
+        <article class="audio-card featured">
+          <div>
+            <span class="tag">最佳信号</span>
+            <h3>新闻音色中性克隆：参考音保持最稳</h3>
+            <p>这条拿到 5.0，说明模型在清晰、稳定、中性播报参考音上具备较强克隆能力。它也是后续局部编辑和跨语种判断的音色基准。</p>
+            <div class="sample-brief">
+              <div><strong>控制点</strong><span>新闻播报参考音色 → 纪录片长句。重点听播报腔、音色厚度、长句停顿和断句是否自然。</span></div>
+              <div><strong>生成文本</strong><span>在漫长的历史长河中，人类从未停止对未知世界的探索，从古老的丝绸之路到现代的太空站，每一次突破都凝聚着无数人的智慧与勇气。</span></div>
+            </div>
+            <div class="score-row">
+              <span class="score-pill">均分 5.0</span>
+              <span class="score-pill">优势样本</span>
+            </div>
+          </div>
+          <div class="audio-pair">
+            <div class="player"><label>参考原声 / 新闻播报</label><audio controls src="assets/refs/cctv_voice_ref_20s.wav"></audio></div>
+            <div class="player"><label>生成结果 / 中性克隆</label><audio controls src="assets/restructured_quick/base_news_01.wav"></audio></div>
+          </div>
+        </article>
+
+        <article class="audio-card">
+          <span class="tag">核心能力</span>
+          <h3>官方中文局部编辑</h3>
+          <p>多处替换后基本无痕，证明官方 demo 条件下局部编辑能力成立。</p>
+          <div class="sample-brief">
+            <div><strong>修改点</strong><span>他人 → 自己；冲动 → 他人；父亲 → 灵魂。重点听多处替换后，气口、语速和语义重音是否仍然自然。</span></div>
+            <div><strong>原文</strong><span>当你明白如何为他人考虑，如何不再被冲动控制头脑，你的父亲应该就已经满足了。</span></div>
+            <div><strong>改文</strong><span>当你明白如何为自己考虑，如何不再被他人控制头脑，你的灵魂应该就已经满足了。</span></div>
+          </div>
+          <div class="audio-pair">
+            <div class="player"><label>原音频</label><audio controls src="assets/edit_sources/edit_prompt_zh.wav"></audio></div>
+            <div class="player"><label>改后音频</label><audio controls src="assets/edit_zh_official_default.wav"></audio></div>
+          </div>
+          <div class="score-row"><span class="score-pill">均分 5.0</span><span class="score-pill">优势样本</span></div>
+        </article>
+
+        <article class="audio-card">
+          <span class="tag warn">需挑样例</span>
+          <h3>悲伤情绪 / 女声口播</h3>
+          <p>评语指出“没有明显悲伤，拖音较多，感情刻板不自然”。年轻女声情绪控制不如新闻音色稳定。</p>
+          <div class="sample-brief">
+            <div><strong>控制点</strong><span>句首加入悲伤情绪标记，告别文本。重点听女声是否有低落感、语速放缓和情绪停顿。</span></div>
+            <div><strong>生成文本</strong><span>&lt;|emotion-sad|&gt;我们终究还是要说再见了，这些年的时光，我会一直记得。</span></div>
+          </div>
+          <div class="audio-pair">
+            <div class="player"><label>参考原声 / 女声口播</label><audio controls src="assets/refs/student_voice_ref.mp3"></audio></div>
+            <div class="player"><label>生成结果 / 悲伤</label><audio controls src="assets/restructured_quick/emotion_sad_01_student.wav"></audio></div>
+          </div>
+          <div class="score-row"><span class="score-pill warn">均分 3.3</span><span class="score-pill risk">暂不适合生产</span></div>
+        </article>
+
+        <article class="audio-card">
+          <span class="tag risk">风险样例</span>
+          <h3>惊讶：副语言割裂感明显</h3>
+          <p>副语言可以被触发，但常不像“同一个人自然发出”。这条评语为“惊讶突兀，不融合，有割裂感”。</p>
+          <div class="sample-brief">
+            <div><strong>控制点</strong><span>惊讶 oh 位于“等等，”之后。重点听 oh 是否融入中文语流，是否像自然惊讶反应。</span></div>
+            <div><strong>生成文本</strong><span>等等，&lt;|nv-Surprise-oh|&gt;这个版本好像真的解决了之前的问题。</span></div>
+          </div>
+          <div class="audio-pair">
+            <div class="player"><label>参考原声 / 女声口播</label><audio controls src="assets/refs/student_voice_ref.mp3"></audio></div>
+            <div class="player"><label>生成结果 / 惊讶 oh</label><audio controls src="assets/restructured_quick/nv_surprise_oh_02_student.wav"></audio></div>
+          </div>
+          <div class="score-row"><span class="score-pill warn">均分 3.7</span><span class="score-pill risk">暂不适合生产</span></div>
+        </article>
+
+        <article class="audio-card">
+          <span class="tag risk">语言风险</span>
+          <h3>粤语跨语种：音色像，但语言不可用</h3>
+          <p>音色和节奏保留较好，但粤语未生效，内容不可理解。这说明跨语种短板主要在目标语言发音，而不是音色保持。</p>
+          <div class="sample-brief">
+            <div><strong>控制点</strong><span>中文新闻参考音色 → 粤语生成。重点听粤语声调、口音和原音色保留。</span></div>
+            <div><strong>生成文本</strong><span>今日我哋测试一下语音编辑同埋声音复制嘅效果。</span></div>
+          </div>
+          <div class="audio-pair">
+            <div class="player"><label>参考原声 / 新闻播报</label><audio controls src="assets/refs/cctv_voice_ref_20s.wav"></audio></div>
+            <div class="player"><label>生成结果 / 粤语</label><audio controls src="assets/system/clone_yue_cross.wav"></audio></div>
+          </div>
+          <div class="score-row"><span class="score-pill risk">均分 2.7</span><span class="score-pill risk">暂不适合生产</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="risks">
+      <div class="section-head">
+        <div class="eyebrow">05 / 风险边界</div>
+        <div>
+          <h2>边界记录决定它能否进入生产流程。</h2>
+          <p class="sub">样本覆盖已经足够支撑完整能力判断；更重要的是把能力边界说清楚，避免把优势能力和风险能力混在一起表达。</p>
+        </div>
+      </div>
+      <div class="risk-board">
+        <div>
+          <h3>主要风险</h3>
+          <p class="sub">问题集中在“表演自然度”和“目标语言发音”，不是简单参数调节就能完全解决。</p>
+        </div>
+        <div class="risk-list">
+          <div class="risk-item"><code>副语言衔接</code><span>副语言插入后容易与前后语流割裂，咳嗽、叹气、呼吸、惊讶和倒吸气都出现过突兀感。</span></div>
+          <div class="risk-item"><code>情绪表演</code><span>年轻女声的悲伤、害怕表现偏刻板，容易像话剧式表演，不像自然口语情绪。</span></div>
+          <div class="risk-item"><code>跨语种发音</code><span>英文有中式口音，日文、韩文机械，粤语内容不可理解，跨语种不宜用于正式生产。</span></div>
+          <div class="risk-item"><code>官方样例条件</code><span>局部编辑高分主要来自官方 demo 条件，自有素材仍需在真实错词、产品名、数字替换场景验证。</span></div>
+          <div class="risk-item"><code>参考音依赖</code><span>公开入口未见可选发音人库，所有生成基本依赖参考音或原音频，产品化使用需要稳定素材准备流程。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="score">
+      <div class="section-head">
+        <div class="eyebrow">06 / 评分汇总</div>
+        <div>
+          <h2>按评分维度汇总本次体验结论。</h2>
+          <p class="sub">整体均分 3.94，说明它不是“不能用”，而是能力层级分化明显：编辑和音色保持强，生产可用性被副语言和跨语种拖低。</p>
+        </div>
+      </div>
+      <div class="score-table">
+        <div class="score-row-head"><span>维度</span><span>均分</span><span>解释</span></div>
+        <div class="score-line"><strong>发音准确</strong><span class="score-value">4.38</span><span class="score-note">中文整体较稳，外语和粤语明显拉低。</span></div>
+        <div class="score-line"><strong>音色一致</strong><span class="score-value">4.32</span><span class="score-note">参考音色保留能力较好，是当前优势。</span></div>
+        <div class="score-line"><strong>自然度</strong><span class="score-value">3.94</span><span class="score-note">普通克隆较自然，副语言和情绪表演拉低。</span></div>
+        <div class="score-line"><strong>控制点</strong><span class="score-value">3.88</span><span class="score-note">局部编辑和部分情绪有效，副语言位置与质感不稳。</span></div>
+        <div class="score-line"><strong>节奏连贯</strong><span class="score-value">3.88</span><span class="score-note">中性播报较好，副语言插入处容易断裂。</span></div>
+        <div class="score-line"><strong>生产可用</strong><span class="score-value">3.24</span><span class="score-note">真实生产仍需挑样例和二次筛选。</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="decision">
+      <div class="section-head">
+        <div class="eyebrow">07 / 最终判断</div>
+        <div>
+          <h2>能力结论已经清晰：强在编辑，弱在表演和跨语种。</h2>
+          <p class="sub">ViiTorVoice 更适合被定位为<span class="highlight-position">“以局部编辑和音色克隆为核心的可编辑语音模型”</span>。它可以支撑编辑修音和音色复用场景，但不适合直接承诺副语言、复杂情绪和多语种生产可用。</p>
+        </div>
+      </div>
+      <div class="grid three">
+        <article class="card">
+          <span class="tag">优势</span>
+          <h3>优势能力</h3>
+          <p>局部编辑、新闻播报中性克隆、官方中英文编辑 demo。这些样本能直接证明技术亮点。</p>
+        </article>
+        <article class="card">
+          <span class="tag warn">谨慎使用</span>
+          <h3>挑样例能力</h3>
+          <p>开心、愤怒、清嗓子、部分笑声可以展示，但必须先人工筛选，不适合批量放开。</p>
+        </article>
+        <article class="card">
+          <span class="tag risk">不宜承诺</span>
+          <h3>风险能力</h3>
+          <p>副语言自然度、悲伤/害怕女声口语、日韩粤跨语种暂不建议进入生产承诺。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section-head">
+        <div class="eyebrow">08 / 来源编辑</div>
+        <div>
+          <h2>信息来源与编辑说明。</h2>
+          <p class="sub">报告将公开产品信息、Space 页面源码、实际生成音频和人工听评结果分开记录，避免把官方能力描述和本地实测结论混在一起。</p>
+        </div>
+      </div>
+      <ul class="source-list">
+        <li><a href="https://mp.weixin.qq.com/s/fwLqhyb3aK6s_YWcAsxFQg" target="_blank" rel="noreferrer">来源文章：微信公众号 ViiTorVoice 产品与能力介绍</a></li>
+        <li><a href="https://huggingface.co/spaces/ZzWater/ViiTorVoice" target="_blank" rel="noreferrer">体验链接：Hugging Face Space / ViiTorVoice 公开体验入口</a></li>
+        <li>本地源码快照：`F:\2026\ViiTorVoice 体验\space_app.py`，用于确认情绪 token、副语言 token、语言选项和页面入口。</li>
+        <li>人工听评数据：`F:\2026\ViiTorVoice 体验\ViiTorVoice_模块化听评结果 (1).csv`，共 34 条评分样本。</li>
+        <li>生成音频与参考音：`F:\2026\ViiTorVoice 体验\生成结果`、`F:\2026\ViiTorVoice 体验\assets`、`F:\2026\ViiTorVoice 体验\素材`。</li>
+      </ul>
+    </section>
+
+    <footer class="footer">
+      <a class="promo-banner" href="http://172.31.101.179:6001/" target="_blank" rel="noreferrer" aria-label="访问音视频生成之家">
+        <img src="assets/promo-banner.png" alt="音视频生成之家">
+      </a>
+      <p>本报告基于公开信息、ViiTorVoice Space 实际生成样片、人工听评结果和本地评分记录整理，重点呈现 ViiTorVoice 作为可编辑语音模型在局部编辑、音色克隆、情绪控制、副语言和跨语种能力上的优势与边界。</p>
+      <div class="editor-meta">
+        <span><strong>报告主题</strong><br>ViiTorVoice 可编辑语音模型能力体验报告</span>
+        <span><strong>编辑信息</strong><br>音视频生成资源部・音视频之家 | 编辑：陈然</span>
+        <span><strong>编辑时间</strong><br>2026-07-09</span>
+        <span><strong>编辑依据</strong><br>34 条人工听评样本与生成音频证据</span>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    document.querySelectorAll("[data-lab]").forEach((lab) => {
+      const tabs = lab.querySelectorAll(".lab-tab");
+      const panels = lab.querySelectorAll(".lab-panel");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((item) => item.classList.remove("active"));
+          panels.forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+          lab.querySelector("#" + tab.dataset.target).classList.add("active");
+        });
+      });
+    });
+
+    const quickNav = document.querySelector(".quick-nav");
+    const quickNavToggle = document.querySelector(".quick-nav-toggle");
+    if (quickNav && quickNavToggle) {
+      const setQuickNav = (expanded) => {
+        quickNav.classList.toggle("collapsed", !expanded);
+        quickNavToggle.setAttribute("aria-expanded", String(expanded));
+      };
+
+      window.setTimeout(() => setQuickNav(false), 3000);
+      quickNavToggle.addEventListener("click", () => {
+        setQuickNav(quickNav.classList.contains("collapsed"));
+      });
+      quickNav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.setTimeout(() => setQuickNav(false), 280);
+        });
+      });
+    }
+
+    const audioPlayers = Array.from(document.querySelectorAll("audio"));
+    audioPlayers.forEach((player) => {
+      player.addEventListener("play", () => {
+        audioPlayers.forEach((other) => {
+          if (other !== player && !other.paused) {
+            other.pause();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
