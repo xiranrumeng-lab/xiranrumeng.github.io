@@ -1,0 +1,2246 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GPT-Live 语音对话体验报告</title>
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #60716d;
+      --paper: #faf8f2;
+      --panel: rgba(255, 253, 248, 0.92);
+      --line: rgba(99, 112, 109, 0.24);
+      --green: #0c756f;
+      --green-soft: #dcefeb;
+      --blue: #2b5c8a;
+      --blue-soft: #dbe9f6;
+      --pink: #ad4e78;
+      --pink-soft: #f6dfeb;
+      --amber: #b7791f;
+      --amber-soft: #f5e7c8;
+      --red: #a94438;
+      --red-soft: #f4ddd8;
+      --shadow: 0 18px 52px rgba(24, 32, 31, 0.1);
+      --radius: 10px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: "Aptos", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --serif: Georgia, "Times New Roman", "Songti SC", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(12, 117, 111, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(12, 117, 111, 0.045) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      font-family: var(--sans);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--green);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(12, 117, 111, 0.35);
+    }
+
+    a:hover {
+      border-bottom-color: var(--green);
+    }
+
+    .quick-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      z-index: 20;
+      display: grid;
+      gap: 10px;
+      width: 168px;
+      padding: 14px;
+      border: 1px solid rgba(102, 120, 115, 0.14);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.42);
+      box-shadow: 0 10px 24px rgba(22, 32, 30, 0.06);
+      transform: translateY(-50%);
+      backdrop-filter: blur(14px);
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .quick-nav-toggle {
+      border: 1px solid rgba(102, 120, 115, 0.14);
+      background: rgba(255, 253, 248, 0.58);
+      color: var(--ink);
+      border-radius: 999px;
+      min-height: 36px;
+      padding: 0 10px;
+      font: 800 12px/1 var(--sans);
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+
+    .quick-nav-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .quick-nav-list a {
+      display: block;
+      padding: 8px 9px;
+      border-radius: 999px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--sans);
+      text-decoration: none;
+      border-bottom: 0;
+    }
+
+    .quick-nav-list a:hover {
+      color: var(--green);
+      background: rgba(224, 240, 236, 0.72);
+    }
+
+    .quick-nav.collapsed {
+      width: 64px;
+      padding: 8px;
+      background: rgba(255, 253, 248, 0.28);
+      transform: translate(calc(-100% + 34px), -50%);
+    }
+
+    .quick-nav.collapsed .quick-nav-list {
+      display: none;
+    }
+
+    .quick-nav.collapsed .quick-nav-toggle {
+      min-height: 36px;
+      padding: 0 10px;
+      text-align: center;
+    }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 40px 0 72px;
+    }
+
+    .hero {
+      min-height: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      gap: 36px;
+      align-items: start;
+      padding: 12px 0 44px;
+    }
+
+    .kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, 0.82);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin-bottom: 18px;
+      font-family: var(--serif);
+      font-size: clamp(44px, 7vw, 88px);
+      line-height: 0.98;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+
+    .hero-title {
+      display: block;
+      max-width: 820px;
+      line-height: 1.02;
+    }
+
+    .hero-title .title-model,
+    .hero-title .title-report {
+      display: inline;
+      font-size: clamp(42px, 4.8vw, 66px);
+    }
+
+    .lead {
+      max-width: 760px;
+      color: #33413e;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    button,
+    .button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fffdf8;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 10px 16px;
+      font: 700 14px/1 var(--sans);
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    button:hover,
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button.secondary {
+      background: rgba(255, 253, 248, 0.76);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .signal-board {
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .signal-board h2 {
+      margin-bottom: 18px;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 120px 1fr 44px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .meter:first-of-type {
+      border-top: 0;
+    }
+
+    .meter-name {
+      font-weight: 750;
+      font-size: 14px;
+    }
+
+    .bar {
+      height: 9px;
+      background: #efe9dc;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      width: var(--value);
+      border-radius: inherit;
+      background: var(--green);
+    }
+
+    .meter-score {
+      font-family: var(--mono);
+      color: var(--muted);
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .section {
+      padding: 52px 0;
+      border-top: 1px solid rgba(99, 112, 109, 0.28);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 0.42fr 1fr;
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .eyebrow.blue {
+      color: var(--blue);
+    }
+
+    .eyebrow.amber {
+      color: var(--amber);
+    }
+
+    .eyebrow.red {
+      color: var(--red);
+    }
+
+    .section-head h2 {
+      margin-bottom: 12px;
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.04;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 760px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: rgba(255, 253, 248, 0.88);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 19px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 18px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0a514c;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .tag,
+    .voice,
+    .tagline span {
+      --pill-bg: var(--green-soft);
+      --pill-color: #0a514c;
+      background: var(--pill-bg);
+      color: var(--pill-color);
+    }
+
+    .tone-blue {
+      --pill-bg: var(--blue-soft);
+      --pill-color: var(--blue);
+    }
+
+    .tone-pink {
+      --pill-bg: var(--pink-soft);
+      --pill-color: var(--pink);
+    }
+
+    .tone-amber {
+      --pill-bg: var(--amber-soft);
+      --pill-color: var(--amber);
+    }
+
+    .tone-red {
+      --pill-bg: var(--red-soft);
+      --pill-color: var(--red);
+    }
+
+    .quote-card {
+      margin-bottom: 16px;
+      padding: 22px;
+      background: rgba(255, 253, 248, 0.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .quote-card p {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.38;
+    }
+
+    .article-highlights {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .highlight-item {
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+    }
+
+    .highlight-item b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+
+    .highlight-item p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.82;
+    }
+
+    .prose {
+      display: grid;
+      gap: 18px;
+    }
+
+    .prose h4 {
+      margin: 8px 0 -2px;
+      font-family: var(--serif);
+      font-size: 28px;
+      line-height: 1.14;
+      font-weight: 650;
+    }
+
+    .prose p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.96;
+    }
+
+    .article-summary-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .article-details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.86);
+      overflow: hidden;
+    }
+
+    .article-details summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 18px;
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 15px;
+      background: rgba(250, 248, 242, 0.72);
+    }
+
+    .article-details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .article-details summary::after {
+      content: "展开";
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .article-details[open] summary::after {
+      content: "收起";
+    }
+
+    .article-details-body {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .standout {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(224, 240, 236, 0.28);
+    }
+
+    .standout strong {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .demo-flow,
+    .demo-groups,
+    .chapter-stage,
+    .audio-spotlight {
+      display: grid;
+      gap: 16px;
+    }
+
+    .flow-intro,
+    .chapter,
+    .module-block,
+    .subgroup,
+    .stage-video,
+    .module-conclusion,
+    .demo-card {
+      background: rgba(255, 253, 248, 0.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .flow-intro {
+      display: grid;
+      gap: 18px;
+      padding: 8px 0 2px;
+      background: transparent;
+      border: 0;
+    }
+
+    .flow-intro h4,
+    .chapter-head h4 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 30px;
+      line-height: 1.08;
+      font-weight: 650;
+    }
+
+    .flow-intro p,
+    .chapter-head p,
+    .flow-stat span,
+    .chapter-meta,
+    .subgroup-meta {
+      color: var(--muted);
+    }
+
+    .flow-intro-copy {
+      display: grid;
+      gap: 10px;
+      max-width: 900px;
+    }
+
+    .flow-intro-kicker {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(220, 239, 235, 0.62);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .flow-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow-stats span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flow-stats strong {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .sample-hub {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 0;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.9);
+      overflow: hidden;
+    }
+
+    .sample-hub-nav {
+      display: grid;
+      gap: 8px;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(250, 248, 242, 0.76);
+    }
+
+    .sample-hub-label {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .sample-hub-tab {
+      appearance: none;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px 14px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .sample-hub-tab:hover,
+    .sample-hub-tab.active {
+      background: rgba(255, 253, 248, 0.94);
+      border-color: rgba(12, 117, 111, 0.28);
+      box-shadow: inset 3px 0 0 var(--green);
+    }
+
+    .sample-hub-tab strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .sample-hub-tab span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .sample-hub-tab code {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      background: transparent;
+    }
+
+    .sample-hub-body {
+      padding: 22px 26px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .sample-hub-panel {
+      display: none;
+      gap: 18px;
+    }
+
+    .sample-hub-panel.active {
+      display: grid;
+    }
+
+    .sample-hub-head {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sample-hub-head h4 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.08;
+      font-weight: 650;
+    }
+
+    .sample-hub-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .sample-hub-signal {
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      background: #1f2927;
+      color: #fffdf8;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .sample-hub-signal strong {
+      color: #fffdf8;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .sample-hub-notes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .sample-note {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.84);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .sample-note strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .sample-hub-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 4px;
+    }
+
+    .sample-hub-meta {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .demo-modals {
+      display: contents;
+    }
+
+    .chapter-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: grid;
+      place-items: center;
+      padding: 28px 22px;
+      background: rgba(21, 28, 27, 0.24);
+      backdrop-filter: blur(12px);
+    }
+
+    .chapter-modal[hidden] {
+      display: none;
+    }
+
+    .chapter-sheet {
+      position: relative;
+      z-index: 1;
+      width: min(1160px, calc(100vw - 36px));
+      max-height: calc(100vh - 56px);
+      overflow: auto;
+      padding: 18px 18px 20px;
+      border: 1px solid rgba(99, 112, 109, 0.22);
+      border-radius: calc(var(--radius) + 2px);
+      background: rgba(255, 253, 248, 0.94);
+      box-shadow: 0 22px 56px rgba(22, 32, 30, 0.16);
+    }
+
+    .chapter-sheet-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: -18px -18px 14px;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid rgba(99, 112, 109, 0.18);
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .chapter-sheet-kicker {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(220, 239, 235, 0.62);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .chapter-close {
+      background: rgba(255, 253, 248, 0.78);
+      color: var(--ink);
+      border: 1px solid rgba(99, 112, 109, 0.22);
+      min-height: 36px;
+      padding: 8px 14px;
+      font: 700 13px/1 var(--sans);
+    }
+
+    .chapter-sheet .chapter {
+      padding: 0;
+      border-left: 0;
+      background: transparent;
+      border: 0;
+    }
+
+    .chapter-sheet .chapter-head {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .chapter-sheet .chapter-head h4 {
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.08;
+    }
+
+    .chapter-sheet .chapter-head p {
+      max-width: 760px;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .chapter-sheet .chapter-kicker {
+      display: inline-flex;
+      width: fit-content;
+    }
+
+    .chapter-sheet .chapter-meta {
+      text-align: left;
+      font-size: 12px;
+    }
+
+    .chapter-sheet .chapter-stage {
+      gap: 18px;
+    }
+
+    .chapter-sheet .module-block,
+    .chapter-sheet .stage-video {
+      padding: 18px;
+    }
+
+    .chapter-sheet .module-head {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .chapter-sheet .module-head strong {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .chapter-sheet .module-head span {
+      font-size: 14px;
+      line-height: 1.78;
+    }
+
+    .chapter-sheet .audio-spotlight-rail {
+      display: grid;
+      gap: 14px;
+    }
+
+    .chapter-sheet .demo-card,
+    .chapter-sheet .spotlight-card {
+      min-width: 0;
+      height: 100%;
+      padding: 18px;
+      gap: 14px;
+    }
+
+    .chapter-sheet .stage-video video {
+      width: min(100%, 320px);
+      max-height: min(56vh, 500px);
+      margin: 0 auto;
+      object-fit: contain;
+    }
+
+    .chapter-sheet .stage-video {
+      justify-items: center;
+    }
+
+    .chapter-sheet .stage-video > * {
+      width: min(100%, 680px);
+    }
+
+    .chapter-sheet .stage-video video {
+      width: min(100%, 320px);
+    }
+
+    .sample-switcher {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(340px, 380px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .sample-switch-tabs {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-width: 0;
+    }
+
+    .sample-switch-tab {
+      appearance: none;
+      width: 100%;
+      min-height: 54px;
+      padding: 11px 14px;
+      border: 1px solid rgba(99, 112, 109, 0.2);
+      border-radius: 12px;
+      background: rgba(255, 253, 248, 0.82);
+      color: var(--muted);
+      text-align: left;
+      font: 700 13px/1.45 var(--sans);
+      cursor: pointer;
+      transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+    }
+
+    .sample-switch-tab:hover,
+    .sample-switch-tab.active {
+      color: var(--ink);
+      border-color: rgba(12, 117, 111, 0.3);
+      background: rgba(220, 239, 235, 0.62);
+      box-shadow: inset 3px 0 0 var(--green);
+    }
+
+    .sample-switch-tab strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .sample-switch-tab span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .sample-switch-panel {
+      display: none;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .sample-switch-panel.active {
+      display: block;
+    }
+
+    .sample-switch-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .sample-switch-stack.columns-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .sample-switcher .audio-spotlight-rail {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      min-width: 0;
+    }
+
+    .sample-switcher .demo-card {
+      width: 100%;
+      max-width: none;
+    }
+
+    .chapter {
+      padding: 18px;
+      border-left: 3px solid var(--green);
+    }
+
+    .chapter-head {
+      display: grid;
+      grid-template-columns: 0.32fr 1fr 96px;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chapter-kicker {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .chapter-meta {
+      text-align: right;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .stage-video,
+    .module-block {
+      padding: 16px;
+    }
+
+    .module-head {
+      display: grid;
+      grid-template-columns: 0.3fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .module-head strong {
+      font-family: var(--serif);
+      font-size: 24px;
+      line-height: 1.16;
+      color: var(--ink);
+    }
+
+    .module-head span {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.78;
+    }
+
+    .module-conclusion {
+      padding: 14px 16px;
+      background: rgba(220, 239, 235, 0.28);
+    }
+
+    .module-conclusion b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .module-conclusion p {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.82;
+    }
+
+    .chapter-stage-label,
+    .spotlight-note {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .audio-spotlight-rail {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(220px, 280px);
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding-bottom: 4px;
+    }
+
+    .audio-spotlight-rail::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .audio-spotlight-rail::-webkit-scrollbar-thumb {
+      background: rgba(99, 112, 109, 0.3);
+      border-radius: 999px;
+    }
+
+    .spotlight-card,
+    .demo-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      scroll-snap-align: start;
+    }
+
+    .demo-card.playing {
+      border-color: rgba(12, 117, 111, 0.42);
+      box-shadow: inset 3px 0 0 var(--green);
+      background: #dcefeb;
+    }
+
+    .demo-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .demo-top h5 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .voice {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .demo-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.68;
+    }
+
+    .tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .tagline span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    audio,
+    video {
+      width: 100%;
+      min-height: 42px;
+    }
+
+    .stage-video video {
+      max-height: 360px;
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.8);
+    }
+
+    .subgroups {
+      display: grid;
+      gap: 12px;
+    }
+
+    .subgroup summary {
+      list-style: none;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 12px;
+      align-items: center;
+      padding: 15px 16px;
+      background: rgba(250, 248, 242, 0.76);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .subgroup summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .subgroup-title {
+      display: grid;
+      gap: 3px;
+    }
+
+    .subgroup-title strong {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .subgroup-body {
+      padding: 16px;
+    }
+
+    .subgroup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .empty-demo {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+      color: #76500f;
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 34px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .promo-banner {
+      display: block;
+      margin: 0 0 22px;
+      overflow: hidden;
+      border: 1px solid rgba(102, 120, 115, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, rgba(224, 240, 236, 0.7), rgba(234, 246, 251, 0.86));
+      box-shadow: 0 14px 34px rgba(22, 32, 30, 0.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      border-bottom: 1px solid rgba(102, 120, 115, 0.22);
+    }
+
+    .promo-banner:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 126, 168, 0.32);
+      box-shadow: 0 18px 42px rgba(22, 32, 30, 0.12);
+    }
+
+    .promo-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .section-head,
+      .chapter-head,
+      .module-head,
+      .hero-bottom,
+      .flow-intro,
+      .sample-hub {
+        grid-template-columns: 1fr;
+      }
+
+      .grid.three,
+      .grid.two,
+      .flow-stats,
+      .subgroup-grid,
+      .sample-hub-notes {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quick-nav {
+        left: 12px;
+        width: 150px;
+      }
+
+      .sample-hub-nav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .chapter-sheet .chapter-head {
+        grid-template-columns: 1fr;
+      }
+
+      .chapter-sheet .audio-spotlight-rail {
+        gap: 12px;
+      }
+
+      .sample-switcher {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-switch-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        width: min(100% - 22px, 1180px);
+        padding-top: 20px;
+      }
+
+      .hero {
+        min-height: auto;
+        grid-template-columns: 1fr;
+      }
+
+      .grid.three,
+      .grid.two,
+      .flow-stats,
+      .subgroup-grid,
+      .sample-hub-notes {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-nav {
+        top: auto;
+        left: 12px;
+        bottom: 12px;
+        transform: none;
+      }
+
+      .quick-nav:not(.collapsed) {
+        width: min(210px, calc(100vw - 24px));
+      }
+
+      .quick-nav.collapsed {
+        transform: translateX(calc(-100% + 54px));
+      }
+
+      .sample-hub-body {
+        padding: 18px;
+      }
+
+      .sample-hub-actions {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .chapter-modal {
+        padding: 16px 10px;
+      }
+
+      .chapter-sheet {
+        width: calc(100vw - 20px);
+        max-height: calc(100vh - 24px);
+      }
+
+      .audio-spotlight-rail {
+        grid-auto-columns: minmax(220px, 1fr);
+      }
+
+      .chapter-sheet .audio-spotlight-rail {
+        gap: 12px;
+      }
+
+      .sample-switch-tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .sample-switch-stack.columns-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="quick-nav collapsed" aria-label="快速导航">
+    <button class="quick-nav-toggle" type="button" aria-expanded="true">快速导航</button>
+    <div class="quick-nav-list">
+      <a href="#top">首屏概览</a>
+      <a href="#article">核心判断</a>
+      <a href="#takeaways">优劣总结</a>
+      <a href="#demos">样本证据</a>
+      <a href="#implications">趋势启示</a>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <section class="hero" id="top">
+      <div>
+        <div class="kicker">
+          <span class="chip">调研体验报告</span>
+          <span class="chip">2026-07-30</span>
+          <span class="chip">GPT-Live</span>
+        </div>
+        <h1 class="hero-title"><span class="title-model">GPT-Live 语音对话</span> <span class="title-report">体验报告</span></h1>
+        <p class="lead" style="margin-top: 8px; margin-bottom: 4px; color: var(--muted); font-size: 15px; font-weight: 600;">音视频生成资源部・音视频之家</p>
+        <p class="lead">它真正厉害的，不是把一句话说得更漂亮，而是把语音交互从“高质量播报”拉回到了“真实闲聊”。</p>
+        <div class="hero-actions">
+          <a class="button" href="#article">查看核心判断</a>
+          <a class="button secondary" href="#demos">查看样本证据</a>
+        </div>
+      </div>
+      <aside class="signal-board" aria-label="能力信号">
+        <h2>能力信号</h2>
+        <div class="meter">
+          <div class="meter-name">活人感</div>
+          <div class="bar"><span style="--value: 94%"></span></div>
+          <div class="meter-score">强</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">接话打断</div>
+          <div class="bar"><span style="--value: 91%"></span></div>
+          <div class="meter-score">强</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">情绪层次</div>
+          <div class="bar"><span style="--value: 74%"></span></div>
+          <div class="meter-score">中</div>
+        </div>
+        <div class="meter">
+          <div class="meter-name">角色才艺</div>
+          <div class="bar"><span style="--value: 42%"></span></div>
+          <div class="meter-score">弱</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="article">
+      <div class="section-head">
+        <div class="eyebrow">01 / 核心判断</div>
+        <div>
+          <h2>GPT-Live 为什么像人在聊天。</h2>
+          <p class="sub">这次体验最关键的判断，不是它又把声音做得更顺了，而是它开始像真人一样停顿、接话、暴露一点不完美。<strong>它没那么高效，却反而更像人在说话。</strong></p>
+        </div>
+      </div>
+      <div class="article-highlights">
+        <article class="highlight-item">
+          <b>结论一</b>
+          <p>它最强的不是“更会说”，而是“更像真人在接话”。</p>
+        </article>
+        <article class="highlight-item">
+          <b>结论二</b>
+          <p>活人感来自停顿、打断、自发反馈这些小动作，不来自单个炫技能力。</p>
+        </article>
+        <article class="highlight-item">
+          <b>结论三</b>
+          <p>聊天已经很强，但演绎、强情绪和才艺能力还远没到成熟状态。</p>
+        </article>
+      </div>
+      <div class="article-summary-stack">
+        <div class="standout"><strong>关键变化在于</strong><p>它不再优先追求“把一句话说完整”，而是开始优先追求“像一个普通人一样把话接住”。</p></div>
+        <div class="standout"><strong>真正把体感拉开的</strong><p>是停顿、接话、自发笑声、轻微咂嘴、自言自语这些几乎不值得单独吹的细节。</p></div>
+        <details class="article-details">
+          <summary>查看完整判断</summary>
+          <div class="article-details-body">
+            <div class="prose">
+              <h4>它真正改变的，不是声音质量，而是对话目标</h4>
+              <p>这次体验下来，一个感受非常明确。GPT-Live 最打人的地方，不是某个单点能力突然特别炸，而是它第一次把聊天这件事，从一个很会说话的语音助手，拉回到了一个真的像人在跟你对话的状态里。</p>
+              <p>以前很多语音产品的问题，不是不聪明，也不是不好听。恰恰相反，它们往往太聪明了，也太工整了。句子太完整，节奏太规整，情绪太标准，服务感太强。你一听就知道，这个东西是在完成一次高质量播报，而不是在和你闲聊。</p>
+              <p>GPT-Live 不一样的地方在于，它没那么高效。它会停顿，会重复，会在你一句话没说完的时候意识到你还在想，会在你插话的时候立刻收声，然后顺着新的顾虑接着聊。它会有一点碎，有一点废话，有一点口头禅，甚至有一点轻微的言之无物。放在传统语音交互的评价体系里，这些都不算优点。可一旦目标从服务切到聊天，这些东西反而一下子活了。</p>
+              <h4>最打人的地方，是普通人式的表达逻辑</h4>
+              <p>从发音人体验看，最推荐的是 Sol、Juniper、Cove，综合效果最好的是 Sol、Arbor、Spruce。这里面最有意思的，不是谁更好听，而是谁更像一个你现实里真的会遇到的人。它们不是被精修过的人设，而是带着一点年龄感、一点口癖、一点不完美的人。</p>
+              <p>这点很关键。很多音库的问题，不是能力不够，而是人物太“完美”了。完美到你在现实生活里几乎碰不到。GPT-Live 反过来，它不是在给你造一个样板间里的主持人，而是在尽量还原一个普通人。这个普通人不一定最利落，不一定最干净，不一定最标准，但他像活人。</p>
+              <h4>活人感不是一句大招，而是一串小动作</h4>
+              <p>然后是对话节奏。几个点很有代表性，一个是跟随人类思考节奏。空白停顿的时候它不抢话，不会急着把你的犹豫填满，还能承接半句话的逻辑。另一个是打断适配感。很多系统表面上支持打断，实际上只是技术上能停。GPT-Live 更像是交流上能接，也就是它不是简单停住，而是理解你为什么打断，然后把新的顾虑接进来。</p>
+              <p>还有几个很具体的观察也很关键。比如它会在听到用户笑的时候也跟着笑，会重复用户刚说的关键词再思考，会冒出你这不天天、哎呀、真的这种碎片口语。你如果只看字面，会觉得这些不高级。可一旦把它放回口语交互里，你会发现，真正让人觉得活的，恰恰不是表达高级，而是表达像人。</p>
+              <h4>边界也很清楚，它强在陪聊，不强在表演</h4>
+              <p>当然，这里也不能吹过头。优点很明显，缺点也同样清楚。最明显的问题有几个，第一，发音人质量不齐。第二，情绪虽然更自然，但极致情绪并不强。第三，角色扮演和才艺基本都不太行。它强在陪你聊，不强在给你演。</p>
+              <p>所以如果只用一句话来概括这次体验，我大概会这么说。GPT-Live 的厉害，不是它终于学会了怎么把话说得更漂亮，而是它开始学会，怎么把话说得没那么漂亮，但更像人。</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" id="takeaways">
+      <div class="section-head">
+        <div class="eyebrow red">02 / 优势与边界</div>
+        <div>
+          <h2>优势很集中，边界也很清楚。</h2>
+          <p class="sub">亮点主要集中在节奏、接话和随机反馈；短板主要集中在强情绪、演绎和才艺能力。</p>
+        </div>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <span class="tag">最强的地方</span>
+          <h3>像在聊天，不像在应答</h3>
+          <ul>
+            <li>对话时序更像真人，支持打断，也能承接新增顾虑。</li>
+            <li>会边思考边说话，而不是句句工整、一次性输出。</li>
+            <li>有废话、口头禅、停顿、自发笑声、轻微咂嘴这类随机反馈。</li>
+            <li>人物气质更像现实里真的会遇到的人，不悬浮。</li>
+            <li>整体松弛，不像训练有素的服务腔。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag tone-red">明显短板</span>
+          <h3>强情绪和演绎仍然没拉满</h3>
+          <ul>
+            <li>发音人质量不齐，稳定性和咬字清晰度有波动。</li>
+            <li>强情绪层次还不够拉开，极致表达偏弱。</li>
+            <li>副语言覆盖面还不完整，部分效果指定后会失真。</li>
+            <li>角色扮演更像模仿语气，不像真的进入角色。</li>
+            <li>唱歌、RAP、戏曲等才艺能力目前更像附赠功能。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="demos">
+      <div class="section-head">
+        <div class="eyebrow blue">03 / 样本证据</div>
+        <div>
+          <h2>四个核心判断，都能在样本里直接听见。</h2>
+          <p class="sub">先看活人感，再看发音人与情绪，再看控制力，最后看能力边界。每一组先给判断，再看对应样本。</p>
+        </div>
+      </div>
+      <div class="demo-flow" id="demo-flow"></div>
+      <div class="demo-modals" id="demo-groups"></div>
+    </section>
+
+    <section class="section" id="implications">
+      <div class="section-head">
+        <div class="eyebrow amber">04 / 行业趋势与启示</div>
+        <div>
+          <h2>语音交互的竞争重点，正在从“播报质量”转向“对话体感”。</h2>
+          <p class="sub">如果这条路线继续成立，后面的差异不会只来自音色好不好听，而会更多来自接话能力、微反应、人格一致性和任务切换时的稳定度。</p>
+        </div>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <span class="tag tone-amber">行业趋势</span>
+          <h3>下一轮竞争，不是堆更多声音，而是把聊天做得更像人</h3>
+          <ul>
+            <li>真正拉开差距的，已经不是单句音质，而是停顿、打断、自发反馈这些对话行为。</li>
+            <li>“像真人”开始变成产品能力，而不是营销描述。</li>
+            <li>社媒传播最容易被放大的，也正是这些主动触发的小反应，而不是标准播报本身。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag tone-blue">行业趋势</span>
+          <h3>发音人价值会从“数量”转向“可记住的代表角色”</h3>
+          <ul>
+            <li>用户不会长期记住九个发音人，但会记住一两个最顺耳、最像人的角色。</li>
+            <li>发音人设计会更像产品人物设计，而不是简单音色陈列。</li>
+            <li>音色库继续扩张的同时，筛出少数代表性角色会更重要。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag tone-pink">后续启示</span>
+          <h3>评测方法要升级，不能只看清晰度和情绪强度</h3>
+          <ul>
+            <li>后续评测更该固定看半句话承接、插话收声、自发笑声、轻微副语言这些样本。</li>
+            <li>“低效但像人”的表达，以前会被当噪声，接下来应该被当成关键体验指标。</li>
+            <li>音频 Demo 的组织方式也要更像对话现象学，而不是参数表。</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag tone-red">后续启示</span>
+          <h3>边界同样会更早暴露，尤其在任务态和强演绎场景</h3>
+          <ul>
+            <li>一旦进入任务态、教学态或强情绪表演，松弛感会明显回缩，这是当前最需要补的落差。</li>
+            <li>如果未来要做长对话助手、陪伴型产品或语音 Agent，控制稳定度会和活人感一样重要。</li>
+            <li>这类产品越像人，越需要更清楚的行为边界和一致性设计。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <a class="promo-banner" href="http://172.31.101.179:6001/" target="_blank" rel="noreferrer" aria-label="访问音视频生成之家">
+        <img src="./assets/promo-banner.png" alt="音视频生成之家">
+      </a>
+      <p>音视频生成资源部・音视频之家 | 编辑：陈然 | 素材来源：何雨晴、陈然、崔龙飞。本报告重点呈现 GPT-Live 在真实闲聊、发音人自然度、情绪层次与能力边界上的实际表现。</p>
+    </footer>
+  </main>
+
+  <script src="./demo-manifest.js"></script>
+  <script>
+    const fallbackDemos = [];
+    const demos = Array.isArray(window.GPT_LIVE_DEMOS) ? window.GPT_LIVE_DEMOS : fallbackDemos;
+    const flowRoot = document.getElementById("demo-flow");
+    const groupsRoot = document.getElementById("demo-groups");
+    const chapterDefs = [
+      {
+        id: "chapter-core",
+        kicker: "第一部分 / 活人感证据",
+        title: "活人感证据",
+        description: "优先看主动触发、自发反馈和整体体感最明确的样本，这一组最能直接说明它为什么像真人聊天。",
+        groups: ["思考与打断", "随机反馈", "细颗粒笑态与口语", "生理拟声", "补充视频"],
+        featuredVideo: "社媒体验总览视频 2:05",
+        coreModules: [
+          {
+            label: "个人体验",
+            description: "这一组统一放个人体验音频，重点看松弛感、自触发反馈和细颗粒笑态这些最像真人聊天的细节。",
+            conclusion: "结论很直接：真正把活人感立住的，不是一个大招，而是这些会自己冒出来的小反应。",
+            collections: [
+              {
+                label: "笑声",
+                description: "把会自己冒出来的笑声放在一起听，更容易判断它是不是只会播报式发笑。",
+                columns: 2,
+                items: ["Maple 对话中忽然噗呲笑", "Sol 自发笑声", "Sol 句中笑声", "Sol 偷笑"]
+              },
+              {
+                label: "笑腔",
+                description: "这一类更看口音味道和笑意是不是自然带出来，而不是单独做腔调。",
+                items: ["Sol 粤语笑腔"]
+              },
+              {
+                label: "咂嘴",
+                description: "重点看这种很小的口部动作，会不会自然打断播报感。",
+                items: ["Maple 咂嘴，自发"]
+              },
+              {
+                label: "自言自语 / 默念",
+                description: "这类最像真人会顺手冒出来的一句旁白或碎念。",
+                items: ["Sol 主动自言自语", "Sol 会自动说一些自言自语"]
+              },
+              {
+                label: "松弛感",
+                description: "这一类不靠夸张动作，而是靠节奏、短句交错和轻微啰嗦把聊天感撑起来。",
+                items: ["Spruce 聊天松弛感"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "chapter-voice",
+        kicker: "第二部分 / 发音人与情绪",
+        title: "发音人与情绪",
+        description: "先定最值得听的声音，再看情绪层次到底有没有真正拉开。",
+        groups: ["发音人总览", "情绪层次", "Sol 情绪词"],
+        moduleSections: [
+          {
+            label: "优先推荐发音人",
+            description: "先听这 4 个声音就够了。Sol 最稳，Cove 气质最好，Arbor 和 Spruce 更像现实里会遇到的人。",
+            conclusion: "如果只想先抓住这套系统最有代表性的声音，优先级就是 Sol、Cove、Arbor、Spruce。",
+            items: ["Sol 发音人列表", "Cove 发音人列表", "Arbor 发音人列表", "Spruce 发音人列表"]
+          },
+          {
+            label: "情绪层次验证",
+            description: "情绪不是靠堆力气，而是看层次有没有拉开。Spruce 这组最适合直接验证这一点。",
+            conclusion: "结论是：情绪确实更自然，但强度层次没有完全拉开，最强的反而是害羞这类轻情绪。",
+            items: ["Spruce 害羞", "Spruce 特别高兴", "Spruce 特别悲伤", "Spruce 超级生气"]
+          }
+        ]
+      },
+      {
+        id: "chapter-control",
+        kicker: "第三部分 / 控制力与任务态",
+        title: "控制力与任务态",
+        description: "先看控制力有没有做细，再看一进任务态之后，松弛感会不会明显回缩。",
+        groups: ["副语言与属性控制", "场景风格", "教辅 / 功能化状态", "其他状态"],
+        moduleSections: [
+          {
+            label: "控制力验证",
+            description: "这一组先看节奏、语速和场景风格切换时，是不是像人在变，而不是参数在变。",
+            conclusion: "结论是控制力已经够用，但更强的是自然切换，不是极致精确控制。",
+            items: ["Sol 前慢后快", "Sol 快语速", "Sol 慢语速", "Maple 冥想"]
+          },
+          {
+            label: "任务态回缩",
+            description: "一旦进入训练和功能型任务，表达会不会重新变回更规整、更工具化，这是这组最该听的点。",
+            conclusion: "一进任务态，系统会明显往工具化表达回缩，松弛感会收掉一截。",
+            items: ["Sol 口语练习", "Sol 数学计算", "Sol 逻辑推理", "Sol 写作"]
+          }
+        ]
+      },
+      {
+        id: "chapter-boundary",
+        kicker: "第四部分 / 能力边界",
+        title: "能力边界",
+        description: "这一章不看亮点，只看它在哪些任务上会明显掉下来。",
+        groups: ["角色扮演", "女声角色扮演", "才艺短板"],
+        moduleSections: [
+          {
+            label: "角色扮演边界",
+            description: "问题不在于完全不能演，而在于更像模仿语气，不像真的进入角色。",
+            conclusion: "角色扮演的结论很明确：能换腔调，但还进不了角色。",
+            items: ["女巫", "Maple 女巫", "小猪佩奇", "Maple 小猪佩奇"]
+          },
+          {
+            label: "才艺边界",
+            description: "唱歌、舞台腔和念白更像附赠功能，拿来听边界很合适，拿来当亮点就不成立了。",
+            conclusion: "才艺这条线目前只能当边界样本，不能当产品亮点。",
+            items: ["Maple 小星星英语", "Maple 生日快乐英语", "Maple 舞台腔", "Maple 念白"]
+          }
+        ]
+      }
+    ];
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderMedia(item) {
+      if (!item.src) {
+        const hint = item.fileHint ? `<div class="empty-demo">${escapeHtml(item.fileHint)}</div>` : "";
+        return `<div class="empty-demo">该样本暂未放入当前页面。${hint}</div>`;
+      }
+      if (item.type === "video") {
+        return `<video controls preload="metadata" src="${escapeHtml(item.src)}"></video>`;
+      }
+      if (item.type === "image") {
+        return `<img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.title)}" style="width:100%;border-radius:var(--radius);display:block;">`;
+      }
+      return `<audio controls preload="metadata" src="${escapeHtml(item.src)}"></audio>`;
+    }
+
+    function getVoiceToneClass(voice) {
+      if (["Sol", "Juniper", "Maple"].includes(voice)) return "tone-pink";
+      if (["Cove", "Arbor", "Spruce"].includes(voice)) return "tone-blue";
+      return "tone-amber";
+    }
+
+    function getTagToneClass(tag, item = {}) {
+      if (/短板|边界|风险|生气|哭腔|吵架|吐槽/.test(tag)) return "tone-red";
+      if (/女声|笑声|笑腔|害羞|高兴|悲伤|撒娇|偷笑/.test(tag)) return "tone-pink";
+      if (/男声|发音人列表|音量|语速|打断|双向对话|角色扮演|才艺/.test(tag)) return "tone-blue";
+      if (/场景风格|古装|戏曲|说唱|RAP|悄悄话|辩论/.test(tag)) return "tone-amber";
+      if (item.voice) return getVoiceToneClass(item.voice);
+      return "";
+    }
+
+    function renderTags(item) {
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      if (!tags.length) return "";
+      return `<div class="tagline">${tags.map(tag => `<span class="${getTagToneClass(tag, item)}">${escapeHtml(tag)}</span>`).join("")}</div>`;
+    }
+
+    function renderCard(item, label = "") {
+      return `
+        <article class="demo-card">
+          ${label ? `<div class="spotlight-note">${escapeHtml(label)}</div>` : ""}
+          <div class="demo-top">
+            <div>
+              <h5>${escapeHtml(item.title)}</h5>
+            </div>
+            ${item.voice ? `<span class="voice ${getVoiceToneClass(item.voice)}">${escapeHtml(item.voice)}</span>` : ""}
+          </div>
+          <p>${escapeHtml(item.summary || "")}</p>
+          ${renderMedia(item)}
+          ${renderTags(item)}
+        </article>
+      `;
+    }
+
+    function renderStageVideo(item) {
+      return `
+        <article class="stage-video demo-card">
+          <div class="chapter-stage-label">整体效果</div>
+          <div class="demo-top">
+            <div>
+              <h5>${escapeHtml(item.title)}</h5>
+            </div>
+            ${item.voice ? `<span class="voice ${getVoiceToneClass(item.voice)}">${escapeHtml(item.voice)}</span>` : ""}
+          </div>
+          <p>${escapeHtml(item.summary || "")}</p>
+          ${renderMedia(item)}
+          ${renderTags(item)}
+        </article>
+      `;
+    }
+
+    function renderSampleSwitcher(items, label, switcherId) {
+      if (!items.length) return "";
+      return `
+        <div class="sample-switcher" data-switcher="${escapeHtml(switcherId)}">
+          <div class="sample-switch-tabs">
+            ${items.map((item, index) => `
+              <button
+                type="button"
+                class="sample-switch-tab ${index === 0 ? "active" : ""}"
+                data-switch-tab="${escapeHtml(switcherId)}"
+                data-switch-target="${escapeHtml(switcherId)}-${index}">
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.summary || "")}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div class="audio-spotlight-rail">
+            ${items.map((item, index) => `
+              <div class="sample-switch-panel ${index === 0 ? "active" : ""}" data-switch-panel="${escapeHtml(switcherId)}-${index}">
+                ${renderCard(item, label)}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSampleCollectionSwitcher(collections, label, switcherId, titleMap) {
+      const validCollections = collections
+        .map(collection => ({
+          ...collection,
+          resolvedItems: (collection.items || []).map(title => titleMap.get(title)).filter(Boolean)
+        }))
+        .filter(collection => collection.resolvedItems.length);
+      if (!validCollections.length) return "";
+      return `
+        <div class="sample-switcher" data-switcher="${escapeHtml(switcherId)}">
+          <div class="sample-switch-tabs">
+            ${validCollections.map((collection, index) => `
+              <button
+                type="button"
+                class="sample-switch-tab ${index === 0 ? "active" : ""}"
+                data-switch-tab="${escapeHtml(switcherId)}"
+                data-switch-target="${escapeHtml(switcherId)}-${index}">
+                <strong>${escapeHtml(collection.label)}</strong>
+                <span>${escapeHtml(collection.description || "")}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div class="audio-spotlight-rail">
+            ${validCollections.map((collection, index) => `
+              <div class="sample-switch-panel ${index === 0 ? "active" : ""}" data-switch-panel="${escapeHtml(switcherId)}-${index}">
+                <div class="sample-switch-stack ${collection.columns === 2 ? "columns-2" : ""}">
+                  ${collection.resolvedItems.map(item => renderCard(item, label)).join("")}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCoreFeaturedZone(chapter, titleMap) {
+      const videoItem = titleMap.get(chapter.featuredVideo);
+      const modules = Array.isArray(chapter.coreModules) ? chapter.coreModules : [];
+      return `
+        <div class="chapter-stage">
+          ${videoItem ? renderStageVideo(videoItem) : ""}
+          ${modules.map(module => {
+            const items = (module.items || []).map(title => titleMap.get(title)).filter(Boolean);
+            const hasCollections = Array.isArray(module.collections) && module.collections.length;
+            if (!items.length && !hasCollections) return "";
+            return `
+              <section class="module-block">
+                <div class="module-head">
+                  <strong>${escapeHtml(module.label)}</strong>
+                  <span>${escapeHtml(module.description || "")}</span>
+                </div>
+                ${module.conclusion ? `
+                  <div class="module-conclusion">
+                    <b>结论</b>
+                    <p>${escapeHtml(module.conclusion)}</p>
+                  </div>
+                ` : ""}
+                ${Array.isArray(module.collections)
+                  ? renderSampleCollectionSwitcher(module.collections, module.label, `${chapter.id}-core-${module.label}`, titleMap)
+                  : renderSampleSwitcher(items, module.label, `${chapter.id}-core-${module.label}`)}
+              </section>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderModuleSections(chapter, titleMap) {
+      const sections = Array.isArray(chapter.moduleSections) ? chapter.moduleSections : [];
+      return `
+        <div class="chapter-stage">
+          ${sections.map(section => {
+            const items = section.items.map(title => titleMap.get(title)).filter(Boolean);
+            if (!items.length) return "";
+            return `
+              <section class="module-block">
+                <div class="module-head">
+                  <strong>${escapeHtml(section.label)}</strong>
+                  <span>${escapeHtml(section.description || "")}</span>
+                </div>
+                ${section.conclusion ? `
+                  <div class="module-conclusion">
+                    <b>结论</b>
+                    <p>${escapeHtml(section.conclusion)}</p>
+                  </div>
+                ` : ""}
+                ${renderSampleSwitcher(items, section.label, `${chapter.id}-section-${section.label}`)}
+              </section>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function renderSubgroup(groupName, items, isOpen) {
+      if (!items.length) return "";
+      const displayName = groupName === "发音人总览" ? "其余发音人样本" : groupName;
+      return `
+        <details class="subgroup" ${isOpen ? "open" : ""}>
+          <summary>
+            <div class="subgroup-title">
+              <strong>${escapeHtml(displayName)}</strong>
+              <span class="subgroup-meta">${items.length} 条相关样本</span>
+            </div>
+            <span class="chapter-meta">更多样本</span>
+          </summary>
+          <div class="subgroup-body">
+            <div class="subgroup-grid">
+              ${items.map(item => renderCard(item)).join("")}
+            </div>
+          </div>
+        </details>
+      `;
+    }
+
+    function renderChapterModal(chapterId, chapterTitle, chapterHtml) {
+      return `
+        <div class="chapter-modal" data-modal="${escapeHtml(chapterId)}" hidden>
+          <div class="chapter-sheet" role="dialog" aria-modal="true" aria-labelledby="${escapeHtml(chapterId)}-title">
+            <div class="chapter-sheet-head">
+              <span class="chapter-sheet-kicker">${escapeHtml(chapterTitle)}</span>
+              <button type="button" class="chapter-close" data-close-modal>关闭样本</button>
+            </div>
+            ${chapterHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function getChapterLeadConclusion(chapter) {
+      const core = chapter.coreModules?.[0]?.conclusion;
+      const section = chapter.moduleSections?.[0]?.conclusion;
+      return core || section || chapter.description || "";
+    }
+
+    function getChapterLeadItems(chapter) {
+      const titles = [
+        ...(chapter.coreModules?.flatMap(module => [
+          ...(module.items || []),
+          ...(module.collections?.flatMap(collection => collection.items || []) || [])
+        ]) || []),
+        ...(chapter.moduleSections?.flatMap(section => section.items || []) || [])
+      ];
+      const normalized = titles.map(title => title.replace(" 发音人列表", ""));
+      return normalized.slice(0, chapter.id === "chapter-voice" ? 4 : 3).join("、");
+    }
+
+    function renderSampleHub(chapters, grouped) {
+      const tabs = chapters.map((chapter, index) => {
+        const count = chapter.groups.reduce((sum, groupName) => sum + ((grouped[groupName] || []).length), 0);
+        return `
+          <button type="button" class="sample-hub-tab ${index === 0 ? "active" : ""}" data-hub-tab="${escapeHtml(chapter.id)}">
+            <div>
+              <strong>${escapeHtml(chapter.title)}</strong>
+              <span>${escapeHtml(chapter.description)}</span>
+            </div>
+            <code>${count} 条</code>
+          </button>
+        `;
+      }).join("");
+
+      const panels = chapters.map((chapter, index) => {
+        const count = chapter.groups.reduce((sum, groupName) => sum + ((grouped[groupName] || []).length), 0);
+        const leadConclusion = getChapterLeadConclusion(chapter);
+        const leadItems = getChapterLeadItems(chapter);
+        return `
+          <section class="sample-hub-panel ${index === 0 ? "active" : ""}" data-hub-panel="${escapeHtml(chapter.id)}">
+            <div class="sample-hub-head">
+              <h4>${escapeHtml(chapter.title)}</h4>
+              <p>${escapeHtml(chapter.description)}</p>
+            </div>
+            <div class="sample-hub-signal">
+              <strong>核心判断</strong><br>
+              ${escapeHtml(leadConclusion)}
+            </div>
+            <div class="sample-hub-notes">
+              <div class="sample-note">
+                <strong>重点样本</strong>
+                ${escapeHtml(leadItems)}
+              </div>
+              <div class="sample-note">
+                <strong>样本规模</strong>
+                ${count} 条样本，按模块整理。
+              </div>
+              <div class="sample-note">
+                <strong>查看方式</strong>
+                点击右侧按钮，展开这一组的详细样本。
+              </div>
+              <div class="sample-note">
+                <strong>关注重点</strong>
+                ${escapeHtml(chapter.title)}这一组最适合直接验证对应判断。
+              </div>
+            </div>
+            <div class="sample-hub-actions">
+              <span class="sample-hub-meta">${count} 条样本 · 关闭后回到当前位置</span>
+              <button type="button" class="button secondary" data-open-modal="${escapeHtml(chapter.id)}">查看详细样本</button>
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      return `
+        <div class="sample-hub">
+          <div class="sample-hub-nav">
+            <div class="sample-hub-label">点击切换</div>
+            ${tabs}
+          </div>
+          <div class="sample-hub-body">
+            ${panels}
+          </div>
+        </div>
+      `;
+    }
+
+    function wireExclusivePlayback() {
+      function syncPlayingState() {
+        document.querySelectorAll(".demo-card.playing").forEach(card => card.classList.remove("playing"));
+        document.querySelectorAll("audio, video").forEach(media => {
+          if (!media.paused && !media.ended) {
+            media.closest(".demo-card")?.classList.add("playing");
+          }
+        });
+      }
+      document.addEventListener("play", event => {
+        const current = event.target;
+        if (!(current instanceof HTMLMediaElement)) return;
+        document.querySelectorAll("audio, video").forEach(media => {
+          if (media !== current) media.pause();
+        });
+        syncPlayingState();
+      }, true);
+      ["pause", "ended"].forEach(name => {
+        document.addEventListener(name, event => {
+          if (event.target instanceof HTMLMediaElement) syncPlayingState();
+        }, true);
+      });
+      syncPlayingState();
+    }
+
+    function wireQuickNav() {
+      const nav = document.querySelector(".quick-nav");
+      const button = document.querySelector(".quick-nav-toggle");
+      if (!nav || !button) return;
+
+      function syncNav(collapsed) {
+        nav.classList.toggle("collapsed", collapsed);
+        button.setAttribute("aria-expanded", String(!collapsed));
+        button.textContent = collapsed ? "导航" : "快速导航";
+      }
+
+      button.addEventListener("click", () => {
+        syncNav(!nav.classList.contains("collapsed"));
+      });
+      syncNav(nav.classList.contains("collapsed"));
+    }
+
+    function wireSampleHub() {
+      const tabs = Array.from(document.querySelectorAll("[data-hub-tab]"));
+      const panels = Array.from(document.querySelectorAll("[data-hub-panel]"));
+      if (!tabs.length || !panels.length) return;
+
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.hubTab;
+          tabs.forEach(item => item.classList.toggle("active", item === tab));
+          panels.forEach(panel => panel.classList.toggle("active", panel.dataset.hubPanel === target));
+        });
+      });
+    }
+
+    function wireSampleSwitchers() {
+      const tabs = Array.from(document.querySelectorAll("[data-switch-tab]"));
+      if (!tabs.length) return;
+      tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+          const group = tab.dataset.switchTab;
+          const target = tab.dataset.switchTarget;
+          document.querySelectorAll(`[data-switch-tab="${group}"]`).forEach(item => {
+            item.classList.toggle("active", item === tab);
+          });
+          document.querySelectorAll(`[data-switch-panel^="${group}-"]`).forEach(panel => {
+            panel.classList.toggle("active", panel.dataset.switchPanel === target);
+          });
+          document.querySelectorAll("audio, video").forEach(media => media.pause());
+        });
+      });
+    }
+
+    function wireChapterModals() {
+      let activeModal = null;
+      let scrollTop = 0;
+
+      function closeModal() {
+        if (!activeModal) return;
+        document.querySelectorAll("audio, video").forEach(media => media.pause());
+        activeModal.hidden = true;
+        activeModal = null;
+        document.body.style.removeProperty("overflow");
+        window.scrollTo(0, scrollTop);
+      }
+
+      function openModal(chapterId) {
+        const modal = document.querySelector(`.chapter-modal[data-modal="${chapterId}"]`);
+        if (!modal) return;
+        scrollTop = window.scrollY;
+        activeModal = modal;
+        modal.hidden = false;
+        document.body.style.overflow = "hidden";
+      }
+
+      document.querySelectorAll(".flow-pill[data-chapter]").forEach(button => {
+        button.addEventListener("click", () => openModal(button.dataset.chapter));
+      });
+
+      document.querySelectorAll("[data-open-modal]").forEach(button => {
+        button.addEventListener("click", () => openModal(button.dataset.openModal));
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach(button => {
+        button.addEventListener("click", closeModal);
+      });
+
+      document.querySelectorAll(".chapter-modal").forEach(modal => {
+        modal.addEventListener("click", event => {
+          if (event.target === modal) closeModal();
+        });
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") closeModal();
+      });
+    }
+
+    if (!demos.length) {
+      flowRoot.innerHTML = `<div class="flow-intro"><div><h4>当前还没有可展示的样本数据。</h4><p>素材补齐后，这里会显示对应内容。</p></div></div>`;
+      groupsRoot.innerHTML = "";
+    } else {
+      const grouped = demos.reduce((acc, item) => {
+        const key = item.group || "未分组";
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(item);
+        return acc;
+      }, {});
+      const titleMap = new Map(demos.map(item => [item.title, item]));
+      const videoCount = demos.filter(item => item.type === "video").length;
+      const audioCount = demos.filter(item => item.type === "audio").length;
+
+      flowRoot.innerHTML = `
+        <section class="flow-intro">
+          <div class="flow-intro-copy">
+            <span class="flow-intro-kicker">样本导览</span>
+            <h4>先看判断，再看对应样本。</h4>
+            <p>四组样本分别对应活人感、发音人与情绪、控制力与任务态、能力边界。点击任一模块，即可展开详细样本。</p>
+          </div>
+          <div class="flow-stats">
+            <span><strong>${demos.length}</strong>条样本，覆盖主要体验结论</span>
+            <span><strong>${audioCount}</strong>条音频，用来对照听感差异</span>
+            <span><strong>${videoCount}</strong>条视频，用来补充整体体感</span>
+          </div>
+        </section>
+        ${renderSampleHub(chapterDefs, grouped)}
+      `;
+
+      groupsRoot.innerHTML = chapterDefs.map((chapter, chapterIndex) => {
+        const hiddenTitles = new Set();
+        if (chapter.featuredVideo) hiddenTitles.add(chapter.featuredVideo);
+        (chapter.coreModules || []).forEach(module => {
+          (module.items || []).forEach(title => hiddenTitles.add(title));
+          (module.collections || []).forEach(collection => (collection.items || []).forEach(title => hiddenTitles.add(title)));
+        });
+        (chapter.moduleSections || []).forEach(section => (section.items || []).forEach(title => hiddenTitles.add(title)));
+        const chapterCount = chapter.groups.reduce((sum, groupName) => sum + ((grouped[groupName] || []).length), 0);
+        const chapterHtml = `
+          <section class="chapter" id="${escapeHtml(chapter.id)}">
+            <div class="chapter-head">
+              <div class="chapter-kicker">${escapeHtml(chapter.kicker)}</div>
+              <div>
+                <h4 id="${escapeHtml(chapter.id)}-title">${escapeHtml(chapter.title)}</h4>
+                <p>${escapeHtml(chapter.description)}</p>
+              </div>
+              <div class="chapter-meta">${chapterCount} 条样本</div>
+            </div>
+            ${chapter.id === "chapter-core" ? renderCoreFeaturedZone(chapter, titleMap) : renderModuleSections(chapter, titleMap)}
+            <div class="subgroups">
+              ${chapter.groups.map((groupName, groupIndex) => {
+                const items = (grouped[groupName] || []).filter(item => !hiddenTitles.has(item.title));
+                return renderSubgroup(groupName, items, false);
+              }).join("")}
+            </div>
+          </section>
+        `;
+        return renderChapterModal(chapter.id, chapter.title, chapterHtml);
+      }).join("");
+
+      wireExclusivePlayback();
+      wireSampleHub();
+      wireSampleSwitchers();
+      wireChapterModals();
+    }
+
+    wireQuickNav();
+  </script>
+</body>
+</html>
