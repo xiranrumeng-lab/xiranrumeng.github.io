@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FireRedTTS3 效果体验报告</title>
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #60716d;
+      --paper: #faf8f2;
+      --panel: rgba(255, 253, 248, 0.92);
+      --line: rgba(99, 112, 109, 0.24);
+      --green: #0c756f;
+      --green-soft: #dcefeb;
+      --blue: #2b5c8a;
+      --blue-soft: #dbe9f6;
+      --pink: #ad4e78;
+      --pink-soft: #f6dfeb;
+      --amber: #b7791f;
+      --amber-soft: #f5e7c8;
+      --red: #a94438;
+      --red-soft: #f4ddd8;
+      --shadow: 0 18px 52px rgba(24, 32, 31, 0.1);
+      --radius: 10px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --sans: "Aptos", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --serif: Georgia, "Times New Roman", "Songti SC", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(12, 117, 111, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(12, 117, 111, 0.045) 1px, transparent 1px),
+        var(--paper);
+      background-size: 44px 44px;
+      font-family: var(--sans);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--green); text-decoration: none; border-bottom: 1px solid rgba(12,117,111,.35); }
+    button, input, select { font: inherit; letter-spacing: 0; }
+    button {
+      appearance: none;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #fffdf8;
+      border-radius: 999px;
+      min-height: 40px;
+      padding: 9px 15px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+    button:hover { transform: translateY(-1px); }
+    .button-ghost, .chip-button {
+      background: rgba(255,253,248,.78);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+    .chip-button.active, .hub-tab.active, .button-ghost.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fffdf8;
+    }
+
+    .quick-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      z-index: 30;
+      display: grid;
+      gap: 10px;
+      width: 166px;
+      padding: 14px;
+      border: 1px solid rgba(102, 120, 115, 0.14);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, 0.44);
+      box-shadow: 0 10px 24px rgba(22, 32, 30, 0.06);
+      transform: translateY(-50%);
+      backdrop-filter: blur(14px);
+      transition: transform 180ms ease, background 180ms ease;
+    }
+    .quick-nav.collapsed { width: 64px; padding: 8px; transform: translate(calc(-100% + 34px), -50%); }
+    .quick-nav-toggle {
+      min-height: 36px;
+      padding: 0 10px;
+      border-color: rgba(102, 120, 115, 0.14);
+      background: rgba(255, 253, 248, 0.62);
+      color: var(--ink);
+      font-size: 12px;
+    }
+    .quick-nav-list { display: grid; gap: 6px; }
+    .quick-nav.collapsed .quick-nav-list { display: none; }
+    .quick-nav-list a {
+      display: block;
+      padding: 8px 9px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .quick-nav-list a:hover { color: var(--green); background: rgba(224,240,236,.72); }
+
+    .shell {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 38px 0 128px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, .95fr);
+      gap: 34px;
+      align-items: start;
+      padding: 10px 0 44px;
+    }
+    .kicker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; color: var(--muted); font-family: var(--mono); font-size: 12px; text-transform: uppercase; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      background: rgba(255,253,248,.82);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h1 {
+      max-width: 820px;
+      margin-bottom: 18px;
+      font-family: var(--serif);
+      font-size: clamp(44px, 6.3vw, 76px);
+      line-height: 1.02;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+    .lead {
+      max-width: 760px;
+      color: #33413e;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.58;
+      text-wrap: pretty;
+    }
+    .eval-note {
+      max-width: 760px;
+      margin: 18px 0 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--amber);
+      background: rgba(245,231,200,.58);
+      color: #5e4a28;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+    .signal-board {
+      background: rgba(255, 253, 248, .9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .signal-board h2 {
+      margin-bottom: 18px;
+      font-size: 15px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-weight: 750;
+    }
+    .meter {
+      display: grid;
+      grid-template-columns: 116px 1fr 48px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 0;
+      border-top: 1px solid var(--line);
+    }
+    .meter:first-of-type { border-top: 0; }
+    .meter-name { font-weight: 760; font-size: 14px; }
+    .meter-bar { height: 9px; background: #efe9dc; border-radius: 999px; overflow: hidden; }
+    .meter-bar span { display: block; height: 100%; width: var(--value); border-radius: inherit; background: var(--green); }
+    .meter-score { font-family: var(--mono); color: var(--muted); text-align: right; font-size: 12px; }
+
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .stat-card {
+      min-height: 106px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,.86);
+    }
+    .stat-card strong { display: block; margin-bottom: 5px; font-family: var(--mono); font-size: 24px; color: var(--green); line-height: 1; }
+    .stat-card span { color: var(--muted); font-size: 13px; }
+
+    .section {
+      padding: 52px 0;
+      border-top: 1px solid rgba(99,112,109,.28);
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: .42fr 1fr;
+      gap: 36px;
+      align-items: start;
+      margin-bottom: 30px;
+    }
+    .eyebrow { color: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .eyebrow.blue { color: var(--blue); }
+    .eyebrow.amber { color: var(--amber); }
+    .eyebrow.red { color: var(--red); }
+    .section-head h2 {
+      margin-bottom: 12px;
+      font-family: var(--serif);
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.04;
+      font-weight: 650;
+      text-wrap: pretty;
+    }
+    .sub { color: var(--muted); font-size: 17px; max-width: 760px; }
+
+    .quote-card {
+      margin-bottom: 16px;
+      padding: 22px;
+      background: rgba(255,253,248,.92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .quote-card p {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(22px, 3vw, 34px);
+      line-height: 1.38;
+    }
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .split-findings {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .card {
+      background: rgba(255,253,248,.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .card h3 { margin-bottom: 10px; font-size: 20px; line-height: 1.2; }
+    .card p, .card li { color: var(--muted); font-size: 15px; }
+    .tag {
+      display: inline-flex;
+      margin-bottom: 16px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0a514c;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .tone-blue { background: var(--blue-soft); color: var(--blue); }
+    .tone-amber { background: var(--amber-soft); color: var(--amber); }
+    .tone-red { background: var(--red-soft); color: var(--red); }
+
+    .module-hub {
+      display: grid;
+      grid-template-columns: 292px minmax(0,1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,.9);
+      overflow: hidden;
+    }
+    .hub-nav {
+      display: grid;
+      gap: 8px;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(250,248,242,.76);
+    }
+    .hub-label { color: var(--green); font-family: var(--mono); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .hub-tab {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 12px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      min-height: 62px;
+    }
+    .hub-tab:hover, .hub-tab.active {
+      background: rgba(255,253,248,.94);
+      border-color: rgba(12,117,111,.28);
+      box-shadow: inset 3px 0 0 var(--green);
+      color: var(--ink);
+    }
+    .hub-tab strong { display: block; margin-bottom: 4px; font-size: 16px; line-height: 1.16; }
+    .hub-tab span { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+    .hub-body { padding: 24px 26px; }
+    .module-panel { display: none; gap: 18px; }
+    .module-panel.active { display: grid; }
+    .module-panel h3 { margin: 0; font-family: var(--serif); font-size: clamp(28px, 3vw, 40px); line-height: 1.08; font-weight: 650; }
+    .module-panel .body-copy { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.8; }
+    .module-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .module-meta span {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(220,239,235,.62);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 850;
+    }
+    .insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .insight { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,253,248,.72); }
+    .insight b { display: block; margin-bottom: 6px; color: var(--green); font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
+    .insight p { margin: 0; color: #34423f; }
+    .dim-row { display: grid; grid-template-columns: 116px 1fr 44px; gap: 10px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); }
+
+    .audio-rail {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(250px, 320px);
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 4px 2px 12px;
+    }
+    .audio-rail::-webkit-scrollbar { height: 8px; }
+    .audio-rail::-webkit-scrollbar-thumb { background: rgba(99,112,109,.3); border-radius: 999px; }
+    .demo-card, .sample-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      scroll-snap-align: start;
+      background: rgba(255,253,248,.9);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+    .demo-card.playing, .sample-card.playing {
+      border-color: rgba(12,117,111,.42);
+      box-shadow: inset 3px 0 0 var(--green);
+      background: #dcefeb;
+    }
+    .demo-top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .demo-top h4, .demo-top h5 { margin: 0; font-size: 18px; line-height: 1.22; }
+    .score-badge {
+      flex: 0 0 auto;
+      min-width: 48px;
+      text-align: center;
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: var(--green-soft);
+      color: #0a514c;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .score-badge.watch { background: var(--amber-soft); color: var(--amber); }
+    .score-badge.risk { background: var(--red-soft); color: var(--red); }
+    .demo-card p, .sample-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.68; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tags span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(99,112,109,.18);
+      background: rgba(255,253,248,.72);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .media-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .media-row button { width: 100%; min-height: 34px; padding: 6px 10px; font-size: 12px; }
+    .media-row button:only-child { grid-column: 1 / -1; }
+
+    .sample-hub {
+      display: grid;
+      grid-template-columns: 300px minmax(0,1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,.9);
+      overflow: hidden;
+    }
+    .sample-controls {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(250,248,242,.76);
+      align-content: start;
+    }
+    .search {
+      width: 100%;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 14px;
+      background: rgba(255,253,248,.9);
+      color: var(--ink);
+    }
+    .control-group { display: grid; gap: 8px; }
+    .control-label { color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 850; text-transform: uppercase; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-button { min-height: 30px; padding: 5px 10px; font-size: 12px; }
+    .sample-body { padding: 22px; min-width: 0; }
+    .sample-body-head { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin-bottom: 16px; }
+    .sample-body-head h3 { margin: 0; font-family: var(--serif); font-size: 30px; font-weight: 650; line-height: 1.08; }
+    .sample-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+      max-height: 760px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .sample-card { min-width: 0; }
+    .sample-id { font-family: var(--mono); font-size: 12px; color: var(--green); font-weight: 850; }
+    .comment { color: #65424a; font-size: 12px; }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,.9);
+    }
+    table { width: 100%; min-width: 960px; border-collapse: collapse; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-family: var(--mono); font-size: 12px; text-transform: uppercase; background: rgba(250,248,242,.8); }
+    td { font-size: 14px; }
+    .source-note { color: var(--muted); font-size: 12px; margin-top: 10px; }
+
+    .footer {
+      padding: 44px 0 0;
+      border-top: 1px solid rgba(99,112,109,.28);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .promo-banner {
+      display: block;
+      margin: 0 0 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, rgba(224,240,236,.7), rgba(234,246,251,.86));
+      box-shadow: 0 14px 34px rgba(22,32,30,.08);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      border-bottom: 1px solid rgba(102,120,115,.22);
+    }
+    .promo-banner:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47,126,168,.32);
+      box-shadow: 0 18px 42px rgba(22,32,30,.12);
+    }
+    .promo-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .footer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .footer-meta strong { color: var(--ink); }
+    .footer-meta span + span::before {
+      content: "";
+      display: inline-block;
+      width: 1px;
+      height: 12px;
+      margin-right: 14px;
+      background: var(--line);
+      vertical-align: -1px;
+    }
+    .footer-focus {
+      max-width: 880px;
+      color: #33413e;
+      font-size: 15px;
+    }
+
+    .player-dock {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 40;
+      width: min(540px, calc(100vw - 36px));
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px solid rgba(102,120,115,.2);
+      border-radius: var(--radius);
+      background: rgba(255,253,248,.88);
+      box-shadow: 0 16px 46px rgba(22,32,30,.16);
+      backdrop-filter: blur(16px);
+    }
+    .player-title { display: flex; justify-content: space-between; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; }
+    .player-title strong { color: var(--ink); font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .player-controls { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; align-items: center; }
+    .player-controls button { min-height: 34px; padding: 6px 10px; font-size: 12px; }
+    audio { width: 100%; height: 32px; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1040px) {
+      .hero, .section-head, .module-hub, .sample-hub { grid-template-columns: 1fr; }
+      .hub-nav, .sample-controls { border-right: 0; border-bottom: 1px solid var(--line); }
+      .hero-bottom, .highlight-grid, .split-findings { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .sample-list { grid-template-columns: 1fr; max-height: none; }
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 22px, 1180px); padding-top: 20px; }
+      .quick-nav { display: none; }
+      .hero-bottom, .highlight-grid, .split-findings, .insight-grid { grid-template-columns: 1fr; }
+      .section { padding: 38px 0; }
+      .media-row { grid-template-columns: 1fr; }
+      .player-dock { left: 12px; right: 12px; bottom: 12px; width: auto; }
+      .player-controls { grid-template-columns: auto auto; }
+      .player-controls audio { grid-column: 1 / -1; }
+      .footer-meta { display: grid; gap: 4px; }
+      .footer-meta span + span::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="quick-nav collapsed" aria-label="快速导航">
+    <button class="quick-nav-toggle" type="button" aria-expanded="false">快速导航</button>
+    <div class="quick-nav-list">
+      <a href="#top">首屏概览</a>
+      <a href="#conclusion">核心结论</a>
+      <a href="#modules">模块能力</a>
+      <a href="#showcase">样本展示</a>
+      <a href="#listen">交互试听</a>
+      <a href="#implications">行业启发</a>
+      <a href="#table">数据表</a>
+    </div>
+  </nav>
+
+  <main class="shell">
+    <section class="hero" id="top">
+      <div>
+        <div class="kicker">
+          <span class="chip">效果体验报告</span>
+          <span class="chip">FireRedTTS3</span>
+          <span class="chip" id="reportDate"></span>
+        </div>
+        <h1>先给结论，再让样本自己说话。</h1>
+        <p class="lead">本报告主要是针对 FireRedTTS3 的语音相关能力进行系统效果体验评估。通过实际效果回答 FireRedTTS3 的“能力到哪一步”，试听区展示“具体听起来如何”。</p>
+        <p class="eval-note">备注：本报告属于内部小样本效果评估，效果仅供参考；如对某效果有详细效果评估需求，可联系 ranchen2 进行。</p>
+        <div class="hero-actions">
+          <a class="button-link" href="#conclusion"><button type="button">看核心判断</button></a>
+          <a class="button-link" href="#listen"><button class="button-ghost" type="button">进入试听</button></a>
+        </div>
+        <div class="hero-bottom" id="topStats"></div>
+      </div>
+      <aside class="signal-board">
+        <h2>Module signal</h2>
+        <div id="heroMeters"></div>
+      </aside>
+    </section>
+
+    <section class="section" id="conclusion">
+      <div class="section-head">
+        <div class="eyebrow">01 / 核心结论</div>
+        <div>
+          <h2>稳定能力、可验证能力和明确边界要分开说。</h2>
+          <p class="sub">中文基础克隆、文本规范化、音色设计长文本稳定性和鲁棒性表现较稳；语音编辑、指令设计、情感表达适合按样本验证；跨语种复刻已有评分可分析，方言部分要区分中文参考音和方言母语者参考音。</p>
+        </div>
+      </div>
+      <div class="quote-card">
+        <p>本轮效果结论：中文音色克隆最稳定；指令式声音设计、多语种复刻和音色设计长文本稳定性具备可听感知的有效结果；多角色对话、复杂语音编辑和中文参考音方言复刻是当前主要短板。</p>
+      </div>
+      <div class="highlight-grid">
+        <article class="card">
+          <span class="tag">稳定能力</span>
+          <h3>基础中文与稳定生成</h3>
+          <p>基础中文克隆均分最高，鲁棒、文本规范化和音色设计长文本稳定性也在较高区间，适合作为报告中最明确的正向结论。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-amber">场景化验证</span>
+          <h3>编辑、情感和指令设计</h3>
+          <p>这些能力已具备可用样本，但体验更依赖任务类型。报告保留备注和维度分，用来定位读错、衔接、音色漂移等问题。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-red">明确边界</span>
+          <h3>多角色与中文参考方言</h3>
+          <p>多角色低分集中；中文参考音做方言没有有效评分支撑，听感结论是无法复刻生成目标方言。多语种复刻和方言母语者参考音复刻另行分析。</p>
+        </article>
+      </div>
+      <div class="split-findings" id="splitFindings"></div>
+    </section>
+
+    <section class="section" id="modules">
+      <div class="section-head">
+        <div class="eyebrow blue">02 / 模块能力</div>
+        <div>
+          <h2>每个模块给一个可执行判断。</h2>
+          <p class="sub">左侧切换模块，右侧显示均分、证据量、高低分维度、优势和风险。</p>
+        </div>
+      </div>
+      <div class="module-hub">
+        <div class="hub-nav" id="moduleTabs"></div>
+        <div class="hub-body" id="modulePanels"></div>
+      </div>
+    </section>
+
+    <section class="section" id="showcase">
+      <div class="section-head">
+        <div class="eyebrow amber">03 / 效果展示</div>
+        <div>
+          <h2>把代表样本放成一排，直接听。</h2>
+          <p class="sub">展示样本覆盖基础克隆、指令设计、情感副语言、音色设计长文本、鲁棒性、多语种复刻、方言母语者参考音复刻，以及中文参考音做方言的边界样本。</p>
+        </div>
+      </div>
+      <div class="audio-rail" id="showcaseRail"></div>
+    </section>
+
+    <section class="section" id="listen">
+      <div class="section-head">
+        <div class="eyebrow red">04 / 交互试听</div>
+        <div>
+          <h2>边筛边听，适合开会走查。</h2>
+          <p class="sub">用模块、分数档和关键词筛选。所有样本共用右下角播放器，播完自动进入下一条匹配样本。</p>
+        </div>
+      </div>
+      <div class="sample-hub">
+        <aside class="sample-controls">
+          <input class="search" id="searchInput" placeholder="搜索编号、场景、备注、观察重点">
+          <div class="control-group">
+            <div class="control-label">模块</div>
+            <div class="chip-row" id="moduleFilters"></div>
+          </div>
+          <div class="control-group">
+            <div class="control-label">分数档</div>
+            <div class="chip-row">
+              <button class="chip-button active" data-tier="all" type="button">全部</button>
+              <button class="chip-button" data-tier="excellent" type="button">高分</button>
+              <button class="chip-button" data-tier="good" type="button">可用</button>
+              <button class="chip-button" data-tier="watch" type="button">需关注</button>
+              <button class="chip-button" data-tier="risk" type="button">低分风险</button>
+              <button class="chip-button" data-tier="unrated" type="button">未评分</button>
+            </div>
+          </div>
+          <div class="control-group">
+            <button class="button-ghost" id="showcaseOnly" type="button">只看展示样例</button>
+          </div>
+        </aside>
+        <div class="sample-body">
+          <div class="sample-body-head">
+            <h3>样本库</h3>
+            <span class="chip" id="visibleHint">0 条</span>
+          </div>
+          <div class="sample-list" id="sampleList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="implications">
+      <div class="section-head">
+        <div class="eyebrow amber">05 / 行业启发</div>
+        <div>
+          <h2>开源模型已能做出可感知效果，闭源模型要拉开的是稳定性和产品化能力。</h2>
+          <p class="sub">本报告没有引入闭源模型同集评分，因此不做直接胜负判断；这里基于 FireRedTTS3 的效果边界，提炼对后续闭源模型迭代更有价值的方向。</p>
+        </div>
+      </div>
+      <div class="quote-card">
+        <p>开源 TTS 模型已经不只是“能发声”，在中文克隆、声音设计、多语种复刻等场景里已经能形成可听、可展示、可分析的效果；闭源模型后续更应该把优势建立在稳定复现、复杂场景控制和评测闭环上。</p>
+      </div>
+      <div class="highlight-grid">
+        <article class="card">
+          <span class="tag">能力基线</span>
+          <h3>开源模型的门槛已经明显提高</h3>
+          <p>FireRedTTS3 在中文音色克隆、文本规范化、音色设计长文本和多语种复刻上已经有较强体验信号。闭源模型如果只在单条样本音质上领先，感知差距会越来越不明显。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-blue">核心差距</span>
+          <h3>真正要拉开的是可控和稳定</h3>
+          <p>多角色、复杂编辑、方言、长段音色维持、低质量参考音频鲁棒性，是开源效果最容易暴露边界的地方。闭源模型应重点拉开这些高难度场景的成功率，而不只是提高平均 MOS。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-amber">评测体系</span>
+          <h3>要从样例展示走向场景验收</h3>
+          <p>中文、多语种、方言、编辑、对话不应混用一个总分。后续闭源评测建议按任务建立母语/方言评审、文本规范化回归集、参考音频质量分层和低分样本复测机制。</p>
+        </article>
+      </div>
+      <div class="split-findings">
+        <article class="card">
+          <span class="tag tone-red">产品方向</span>
+          <h3>复杂语音编辑需要工程化闭环</h3>
+          <p>从评分看，编辑能力的风险集中在替换读错、插入缺失、删除不干净、衔接和音色保持。闭源模型后续可以把“可预览、可局部重试、可自动验收”的编辑工作流作为差异点。</p>
+        </article>
+        <article class="card">
+          <span class="tag">国际化方向</span>
+          <h3>多语种要补母语听感，方言要重参考材料</h3>
+          <p>多语种复刻已有可分析信号，但仍需要母语者确认发音地道性和风格相似度。方言方向则不能依赖中文参考音，应围绕方言参考音质量、覆盖词和地域表达素材做数据建设。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-blue">闭源优势</span>
+          <h3>把模型能力变成稳定交付能力</h3>
+          <p>闭源模型的后续重点应是降低失败样本比例、提高长文本一致性、增强指令可控粒度、建立跨语言/方言评审数据闭环，并在真实部署条件下保持音质和自然度。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="table">
+      <div class="section-head">
+        <div class="eyebrow">06 / 数据表</div>
+        <div>
+          <h2>模块判断背后的评分依据。</h2>
+          <p class="sub">表格汇总每个模块的均分、样本数量、高分维度和风险维度，作为前文体验结论的量化依据。</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="moduleTable">
+          <thead><tr><th>模块</th><th>判断</th><th>均分</th><th>证据量</th><th>高分维度</th><th>风险维度</th><th>结论</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="source-note">数据来源：中文部分由 1-2 人评分评估；多语种部分由 1 位学习者评估；方言部分由 1 位非母语者根据参考音频评估。中文参考音做方言未作为有效评分项处理；多语种复刻建议继续补母语评审。</p>
+    </section>
+
+    <footer class="footer">
+      <a class="promo-banner" href="http://172.31.101.179:6001/" target="_blank" rel="noreferrer" aria-label="访问音视频生成之家">
+        <img src="./assets/promo-banner.png" alt="音视频生成之家">
+      </a>
+      <p>音视频生成资源部・音视频之家 | 编辑：陈然 | 素材来源：陈然、王晓然、其他多语种团队人员。本报告重点呈现 FireRedTTS3 在中文音色克隆、指令式声音设计、跨语种/跨方言复刻、长文本稳定性、语音编辑与部署边界上的实际表现。</p>
+    </footer>
+  </main>
+
+  <div class="player-dock">
+    <div class="player-title">
+      <strong id="nowTitle">请选择一个样本播放</strong>
+      <span id="queueHint">0 条队列</span>
+    </div>
+    <div class="player-controls">
+      <button class="button-ghost" id="prevBtn" type="button">上一条</button>
+      <button class="button-ghost" id="nextBtn" type="button">下一条</button>
+      <audio id="globalAudio" controls></audio>
+    </div>
+  </div>
+
+  <script>
+    const DATA = {"summary":{"generatedAt":"2026-09-10","mainScoreRows":359,"mainSampleCount":130,"audioCount":239,"modules":9,"dialect":{"avg":4.25,"count":104,"sampleCount":21,"dims":{"地域表达风格":3.71,"方言/口音准确度":4.05,"自然度":4.35,"音色保持":4.81,"音质":4.33}},"auto":{"avg":4.43,"count":120,"sampleCount":24,"cer":0.02,"asr":0.73}},"modules":[{"name":"音色克隆与基础中文生成","mark":"克隆","model":"Base","status":"已形成正式结论","purpose":"验证中文基础克隆能力，重点看参考音色保留、风格贴合、音质、自然度和常见中文场景韵律表现。","sourceSummary":"基础克隆表现较好，音色相似度和音质稳定；语速、韵律和场景表达仍需优化。","avg":4.92,"grade":"强","scoreCount":12,"sampleCount":3,"lowCount":0,"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":4.67},"highDims":[["自然度",5.0],["音色相似度",5.0],["音质",5.0],["风格相似度",4.67]],"lowDims":[["风格相似度",4.67],["自然度",5.0],["音色相似度",5.0],["音质",5.0]],"takeaway":"中文基础克隆是当前最稳定的能力，音色相似、音质和自然度均在高分段。","strength":"适合先用于中文旁白、广告、叙述类可控场景。","risk":"后续仍要继续看语速、韵律和不同参考音色下的一致性。"},{"name":"鲁棒性与部署风险","mark":"鲁棒","model":"Base/Instruct","status":"已形成正式结论，部分需复评","purpose":"评估短参考、低音量、噪声、混响、随机种子一致性等实际部署条件下的可靠性。","sourceSummary":"多数边界项可用；参考音频质量和响度一致性会显著影响评分，REF_REVERB 应按响度过低重新复评。","avg":4.61,"grade":"强","scoreCount":28,"sampleCount":7,"lowCount":2,"dimAvg":{"可复现性/差异合理性":5.0,"抗噪/短参考表现":3.5,"自然度":4.86,"音色一致性":5.0,"音色相似度":5.0,"音质":4.43},"highDims":[["可复现性/差异合理性",5.0],["音色一致性",5.0],["音色相似度",5.0],["自然度",4.86]],"lowDims":[["抗噪/短参考表现",3.5],["音质",4.43],["自然度",4.86],["可复现性/差异合理性",5.0]],"takeaway":"多数部署边界条件可用，但参考音频质量会显著影响结果。","strength":"短参考、响度统一和可复现性整体表现较好。","risk":"噪声、混响、低响度参考要设置质量门槛；低分样本应复评后再定结论。"},{"name":"文本规范化与复杂文本","mark":"文本","model":"Base","status":"已形成正式结论","purpose":"评估中英混排、数字金额、日期时间、网址版本号、复杂发音、符号和停顿处理等部署文本读法。","sourceSummary":"一般中英混排表现较好；金额、网址、版本号、标点等文本规范化仍有部署风险。","avg":4.47,"grade":"较强","scoreCount":36,"sampleCount":9,"lowCount":0,"dimAvg":{"中英数字读法":5.0,"切换流畅度":5.0,"发音清晰度":4.5,"复杂发音准确性":5.0,"符号/停顿处理":5.0,"自然度":4.44,"规范化读法准确性":3.75,"音质":4.4,"韵律停顿":4.0},"highDims":[["中英数字读法",5.0],["切换流畅度",5.0],["复杂发音准确性",5.0],["符号/停顿处理",5.0]],"lowDims":[["规范化读法准确性",3.75],["韵律停顿",4.0],["音质",4.4],["自然度",4.44]],"takeaway":"一般中英混排和复杂文本读法较稳，部署前仍需扩充金额、网址、版本号类验收。","strength":"发音清晰、复杂发音准确性和多类文本自然度表现较好。","risk":"符号停顿、规范化读法和边界文本仍可能影响线上体验。"},{"name":"长文本与稳定性","mark":"长文本","model":"Base/Instruct","status":"已形成正式结论","purpose":"评估长文本生成中的音色稳定、韵律连贯、停顿节奏、音质稳定和分段拼接自然度。","sourceSummary":"长文本能完成且音色大体可维持；韵律、停顿、底噪、音质稳定性仍需优化。","avg":4.45,"grade":"较强","scoreCount":20,"sampleCount":5,"lowCount":0,"dimAvg":{"拼接/长文本自然度":4.5,"指令匹配度":4.67,"自然度":3.0,"角色/场景风格":5.0,"音色稳定性":5.0,"音质":4.4,"韵律连贯性":5.0},"highDims":[["角色/场景风格",5.0],["音色稳定性",5.0],["韵律连贯性",5.0],["指令匹配度",4.67]],"lowDims":[["自然度",3.0],["音质",4.4],["拼接/长文本自然度",4.5],["指令匹配度",4.67]],"takeaway":"该项主要评估音色设计场景下的长文本稳定性：能完成长段生成，整体可用，但长程韵律和音色维持仍要关注。","strength":"音色设计长文本的指令匹配和音质总体在较高区间。","risk":"后半段音色漂移、停顿节奏和底噪问题需要在真实音色设计长文本中继续压测。"},{"name":"情感与副语言表达","mark":"情感","model":"Base/Instruct","status":"已形成正式结论","purpose":"评估情绪控制，以及笑声、叹气、咳嗽、喘气、犹豫、停顿等副语言现象的真实感和自然度。","sourceSummary":"直接情感控制较好；副语言真实感和克隆音色下的情绪强度不稳定。","avg":4.32,"grade":"较强","scoreCount":88,"sampleCount":22,"lowCount":2,"dimAvg":{"前后衔接":4.0,"副语言真实感":3.0,"情绪强度匹配":5.0,"情绪辨识度":5.0,"目标表达辨识度":4.44,"自然度":4.32,"音色相似度":4.44,"音质":4.18},"highDims":[["情绪强度匹配",5.0],["情绪辨识度",5.0],["目标表达辨识度",4.44],["音色相似度",4.44]],"lowDims":[["副语言真实感",3.0],["前后衔接",4.0],["音质",4.18],["自然度",4.32]],"takeaway":"情感直控表现较好，副语言真实感和克隆情绪强度不够稳定。","strength":"多情绪、多场景样本均有较高平均分，适合做效果展示。","risk":"笑声、停顿、咳嗽、喘气等副语言要逐条验收，避免机械感或音质下降。"},{"name":"指令式声音设计","mark":"设计","model":"Instruct","status":"已形成正式结论","purpose":"汇总属性控制、短/长场景人设和同文本多音色对照，评估自然语言指令生成音色、人设风格和多音色区分能力。","sourceSummary":"指令音色设计较成熟，多音色区分度好；复杂口音、长文本稳定性和细粒度风格强度仍需提升。","avg":4.27,"grade":"可用","scoreCount":52,"sampleCount":13,"lowCount":0,"dimAvg":{"指令匹配度":4.23,"自然度":4.46,"角色/场景风格":4.5,"音色差异辨识度":4.0,"音质":4.0},"highDims":[["角色/场景风格",4.5],["自然度",4.46],["指令匹配度",4.23],["音色差异辨识度",4.0]],"lowDims":[["音色差异辨识度",4.0],["音质",4.0],["指令匹配度",4.23],["自然度",4.46]],"takeaway":"自然语言指令能较好驱动人设、场景和多音色差异，整体可用。","strength":"属性控制和场景音色设计具备展示价值。","risk":"复杂口音、现场感强的场景和极细粒度风格强度仍有波动。"},{"name":"语音编辑能力","mark":"编辑","model":"Instruct","status":"已形成正式结论","purpose":"评估语义替换、插入、删除、声学参数调整和组合编辑的内容正确性、目标变化、音色保持、音质和衔接。","sourceSummary":"声学编辑目标明确可感知；语义编辑风险较高，存在替换读错、插入缺失、删除不干净和衔接不自然。","avg":4.2,"grade":"可用","scoreCount":84,"sampleCount":21,"lowCount":7,"dimAvg":{"内容正确性":4.0,"未编辑区域一致性":4.57,"没有爆音/破音":4.67,"流程完成度":5.0,"目标变化是否听得出来":4.33,"编辑正确性":5.0,"自然度":4.57,"衔接自然度":3.0,"音色一致性":4.22,"音色保持":3.33,"音质":4.17},"highDims":[["流程完成度",5.0],["编辑正确性",5.0],["没有爆音/破音",4.67],["未编辑区域一致性",4.57]],"lowDims":[["衔接自然度",3.0],["音色保持",3.33],["内容正确性",4.0],["音质",4.17]],"takeaway":"声学编辑变化可感知，但语义编辑和极端参数编辑是主要风险。","strength":"音量、语速、局部音色等编辑在多数样本上能完成目标。","risk":"替换读错、插入缺失、删除不干净、前后衔接和音色保持需要重点复测。"},{"name":"多角色对话","mark":"多角色","model":"Base/Instruct","status":"初步结论，建议补样本","purpose":"评估多角色声线区分、角色切换准确性、标点处理、音质一致性和对话衔接自然度。","sourceSummary":"多角色能力不成熟，存在声线区分不足、标点误读、拼接和衔接不自然；有效样本偏少。","avg":3.14,"grade":"高风险","scoreCount":14,"sampleCount":3,"lowCount":4,"dimAvg":{"切换准确性":1.0,"对话节奏":2.0,"对话衔接":4.0,"拼接自然度":2.0,"角色区分度":3.33,"音色相似度":4.5,"音质":4.0},"highDims":[["音色相似度",4.5],["对话衔接",4.0],["音质",4.0],["角色区分度",3.33]],"lowDims":[["切换准确性",1.0],["对话节奏",2.0],["拼接自然度",2.0],["角色区分度",3.33]],"takeaway":"多角色对话目前是明显短板，只能作为初步能力展示。","strength":"部分样本能表现角色变化和对话结构。","risk":"角色区分、切换准确性、标点处理和拼接自然度分数偏低，样本数也不足。"},{"name":"跨语种/跨方言能力","mark":"跨语种","model":"Base/Instruct","status":"暂无正式结论","purpose":"评估跨语种克隆、跨方言复刻、设计音色跨语言迁移和 Instruct 直接跨语言/方言生成。","sourceSummary":"缺少外语/方言评审，本轮不形成正式结论；已有非专业反馈仅作风险提示。","avg":3.0,"grade":"待确认","scoreCount":25,"sampleCount":5,"lowCount":11,"dimAvg":{"发音准确度":2.5,"发音准确性":1.0,"地域表达风格":5.0,"指令音色匹配":1.0,"方言/口音准确度":5.0,"自然度":3.0,"语言/方言自然度":1.0,"音色保持":5.0,"音色相似度":5.0,"音质":2.8,"风格相似度":5.0},"highDims":[["地域表达风格",5.0],["方言/口音准确度",5.0],["音色保持",5.0],["音色相似度",5.0]],"lowDims":[["发音准确性",1.0],["指令音色匹配",1.0],["语言/方言自然度",1.0],["发音准确度",2.5]],"takeaway":"跨语种与方言要拆开看：多语种复刻已有可分析评分；中文参考音直接复刻方言不可用；方言母语者参考音复刻整体一致性较好。","strength":"多语种克隆在自动初评中音色、发音、音质和自然度整体较稳；方言母语者参考音复刻的音色保持得分较高，评语也基本一致。","risk":"中文参考音无法可靠生成目标方言；方言复刻会继承原声背景、混响和音质问题，地域表达还受测试文本覆盖限制。"}],"samples":[{"id":"BASE_01","displayId":"BASE_01","rawId":"BASE_01","module":"音色克隆与基础中文生成","pageModule":"模块1 · 基础能力测试","type":"clone","scene":"纪录片旁白","instruction":"刘亦菲原声","label":"生成效果","file":"BASE_01.wav","audio":"audio/other_modules/BASE_01.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"发音准确、停顿自然","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":5.0},"comments":[]},{"id":"BASE_02","displayId":"BASE_02","rawId":"BASE_02","module":"音色克隆与基础中文生成","pageModule":"模块1 · 基础能力测试","type":"clone","scene":"产品广告","instruction":"刘亦菲原声","label":"生成效果","file":"BASE_02.wav","audio":"audio/other_modules/BASE_02.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"清晰准确、略带介绍感","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":5.0},"comments":[]},{"id":"BASE_03","displayId":"BASE_03","rawId":"BASE_03","module":"音色克隆与基础中文生成","pageModule":"模块1 · 基础能力测试","type":"clone","scene":"有声书叙述","instruction":"迪丽热巴","label":"生成效果","file":"BASE_03.wav","audio":"audio/other_modules/BASE_03.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"平静叙事、有画面感","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":4.0},"comments":[]},{"id":"CLONE_AR","displayId":"CLONE_AR","rawId":"CLONE_AR","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Arabic 阿拉伯语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_AR.wav","audio":"audio/other_modules/CLONE_AR.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"RTL 语言发音","avg":4.44,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.9,"自然度":4.3,"音色相似度":4.9,"音质":4.4,"风格相似度":3.7},"comments":[]},{"id":"CLONE_YUE","displayId":"CLONE_YUE","rawId":"CLONE_YUE","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Cantonese 粤语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_YUE.wav","audio":"audio/other_modules/CLONE_YUE.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"粤语声调","avg":4.13,"tier":"good","source":["中文部分1-2人评分评估","多语种部分1位学习者评估"],"dimAvg":{"发音准确度":3.0,"自然度":4.15,"音色相似度":4.95,"音质":4.1,"风格相似度":4.45},"comments":["非粤语"]},{"id":"CLONE_ZH","displayId":"CLONE_ZH","rawId":"CLONE_ZH","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Chinese 中文","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_ZH.wav","audio":"audio/other_modules/CLONE_ZH.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"基准中文","avg":4.54,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.3,"音色相似度":4.9,"音质":4.3,"风格相似度":4.2},"comments":[]},{"id":"CLONE_CS","displayId":"CLONE_CS","rawId":"CLONE_CS","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Czech 捷克语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_CS.wav","audio":"audio/other_modules/CLONE_CS.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"捷克语发音","avg":4.58,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.6,"自然度":4.5,"音色相似度":4.8,"音质":4.5,"风格相似度":4.5},"comments":[]},{"id":"CLONE_NL","displayId":"CLONE_NL","rawId":"CLONE_NL","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Dutch 荷兰语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_NL.wav","audio":"audio/other_modules/CLONE_NL.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"荷兰语发音","avg":4.38,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.8,"自然度":4.5,"音色相似度":4.8,"音质":4.4,"风格相似度":3.4},"comments":[]},{"id":"CLONE_EN","displayId":"CLONE_EN","rawId":"CLONE_EN","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"English 英语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_EN.wav","audio":"audio/other_modules/CLONE_EN.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"英文自然度","avg":4.1,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.4,"音色相似度":4.8,"音质":4.4,"风格相似度":1.9},"comments":[]},{"id":"CLONE_FI","displayId":"CLONE_FI","rawId":"CLONE_FI","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Finnish 芬兰语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_FI.wav","audio":"audio/other_modules/CLONE_FI.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"芬兰语发音","avg":4.38,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.8,"自然度":4.3,"音色相似度":4.8,"音质":4.4,"风格相似度":3.6},"comments":[]},{"id":"CLONE_FR","displayId":"CLONE_FR","rawId":"CLONE_FR","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"French 法语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_FR.wav","audio":"audio/other_modules/CLONE_FR.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"法语发音","avg":4.4,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.5,"音色相似度":4.8,"音质":4.2,"风格相似度":3.5},"comments":[]},{"id":"CLONE_DE","displayId":"CLONE_DE","rawId":"CLONE_DE","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"German 德语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_DE.wav","audio":"audio/other_modules/CLONE_DE.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"德语发音","avg":4.58,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.8,"自然度":4.3,"音色相似度":4.9,"音质":4.4,"风格相似度":4.5},"comments":[]},{"id":"CLONE_EL","displayId":"CLONE_EL","rawId":"CLONE_EL","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Greek 希腊语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_EL.wav","audio":"audio/other_modules/CLONE_EL.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"希腊语发音","avg":4.64,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.9,"自然度":4.6,"音色相似度":4.9,"音质":4.5,"风格相似度":4.3},"comments":[]},{"id":"CLONE_HI","displayId":"CLONE_HI","rawId":"CLONE_HI","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Hindi 印地语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_HI.wav","audio":"audio/other_modules/CLONE_HI.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"印地语发音","avg":4.22,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.3,"自然度":4.1,"音色相似度":4.9,"音质":4.4,"风格相似度":3.4},"comments":[]},{"id":"CLONE_ID","displayId":"CLONE_ID","rawId":"CLONE_ID","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Indonesian 印尼语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_ID.wav","audio":"audio/other_modules/CLONE_ID.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"印尼语发音","avg":4.28,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.7,"自然度":4.2,"音色相似度":4.6,"音质":4.2,"风格相似度":3.7},"comments":[]},{"id":"CLONE_IT","displayId":"CLONE_IT","rawId":"CLONE_IT","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Italian 意大利语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_IT.wav","audio":"audio/other_modules/CLONE_IT.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"意大利语发音","avg":4.48,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.3,"音色相似度":4.6,"音质":4.3,"风格相似度":4.2},"comments":[]},{"id":"CLONE_JA","displayId":"CLONE_JA","rawId":"CLONE_JA","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Japanese 日语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_JA.wav","audio":"audio/other_modules/CLONE_JA.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"日语节奏","avg":4.45,"tier":"good","source":["中文部分1-2人评分评估","多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.5,"自然度":4.2,"音色相似度":4.9,"音质":4.3,"风格相似度":4.35},"comments":[]},{"id":"CLONE_KO","displayId":"CLONE_KO","rawId":"CLONE_KO","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Korean 韩语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_KO.wav","audio":"audio/other_modules/CLONE_KO.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"韩语发音","avg":4.4,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.4,"音色相似度":4.9,"音质":4.5,"风格相似度":3.2},"comments":[]},{"id":"CLONE_PL","displayId":"CLONE_PL","rawId":"CLONE_PL","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Polish 波兰语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_PL.wav","audio":"audio/other_modules/CLONE_PL.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"波兰语发音","avg":4.48,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.8,"自然度":4.4,"音色相似度":4.9,"音质":4.5,"风格相似度":3.8},"comments":[]},{"id":"CLONE_PT","displayId":"CLONE_PT","rawId":"CLONE_PT","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Portuguese 葡萄牙语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_PT.wav","audio":"audio/other_modules/CLONE_PT.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"葡语发音","avg":4.52,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.3,"音色相似度":4.9,"音质":4.4,"风格相似度":4.0},"comments":[]},{"id":"CLONE_RO","displayId":"CLONE_RO","rawId":"CLONE_RO","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Romanian 罗马尼亚语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_RO.wav","audio":"audio/other_modules/CLONE_RO.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"罗马尼亚语发音","avg":4.4,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.5,"音色相似度":4.8,"音质":4.3,"风格相似度":3.4},"comments":[]},{"id":"CLONE_RU","displayId":"CLONE_RU","rawId":"CLONE_RU","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Russian 俄语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_RU.wav","audio":"audio/other_modules/CLONE_RU.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"俄语发音","avg":4.52,"tier":"excellent","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.4,"音色相似度":4.9,"音质":4.5,"风格相似度":3.8},"comments":[]},{"id":"CLONE_ES","displayId":"CLONE_ES","rawId":"CLONE_ES","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Spanish 西班牙语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_ES.wav","audio":"audio/other_modules/CLONE_ES.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"西语发音","avg":4.44,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.3,"音色相似度":4.8,"音质":4.3,"风格相似度":3.8},"comments":[]},{"id":"CLONE_TH","displayId":"CLONE_TH","rawId":"CLONE_TH","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Thai 泰语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_TH.wav","audio":"audio/other_modules/CLONE_TH.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"泰语发音","avg":4.24,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.4,"自然度":4.3,"音色相似度":4.9,"音质":4.4,"风格相似度":3.2},"comments":[]},{"id":"CLONE_TR","displayId":"CLONE_TR","rawId":"CLONE_TR","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Turkish 土耳其语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_TR.wav","audio":"audio/other_modules/CLONE_TR.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"土耳其语发音","avg":4.48,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.4,"音色相似度":4.9,"音质":4.5,"风格相似度":3.6},"comments":[]},{"id":"CLONE_UK","displayId":"CLONE_UK","rawId":"CLONE_UK","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Ukrainian 乌克兰语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_UK.wav","audio":"audio/other_modules/CLONE_UK.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"乌克兰语发音","avg":4.46,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.3,"音色相似度":4.8,"音质":4.3,"风格相似度":3.9},"comments":[]},{"id":"CLONE_VI","displayId":"CLONE_VI","rawId":"CLONE_VI","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"Vietnamese 越南语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_VI.wav","audio":"audio/other_modules/CLONE_VI.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"越南语声调","avg":4.3,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":4.8,"自然度":4.2,"音色相似度":4.6,"音质":4.2,"风格相似度":3.7},"comments":[]},{"id":"DIALECT_ANHUI__dialect_ref","displayId":"DIALECT_ANHUI｜方言参考","rawId":"DIALECT_ANHUI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"安徽话（合肥）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_ANHUI.wav","audio":"audio/module_03_native_dialects/DIALECT_ANHUI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_ANHUI_02_安徽.wav","focus":"方言声调、地域表达、音色保持","avg":4.0,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":4.0,"自然度":4.0,"音色保持":4.0,"音质":4.0},"comments":["原声的背景很大，复刻也一样，口音风格一致，但是方言不地道，可能因为复刻参考没有覆盖这个词"]},{"id":"DIALECT_ANHUI__chinese_ref","displayId":"DIALECT_ANHUI｜中文参考","rawId":"DIALECT_ANHUI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"安徽话（合肥）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_ANHUI.wav","audio":"audio/module_03_dialects/DIALECT_ANHUI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_ANHUI_02_安徽.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_FUJIAN__dialect_ref","displayId":"DIALECT_FUJIAN｜方言参考","rawId":"DIALECT_FUJIAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"福建话（福州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_FUJIAN.wav","audio":"audio/module_03_native_dialects/DIALECT_FUJIAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_FUJIAN_02_福建.wav","focus":"方言声调、地域表达、音色保持","avg":3.4,"tier":"watch","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":3.0,"音色保持":4.0,"音质":4.0},"comments":["方言不地道，可能因为复刻参考没有覆盖这个词，说话不流畅，会有捧读感"]},{"id":"DIALECT_FUJIAN__chinese_ref","displayId":"DIALECT_FUJIAN｜中文参考","rawId":"DIALECT_FUJIAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"福建话（福州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_FUJIAN.wav","audio":"audio/module_03_dialects/DIALECT_FUJIAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_FUJIAN_02_福建.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_GANSU__dialect_ref","displayId":"DIALECT_GANSU｜方言参考","rawId":"DIALECT_GANSU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"甘肃话（兰州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_GANSU.wav","audio":"audio/module_03_native_dialects/DIALECT_GANSU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_GANSU_01_甘肃.wav","focus":"方言声调、地域表达、音色保持","avg":3.4,"tier":"watch","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":3.0,"音色保持":4.0,"音质":4.0},"comments":[]},{"id":"DIALECT_GANSU__chinese_ref","displayId":"DIALECT_GANSU｜中文参考","rawId":"DIALECT_GANSU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"甘肃话（兰州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_GANSU.wav","audio":"audio/module_03_dialects/DIALECT_GANSU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_GANSU_01_甘肃.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_GUIZHOU__dialect_ref","displayId":"DIALECT_GUIZHOU｜方言参考","rawId":"DIALECT_GUIZHOU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"贵州话（贵阳）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_GUIZHOU.wav","audio":"audio/module_03_native_dialects/DIALECT_GUIZHOU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_GUIZHOU_02_贵州.wav","focus":"方言声调、地域表达、音色保持","avg":4.0,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":5.0,"音色保持":5.0,"音质":4.0},"comments":[]},{"id":"DIALECT_GUIZHOU__chinese_ref","displayId":"DIALECT_GUIZHOU｜中文参考","rawId":"DIALECT_GUIZHOU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"贵州话（贵阳）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_GUIZHOU.wav","audio":"audio/module_03_dialects/DIALECT_GUIZHOU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_GUIZHOU_02_贵州.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_HEBEI__dialect_ref","displayId":"DIALECT_HEBEI｜方言参考","rawId":"DIALECT_HEBEI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"河北话（石家庄）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_HEBEI.wav","audio":"audio/module_03_native_dialects/DIALECT_HEBEI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HEBEI_01_河北.wav","focus":"方言声调、地域表达、音色保持","avg":4.8,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_HEBEI__chinese_ref","displayId":"DIALECT_HEBEI｜中文参考","rawId":"DIALECT_HEBEI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"河北话（石家庄）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_HEBEI.wav","audio":"audio/module_03_dialects/DIALECT_HEBEI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HEBEI_01_河北.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_HENAN__dialect_ref","displayId":"DIALECT_HENAN｜方言参考","rawId":"DIALECT_HENAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"河南话（郑州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_HENAN.wav","audio":"audio/module_03_native_dialects/DIALECT_HENAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HENAN_01_河南.wav","focus":"方言声调、地域表达、音色保持","avg":4.6,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":4.0},"comments":[]},{"id":"DIALECT_HENAN__chinese_ref","displayId":"DIALECT_HENAN｜中文参考","rawId":"DIALECT_HENAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"河南话（郑州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_HENAN.wav","audio":"audio/module_03_dialects/DIALECT_HENAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HENAN_01_河南.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_HUBEI__dialect_ref","displayId":"DIALECT_HUBEI｜方言参考","rawId":"DIALECT_HUBEI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"湖北话（武汉）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_HUBEI.wav","audio":"audio/module_03_native_dialects/DIALECT_HUBEI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HUBEI_01_湖北.wav","focus":"方言声调、地域表达、音色保持","avg":4.2,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_HUBEI__chinese_ref","displayId":"DIALECT_HUBEI｜中文参考","rawId":"DIALECT_HUBEI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"湖北话（武汉）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_HUBEI.wav","audio":"audio/module_03_dialects/DIALECT_HUBEI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HUBEI_01_湖北.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_HUNAN__dialect_ref","displayId":"DIALECT_HUNAN｜方言参考","rawId":"DIALECT_HUNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"湖南话（长沙）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_HUNAN.wav","audio":"audio/module_03_native_dialects/DIALECT_HUNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HUNAN_01_湖南.wav","focus":"方言声调、地域表达、音色保持","avg":4.2,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":4.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":[]},{"id":"DIALECT_HUNAN__chinese_ref","displayId":"DIALECT_HUNAN｜中文参考","rawId":"DIALECT_HUNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"湖南话（长沙）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_HUNAN.wav","audio":"audio/module_03_dialects/DIALECT_HUNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_HUNAN_01_湖南.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_JIANGXI__dialect_ref","displayId":"DIALECT_JIANGXI｜方言参考","rawId":"DIALECT_JIANGXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"江西话（南昌）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_JIANGXI.wav","audio":"audio/module_03_native_dialects/DIALECT_JIANGXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_JIANGXI_02_江西.wav","focus":"方言声调、地域表达、音色保持","avg":4.2,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":4.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":[]},{"id":"DIALECT_JIANGXI__chinese_ref","displayId":"DIALECT_JIANGXI｜中文参考","rawId":"DIALECT_JIANGXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"江西话（南昌）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_JIANGXI.wav","audio":"audio/module_03_dialects/DIALECT_JIANGXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_JIANGXI_02_江西.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_LIAONING__dialect_ref","displayId":"DIALECT_LIAONING｜方言参考","rawId":"DIALECT_LIAONING","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"辽宁话（沈阳）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_LIAONING.wav","audio":"audio/module_03_native_dialects/DIALECT_LIAONING.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_LIAONING_02_辽宁.wav","focus":"方言声调、地域表达、音色保持","avg":5.0,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":5.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_LIAONING__chinese_ref","displayId":"DIALECT_LIAONING｜中文参考","rawId":"DIALECT_LIAONING","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"辽宁话（沈阳）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_LIAONING.wav","audio":"audio/module_03_dialects/DIALECT_LIAONING.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_LIAONING_02_辽宁.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_MINNAN__dialect_ref","displayId":"DIALECT_MINNAN｜方言参考","rawId":"DIALECT_MINNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"闽南语（泉州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_MINNAN.wav","audio":"audio/module_03_native_dialects/DIALECT_MINNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_MINNAN_02_闽南.wav","focus":"方言声调、地域表达、音色保持","avg":4.0,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":3.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":[]},{"id":"DIALECT_MINNAN__chinese_ref","displayId":"DIALECT_MINNAN｜中文参考","rawId":"DIALECT_MINNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"闽南语（泉州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_MINNAN.wav","audio":"audio/module_03_dialects/DIALECT_MINNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_MINNAN_02_闽南.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_NINGXIA__dialect_ref","displayId":"DIALECT_NINGXIA｜方言参考","rawId":"DIALECT_NINGXIA","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"宁夏话（银川）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_NINGXIA.wav","audio":"audio/module_03_native_dialects/DIALECT_NINGXIA.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_NINGXIA_01_宁夏.wav","focus":"方言声调、地域表达、音色保持","avg":4.8,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_NINGXIA__chinese_ref","displayId":"DIALECT_NINGXIA｜中文参考","rawId":"DIALECT_NINGXIA","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"宁夏话（银川）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_NINGXIA.wav","audio":"audio/module_03_dialects/DIALECT_NINGXIA.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_NINGXIA_01_宁夏.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_SHAANXI__dialect_ref","displayId":"DIALECT_SHAANXI｜方言参考","rawId":"DIALECT_SHAANXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"陕西话（西安）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SHAANXI.wav","audio":"audio/module_03_native_dialects/DIALECT_SHAANXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHAANXI_01_陕西.wav","focus":"方言声调、地域表达、音色保持","avg":4.6,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":5.0,"自然度":4.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_SHAANXI__chinese_ref","displayId":"DIALECT_SHAANXI｜中文参考","rawId":"DIALECT_SHAANXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"陕西话（西安）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SHAANXI.wav","audio":"audio/module_03_dialects/DIALECT_SHAANXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHAANXI_01_陕西.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_SHANDONG__dialect_ref","displayId":"DIALECT_SHANDONG｜方言参考","rawId":"DIALECT_SHANDONG","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"山东话（济南）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SHANDONG.wav","audio":"audio/module_03_native_dialects/DIALECT_SHANDONG.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANDONG_01_山东.wav","focus":"方言声调、地域表达、音色保持","avg":4.0,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":4.0,"音色保持":5.0,"音质":3.0},"comments":["电音重"]},{"id":"DIALECT_SHANDONG__chinese_ref","displayId":"DIALECT_SHANDONG｜中文参考","rawId":"DIALECT_SHANDONG","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"山东话（济南）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SHANDONG.wav","audio":"audio/module_03_dialects/DIALECT_SHANDONG.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANDONG_01_山东.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_SHANGHAI__dialect_ref","displayId":"DIALECT_SHANGHAI｜方言参考","rawId":"DIALECT_SHANGHAI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"上海话（上海）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SHANGHAI.wav","audio":"audio/module_03_native_dialects/DIALECT_SHANGHAI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANGHAI_01_上海.wav","focus":"方言声调、地域表达、音色保持","avg":4.2,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":4.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":["原声里面就夹杂普通话"]},{"id":"DIALECT_SHANGHAI__chinese_ref","displayId":"DIALECT_SHANGHAI｜中文参考","rawId":"DIALECT_SHANGHAI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"上海话（上海）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SHANGHAI.wav","audio":"audio/module_03_dialects/DIALECT_SHANGHAI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANGHAI_01_上海.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_SHANXI__dialect_ref","displayId":"DIALECT_SHANXI｜方言参考","rawId":"DIALECT_SHANXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"山西话（太原）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SHANXI.wav","audio":"audio/module_03_native_dialects/DIALECT_SHANXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANXI_01_山西.wav","focus":"方言声调、地域表达、音色保持","avg":4.6,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_SHANXI__chinese_ref","displayId":"DIALECT_SHANXI｜中文参考","rawId":"DIALECT_SHANXI","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"山西话（太原）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SHANXI.wav","audio":"audio/module_03_dialects/DIALECT_SHANXI.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SHANXI_01_山西.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_SICHUAN__dialect_ref","displayId":"DIALECT_SICHUAN｜方言参考","rawId":"DIALECT_SICHUAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"四川话（成都）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SICHUAN.wav","audio":"audio/module_03_native_dialects/DIALECT_SICHUAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SICHUAN_02_四川.wav","focus":"方言声调、地域表达、音色保持","avg":4.9,"tier":"excellent","source":["中文部分1-2人评分评估","方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":5.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":4.5},"comments":[]},{"id":"DIALECT_SICHUAN__chinese_ref","displayId":"DIALECT_SICHUAN｜中文参考","rawId":"DIALECT_SICHUAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"四川话（成都）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SICHUAN.wav","audio":"audio/module_03_dialects/DIALECT_SICHUAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_SICHUAN_02_四川.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_TIANJIN__dialect_ref","displayId":"DIALECT_TIANJIN｜方言参考","rawId":"DIALECT_TIANJIN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"天津话（天津）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_TIANJIN.wav","audio":"audio/module_03_native_dialects/DIALECT_TIANJIN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_TIANJIN_01_天津.wav","focus":"方言声调、地域表达、音色保持","avg":4.8,"tier":"excellent","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":4.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_TIANJIN__chinese_ref","displayId":"DIALECT_TIANJIN｜中文参考","rawId":"DIALECT_TIANJIN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"天津话（天津）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_TIANJIN.wav","audio":"audio/module_03_dialects/DIALECT_TIANJIN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_TIANJIN_01_天津.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_WENZHOU__dialect_ref","displayId":"DIALECT_WENZHOU｜方言参考","rawId":"DIALECT_WENZHOU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"温州话（温州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_WENZHOU.wav","audio":"audio/module_03_native_dialects/DIALECT_WENZHOU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_WENZHOU_02_温州.wav","focus":"方言声调、地域表达、音色保持","avg":3.6,"tier":"watch","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":4.0,"音色保持":4.0,"音质":4.0},"comments":["原始音频音质不好有明显混响背景音，复刻会带出，地域表达风格受限于测试文本，有点无法发挥效果，针对口音和自然度和音色保持进行评价"]},{"id":"DIALECT_WENZHOU__chinese_ref","displayId":"DIALECT_WENZHOU｜中文参考","rawId":"DIALECT_WENZHOU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"温州话（温州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_WENZHOU.wav","audio":"audio/module_03_dialects/DIALECT_WENZHOU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_WENZHOU_02_温州.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_WU__dialect_ref","displayId":"DIALECT_WU｜方言参考","rawId":"DIALECT_WU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"吴语（苏州）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_WU.wav","audio":"audio/module_03_native_dialects/DIALECT_WU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_WU_02_吴语.wav","focus":"方言声调、地域表达、音色保持","avg":4.0,"tier":"good","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":4.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":["原始音频音质不好有明显混响背景音，复刻会带出，地域表达风格受限于测试文本，有点无法发挥效果，针对口音和自然度和音色保持进行评价"]},{"id":"DIALECT_WU__chinese_ref","displayId":"DIALECT_WU｜中文参考","rawId":"DIALECT_WU","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"吴语（苏州）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_WU.wav","audio":"audio/module_03_dialects/DIALECT_WU.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_WU_02_吴语.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DIALECT_YUNNAN__dialect_ref","displayId":"DIALECT_YUNNAN｜方言参考","rawId":"DIALECT_YUNNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"云南话（昆明）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_YUNNAN.wav","audio":"audio/module_03_native_dialects/DIALECT_YUNNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_YUNNAN_01_云南.wav","focus":"方言声调、地域表达、音色保持","avg":3.8,"tier":"watch","source":["方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":3.0,"方言/口音准确度":3.0,"自然度":4.0,"音色保持":5.0,"音质":4.0},"comments":["原始音频音质不好有明显混响背景音，复刻会带出，地域表达风格受限于测试文本，有点无法发挥效果，针对口音和自然度和音色保持进行评价"]},{"id":"DIALECT_YUNNAN__chinese_ref","displayId":"DIALECT_YUNNAN｜中文参考","rawId":"DIALECT_YUNNAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"云南话（昆明）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_YUNNAN.wav","audio":"audio/module_03_dialects/DIALECT_YUNNAN.mp3","reference":null,"referenceLabel":"方言原声参考:DIALECT_YUNNAN_01_云南.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_01","displayId":"DESIGN_01","rawId":"DESIGN_01","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个年轻女性的温柔嗓音，语速稍慢。","label":"生成效果","file":"DESIGN_01.wav","audio":"audio/other_modules/DESIGN_01.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":5.0,"角色/场景风格":4.0,"音质":5.0},"comments":[]},{"id":"DESIGN_02","displayId":"DESIGN_02","rawId":"DESIGN_02","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个中年男性的沉稳嗓音，语速适中，带有播音腔。","label":"生成效果","file":"DESIGN_02.wav","audio":"audio/other_modules/DESIGN_02.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":5.0,"角色/场景风格":5.0,"音质":5.0},"comments":[]},{"id":"DESIGN_03","displayId":"DESIGN_03","rawId":"DESIGN_03","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个活泼开朗的少女声音，语速偏快，带一点俏皮。","label":"生成效果","file":"DESIGN_03.wav","audio":"audio/other_modules/DESIGN_03.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":4.0,"角色/场景风格":4.0,"音质":3.0},"comments":["音质差，高频撕裂"]},{"id":"DESIGN_04","displayId":"DESIGN_04","rawId":"DESIGN_04","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个老年男性的声音，语速缓慢，带有沙哑感。","label":"生成效果","file":"DESIGN_04.wav","audio":"audio/other_modules/DESIGN_04.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":5.0,"角色/场景风格":5.0,"音质":4.0},"comments":[]},{"id":"DESIGN_05","displayId":"DESIGN_05","rawId":"DESIGN_05","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个30岁左右的女性声音，温柔知性，语速适中，带一点微笑感。","label":"生成效果","file":"DESIGN_05.wav","audio":"audio/other_modules/DESIGN_05.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":5.0,"角色/场景风格":5.0,"音质":4.0},"comments":[]},{"id":"DESIGN_06","displayId":"DESIGN_06","rawId":"DESIGN_06","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个年轻男性的声音，充满自信和活力，语速较快，适合做产品广告。","label":"生成效果","file":"DESIGN_06.wav","audio":"audio/other_modules/DESIGN_06.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":4.0,"角色/场景风格":4.0,"音质":4.0},"comments":["自信到有点强硬，"]},{"id":"DESIGN_07","displayId":"DESIGN_07","rawId":"DESIGN_07","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个带有四川口音的年轻女声，亲切自然，语速适中。","label":"生成效果","file":"DESIGN_07.wav","audio":"audio/other_modules/DESIGN_07.mp3","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":4.0,"角色/场景风格":4.0,"音质":4.0},"comments":["没有四川口音，音质不太好"]},{"id":"DESIGN_LIVE_01","displayId":"DESIGN_LIVE_01","rawId":"DESIGN_LIVE_01","module":"指令式声音设计","pageModule":"模块5 · 声音设计 · 场景人设 · 短文本","type":"voice_design","scene":"直播带货","instruction":"生成一个25岁左右女性的声音，热情洋溢，语速偏快，带一点兴奋和感染力，适合直播带货场景。","label":"生成效果","file":"DESIGN_LIVE_01.wav","audio":"audio/other_modules/DESIGN_LIVE_01.mp3","reference":null,"referenceLabel":"","focus":"场景风格、情绪强度、语速","avg":3.5,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":3.0,"自然度":4.0,"角色/场景风格":4.0,"音质":3.0},"comments":["音质差，语气情绪强度不太好"]},{"id":"DESIGN_LIVE_02","displayId":"DESIGN_LIVE_02","rawId":"DESIGN_LIVE_02","module":"指令式声音设计","pageModule":"模块5 · 声音设计 · 场景人设 · 短文本","type":"voice_design","scene":"游戏解说","instruction":"生成一个年轻男性的声音，充满活力和激情，语速快，带有即兴感和现场感，适合游戏直播解说。","label":"生成效果","file":"DESIGN_LIVE_02.wav","audio":"audio/other_modules/DESIGN_LIVE_02.mp3","reference":null,"referenceLabel":"","focus":"场景风格、情绪强度、语速","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":5.0,"角色/场景风格":5.0,"音质":4.0},"comments":[]},{"id":"DESIGN_SPORTS","displayId":"DESIGN_SPORTS","rawId":"DESIGN_SPORTS","module":"指令式声音设计","pageModule":"模块5 · 声音设计 · 场景人设 · 短文本","type":"voice_design","scene":"足球解说","instruction":"生成一个中年男性的声音，嗓音浑厚有磁性，语速中等偏快，带有紧张感和爆发力，适合足球比赛解说。","label":"生成效果","file":"DESIGN_SPORTS.wav","audio":"audio/other_modules/DESIGN_SPORTS.mp3","reference":null,"referenceLabel":"","focus":"场景风格、情绪强度、语速","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":4.0,"角色/场景风格":5.0,"音质":4.0},"comments":["最后情绪不够"]},{"id":"DESIGN_LONG_LIVE","displayId":"DESIGN_LONG_LIVE","rawId":"DESIGN_LONG_LIVE","module":"长文本与稳定性","pageModule":"模块6 · 声音设计 · 场景人设 · 长文本","type":"voice_design","scene":"直播带货长文本","instruction":"生成一个25岁左右女性的声音，热情洋溢，语速偏快，带一点兴奋和感染力，适合直播带货场景。","label":"生成效果","file":"DESIGN_LONG_LIVE.wav","audio":"audio/other_modules/DESIGN_LONG_LIVE.mp3","reference":null,"referenceLabel":"","focus":"长文本风格持续性","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":3.0,"角色/场景风格":5.0,"音质":4.0},"comments":["音色没维持住，后半音色变了"]},{"id":"DESIGN_LONG_GAME","displayId":"DESIGN_LONG_GAME","rawId":"DESIGN_LONG_GAME","module":"长文本与稳定性","pageModule":"模块6 · 声音设计 · 场景人设 · 长文本","type":"voice_design","scene":"游戏解说长文本","instruction":"生成一个年轻男性的声音，充满活力和激情，语速快，带有即兴感和现场感，适合游戏直播解说。","label":"生成效果","file":"DESIGN_LONG_GAME.wav","audio":"audio/other_modules/DESIGN_LONG_GAME.mp3","reference":null,"referenceLabel":"","focus":"长文本风格持续性","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":3.0,"角色/场景风格":5.0,"音质":4.0},"comments":["音色没维持住，后半音色变了"]},{"id":"DESIGN_LONG_SPORTS","displayId":"DESIGN_LONG_SPORTS","rawId":"DESIGN_LONG_SPORTS","module":"长文本与稳定性","pageModule":"模块6 · 声音设计 · 场景人设 · 长文本","type":"voice_design","scene":"足球解说长文本","instruction":"生成一个中年男性的声音，嗓音浑厚有磁性，语速中等偏快，带有紧张感和爆发力，适合足球比赛解说。","label":"生成效果","file":"DESIGN_LONG_SPORTS.wav","audio":"audio/other_modules/DESIGN_LONG_SPORTS.mp3","reference":null,"referenceLabel":"","focus":"长文本风格持续性","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":3.0,"角色/场景风格":5.0,"音质":4.0},"comments":["音色没维持住，后半音色变了，后面还有点译制腔"]},{"id":"EDIT_SUB_01","displayId":"EDIT_SUB_01","rawId":"EDIT_SUB_01","module":"语音编辑能力","pageModule":"模块7 · 语音编辑 · 语义","type":"semantic_edit","scene":"语义替换","instruction":"将「汽车」替换为「手机」","label":"编辑后","file":"EDIT_SUB_01.wav","audio":"audio/other_modules/EDIT_SUB_01.mp3","reference":null,"referenceLabel":"","focus":"替换正确、未编辑区域一致","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":5.0,"未编辑区域一致性":4.0,"衔接自然度":3.0,"音色一致性":4.0},"comments":["未编辑区也有音色变化，编辑位置衔接不够自然"]},{"id":"EDIT_SUB_02","displayId":"EDIT_SUB_02","rawId":"EDIT_SUB_02","module":"语音编辑能力","pageModule":"模块7 · 语音编辑 · 语义","type":"semantic_edit","scene":"语义替换","instruction":"将「Pro」替换为「Air」","label":"编辑后","file":"EDIT_SUB_02.wav","audio":"audio/other_modules/EDIT_SUB_02.mp3","reference":null,"referenceLabel":"","focus":"替换正确、未编辑区域一致","avg":3.25,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":4.0,"未编辑区域一致性":4.0,"衔接自然度":2.0,"音色一致性":3.0},"comments":["编辑替换的单词发音含糊听不清"]},{"id":"EDIT_SUB_03","displayId":"EDIT_SUB_03","rawId":"EDIT_SUB_03","module":"语音编辑能力","pageModule":"模块7 · 语音编辑 · 语义","type":"semantic_edit","scene":"语义替换","instruction":"将「Transformer」替换为「Diffusion」","label":"编辑后","file":"EDIT_SUB_03.wav","audio":"audio/other_modules/EDIT_SUB_03.mp3","reference":null,"referenceLabel":"","focus":"替换正确、未编辑区域一致","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":5.0,"未编辑区域一致性":5.0,"衔接自然度":5.0,"音色一致性":5.0},"comments":[]},{"id":"EDIT_SPEED_01","displayId":"EDIT_SPEED_01","rawId":"EDIT_SPEED_01","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"语速 0.8x","instruction":"adjust the speed to 0.8x","label":"编辑后","file":"EDIT_SPEED_01.wav","audio":"audio/other_modules/EDIT_SPEED_01.mp3","reference":null,"referenceLabel":"","focus":"放慢后自然度","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":5.0,"音色保持":4.0,"音质":3.0},"comments":["音质很差"]},{"id":"EDIT_SPEED_02","displayId":"EDIT_SPEED_02","rawId":"EDIT_SPEED_02","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"语速 1.5x","instruction":"adjust the speed to 1.5x","label":"编辑后","file":"EDIT_SPEED_02.wav","audio":"audio/other_modules/EDIT_SPEED_02.mp3","reference":null,"referenceLabel":"","focus":"加快后自然度","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":4.0,"音色保持":4.0,"音质":4.0},"comments":[]},{"id":"EDIT_PITCH_UP","displayId":"EDIT_PITCH_UP","rawId":"EDIT_PITCH_UP","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"音高 +3","instruction":"shift the pitch by 3 steps","label":"编辑后","file":"EDIT_PITCH_UP.wav","audio":"audio/other_modules/EDIT_PITCH_UP.mp3","reference":null,"referenceLabel":"","focus":"音色一致性","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":5.0,"音色保持":1.0,"音质":5.0},"comments":["音高改变，与参考音音色就完全不一样了，但改变的音色可以保持"]},{"id":"EDIT_PITCH_DN","displayId":"EDIT_PITCH_DN","rawId":"EDIT_PITCH_DN","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"音高 -3","instruction":"shift the pitch by -3 steps","label":"编辑后","file":"EDIT_PITCH_DN.wav","audio":"audio/other_modules/EDIT_PITCH_DN.mp3","reference":null,"referenceLabel":"","focus":"音色一致性","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":5.0,"音色保持":1.0,"音质":5.0},"comments":["音高改变，与参考音音色就完全不一样了，但改变的音色可以保持"]},{"id":"EDIT_VOL_UP","displayId":"EDIT_VOL_UP","rawId":"EDIT_VOL_UP","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"音量 1.5x","instruction":"adjust the volume to 1.5","label":"编辑后","file":"EDIT_VOL_UP.wav","audio":"audio/other_modules/EDIT_VOL_UP.mp3","reference":null,"referenceLabel":"","focus":"是否失真","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"EDIT_VOL_DN","displayId":"EDIT_VOL_DN","rawId":"EDIT_VOL_DN","module":"语音编辑能力","pageModule":"模块8 · 语音编辑 · 声学","type":"acoustic_edit","scene":"音量 0.5x","instruction":"adjust the volume to 0.5","label":"编辑后","file":"EDIT_VOL_DN.wav","audio":"audio/other_modules/EDIT_VOL_DN.mp3","reference":null,"referenceLabel":"","focus":"是否过轻","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标变化是否听得出来":5.0,"自然度":5.0,"音色保持":5.0,"音质":5.0},"comments":[]},{"id":"COMBO_01","displayId":"COMBO_01","rawId":"COMBO_01","module":"语音编辑能力","pageModule":"模块9 · 组合测试","type":"combo","scene":"声音设计 → 语义编辑","instruction":"年轻女声；汽车替换为手机","label":"编辑后","file":"COMBO_01_edit.wav","audio":"audio/other_modules/COMBO_01_edit.mp3","reference":null,"referenceLabel":"","focus":"编辑后音色一致性","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"流程完成度":5.0,"编辑正确性":5.0,"自然度":4.0,"音色一致性":4.0},"comments":["音色基本一致，略有变化，替换的字，略有不自然"]},{"id":"COMBO_02","displayId":"COMBO_02","rawId":"COMBO_02","module":"语音编辑能力","pageModule":"模块9 · 组合测试","type":"combo","scene":"声音设计 → 声学编辑","instruction":"中年男声；语速调整到 1.3x","label":"编辑后","file":"COMBO_02_edit.wav","audio":"audio/other_modules/COMBO_02_edit.mp3","reference":null,"referenceLabel":"","focus":"声学编辑是否破坏音色","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"流程完成度":5.0,"编辑正确性":5.0,"自然度":4.0,"音色一致性":3.0},"comments":["编辑后音色变了，音质变得很差"]},{"id":"CONTRAST_01","displayId":"CONTRAST_01","rawId":"CONTRAST_01","module":"指令式声音设计","pageModule":"模块10 · 同文本多音色对照","type":"contrast","scene":"沉稳男性播报","instruction":"生成一个沉稳的男性播报音色。","label":"生成效果","file":"CONTRAST_01.wav","audio":"audio/other_modules/CONTRAST_01.mp3","reference":null,"referenceLabel":"","focus":"沉稳、正式","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":5.0,"音色差异辨识度":5.0,"音质":5.0},"comments":["不像播报，更偏角色音，沉稳男角色"]},{"id":"CONTRAST_02","displayId":"CONTRAST_02","rawId":"CONTRAST_02","module":"指令式声音设计","pageModule":"模块10 · 同文本多音色对照","type":"contrast","scene":"活泼女性主持","instruction":"生成一个活泼的女性主持音色。","label":"生成效果","file":"CONTRAST_02.wav","audio":"audio/other_modules/CONTRAST_02.mp3","reference":null,"referenceLabel":"","focus":"活泼、亲切","avg":3.5,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":3.0,"自然度":4.0,"音色差异辨识度":4.0,"音质":3.0},"comments":["不像主持，结尾语调不自然"]},{"id":"CONTRAST_03","displayId":"CONTRAST_03","rawId":"CONTRAST_03","module":"指令式声音设计","pageModule":"模块10 · 同文本多音色对照","type":"contrast","scene":"疲惫老年声音","instruction":"生成一个带有疲惫感的老年声音。","label":"生成效果","file":"CONTRAST_03.wav","audio":"audio/other_modules/CONTRAST_03.mp3","reference":null,"referenceLabel":"","focus":"疲惫、缓慢","avg":3.5,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":3.0,"自然度":4.0,"音色差异辨识度":3.0,"音质":4.0},"comments":["音色不自然，不想老年，略有疲惫，但不够缓慢"]},{"id":"PARA_01","displayId":"PARA_01","rawId":"PARA_01","module":"情感与副语言表达","pageModule":"补充A · 副语言能力测试","type":"paralinguistic","scene":"笑声","instruction":"生成一个年轻女性的温柔嗓音。","label":"生成效果","file":"PARA_01.wav","audio":"audio/other_modules/PARA_01.mp3","reference":null,"referenceLabel":"","focus":"笑声自然度","avg":2.75,"tier":"risk","source":["中文部分1-2人评分评估"],"dimAvg":{"前后衔接":4.0,"副语言真实感":1.0,"自然度":4.0,"音质":2.0},"comments":["衔接和自然度可以，但是电音很重，音质很差"]},{"id":"PARA_02","displayId":"PARA_02","rawId":"PARA_02","module":"情感与副语言表达","pageModule":"补充A · 副语言能力测试","type":"paralinguistic","scene":"叹气","instruction":"生成一个中年男性的沉稳嗓音。","label":"生成效果","file":"PARA_02.wav","audio":"audio/other_modules/PARA_02.mp3","reference":null,"referenceLabel":"","focus":"叹气真实感","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"前后衔接":5.0,"副语言真实感":5.0,"自然度":5.0,"音质":4.0},"comments":["副语言有电音"]},{"id":"PARA_03","displayId":"PARA_03","rawId":"PARA_03","module":"情感与副语言表达","pageModule":"补充A · 副语言能力测试","type":"paralinguistic","scene":"停顿/犹豫","instruction":"生成一个年轻男性的声音，语速适中。","label":"生成效果","file":"PARA_03.wav","audio":"audio/other_modules/PARA_03.mp3","reference":null,"referenceLabel":"","focus":"停顿自然度","avg":3.5,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"前后衔接":3.0,"副语言真实感":3.0,"自然度":4.0,"音质":4.0},"comments":["停顿可感知，但是犹豫的感觉不明显不真实"]},{"id":"STAB_01","displayId":"STAB_01","rawId":"STAB_01","module":"长文本与稳定性","pageModule":"补充B · 长文本稳定性","type":"stability","scene":"长篇新闻稿","instruction":"刘亦菲原声克隆","label":"生成效果","file":"STAB_01.wav","audio":"audio/other_modules/STAB_01.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"长篇音色与韵律稳定性","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"拼接/长文本自然度":5.0,"音色稳定性":5.0,"音质":5.0,"韵律连贯性":5.0},"comments":[]},{"id":"STAB_02","displayId":"STAB_02","rawId":"STAB_02","module":"长文本与稳定性","pageModule":"补充B · 长文本稳定性","type":"stability","scene":"长篇产品介绍（中英混排）","instruction":"肖战参考音色；10 段生成后合并","label":"分段 10","file":"STAB_02_分段_10.wav","audio":"audio/stab_02/STAB_02_分段_10.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"逐段听一致性，再听合并后是否顺滑；重点看中英切换、音色漂移和拼接痕迹","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"拼接/长文本自然度":4.0,"音色稳定性":5.0,"音质":5.0,"韵律连贯性":5.0},"comments":["。的停顿偏长，一段话的连续感不足（应是因为多句拼接导致，模型有一次输入字符限制）"]},{"id":"MIX_01","displayId":"MIX_01","rawId":"MIX_01","module":"文本规范化与复杂文本","pageModule":"补充C · 中英混排测试","type":"mixed_text","scene":"中英混排","instruction":"刘亦菲参考音色克隆","label":"生成效果","file":"MIX_01.wav","audio":"audio/other_modules/MIX_01.mp3","reference":"audio/references/刘亦菲原声.mp3","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"英文单词自然度","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"中英数字读法":5.0,"切换流畅度":5.0,"自然度":5.0,"音质":5.0},"comments":[]},{"id":"MIX_02","displayId":"MIX_02","rawId":"MIX_02","module":"文本规范化与复杂文本","pageModule":"补充C · 中英混排测试","type":"mixed_text","scene":"中英混排","instruction":"肖战参考音色克隆","label":"生成效果","file":"MIX_02.wav","audio":"audio/other_modules/MIX_02.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"中英数字切换","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"中英数字读法":5.0,"切换流畅度":5.0,"自然度":5.0,"音质":5.0},"comments":[]},{"id":"EMO_JOY","displayId":"EMO_JOY","rawId":"EMO_JOY","module":"情感与副语言表达","pageModule":"补充D · 情感指令控制","type":"emotion","scene":"开心","instruction":"用非常开心、兴奋的语气说。","label":"生成效果","file":"EMO_JOY.wav","audio":"audio/other_modules/EMO_JOY.mp3","reference":null,"referenceLabel":"","focus":"兴奋感","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"情绪强度匹配":5.0,"情绪辨识度":5.0,"自然度":4.0,"音质":3.0},"comments":["音质比较差"]},{"id":"EMO_SAD","displayId":"EMO_SAD","rawId":"EMO_SAD","module":"情感与副语言表达","pageModule":"补充D · 情感指令控制","type":"emotion","scene":"悲伤","instruction":"用悲伤、低沉的语气说。","label":"生成效果","file":"EMO_SAD.wav","audio":"audio/other_modules/EMO_SAD.mp3","reference":null,"referenceLabel":"","focus":"悲伤感","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"情绪强度匹配":5.0,"情绪辨识度":5.0,"自然度":5.0,"音质":4.0},"comments":["有杂音"]},{"id":"EMO_ANGER","displayId":"EMO_ANGER","rawId":"EMO_ANGER","module":"情感与副语言表达","pageModule":"补充D · 情感指令控制","type":"emotion","scene":"愤怒","instruction":"用愤怒、强硬的语气说。","label":"生成效果","file":"EMO_ANGER.wav","audio":"audio/other_modules/EMO_ANGER.mp3","reference":null,"referenceLabel":"","focus":"愤怒力度","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"情绪强度匹配":5.0,"情绪辨识度":5.0,"自然度":5.0,"音质":5.0},"comments":[]},{"id":"MULTI_ROLE","displayId":"MULTI_ROLE","rawId":"MULTI_ROLE","module":"多角色对话","pageModule":"补充E · 多角色对话生成","type":"multi_role","scene":"女性+男性对话","instruction":"模拟两个人对话，一个是温柔的女性，一个是低沉的男性。","label":"生成效果","file":"MULTI_ROLE.wav","audio":"audio/other_modules/MULTI_ROLE.mp3","reference":null,"referenceLabel":"","focus":"角色切换","avg":2.75,"tier":"risk","source":["中文部分1-2人评分评估"],"dimAvg":{"切换准确性":1.0,"对话衔接":4.0,"角色区分度":1.0,"音质":5.0},"comments":["没有区分，这个指令没生效，无法同时生成两个音色，只会生成一个音色读所有问题，还会读出 女：男："]},{"id":"TN_DATE_TIME","displayId":"TN_DATE_TIME","rawId":"TN_DATE_TIME","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"tn","scene":"日期时间","instruction":"文本规范化","label":"生成效果","file":"TN_DATE_TIME.wav","audio":"audio/supplemental_subjective/TN_DATE_TIME.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"读法是否符合预期","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"发音清晰度":5.0,"自然度":5.0,"规范化读法准确性":5.0,"韵律停顿":5.0},"comments":[]},{"id":"TN_MONEY_UNIT","displayId":"TN_MONEY_UNIT","rawId":"TN_MONEY_UNIT","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"tn","scene":"金额/单位","instruction":"文本规范化","label":"生成效果","file":"TN_MONEY_UNIT.wav","audio":"audio/supplemental_subjective/TN_MONEY_UNIT.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"读法是否符合预期","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"发音清晰度":4.0,"自然度":4.0,"规范化读法准确性":3.0,"韵律停顿":4.0},"comments":["金额读错"]},{"id":"TN_PHONE","displayId":"TN_PHONE","rawId":"TN_PHONE","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"tn","scene":"电话","instruction":"文本规范化","label":"生成效果","file":"TN_PHONE.wav","audio":"audio/supplemental_subjective/TN_PHONE.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"读法是否符合预期","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"发音清晰度":5.0,"自然度":3.0,"规范化读法准确性":4.0,"韵律停顿":3.0},"comments":["电话号码的节奏不对"]},{"id":"TN_WEB_VERSION","displayId":"TN_WEB_VERSION","rawId":"TN_WEB_VERSION","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"tn","scene":"网址/版本号","instruction":"文本规范化","label":"生成效果","file":"TN_WEB_VERSION.wav","audio":"audio/supplemental_subjective/TN_WEB_VERSION.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"读法是否符合预期","avg":3.5,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"发音清晰度":4.0,"自然度":3.0,"规范化读法准确性":3.0,"韵律停顿":4.0},"comments":["网址读错"]},{"id":"HARD_POLYPHONE","displayId":"HARD_POLYPHONE","rawId":"HARD_POLYPHONE","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"hard","scene":"多音字","instruction":"复杂发音","label":"生成效果","file":"HARD_POLYPHONE.wav","audio":"audio/supplemental_subjective/HARD_POLYPHONE.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"复杂发音与停顿","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"复杂发音准确性":5.0,"符号/停顿处理":5.0,"自然度":5.0,"音质":4.0},"comments":[]},{"id":"HARD_SYMBOL","displayId":"HARD_SYMBOL","rawId":"HARD_SYMBOL","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"hard","scene":"比例/符号","instruction":"复杂发音","label":"生成效果","file":"HARD_SYMBOL.wav","audio":"audio/supplemental_subjective/HARD_SYMBOL.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"复杂发音与停顿","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"复杂发音准确性":5.0,"符号/停顿处理":5.0,"自然度":5.0,"音质":4.0},"comments":[]},{"id":"HARD_PAUSE","displayId":"HARD_PAUSE","rawId":"HARD_PAUSE","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"hard","scene":"序号/停顿","instruction":"复杂发音","label":"生成效果","file":"HARD_PAUSE.wav","audio":"audio/supplemental_subjective/HARD_PAUSE.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"复杂发音与停顿","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"复杂发音准确性":5.0,"符号/停顿处理":5.0,"自然度":5.0,"音质":4.0},"comments":[]},{"id":"REF_SHORT","displayId":"REF_SHORT","rawId":"REF_SHORT","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"robust","scene":"短参考","instruction":"参考音频鲁棒性","label":"生成效果","file":"REF_SHORT.wav","audio":"audio/supplemental_subjective/REF_SHORT.mp3","reference":null,"referenceLabel":"","focus":"参考质量变化下的克隆稳定性","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"抗噪/短参考表现":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"REF_LOW","displayId":"REF_LOW","rawId":"REF_LOW","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"robust","scene":"低音量参考","instruction":"参考音频鲁棒性","label":"生成效果","file":"REF_LOW.wav","audio":"audio/supplemental_subjective/REF_LOW.mp3","reference":null,"referenceLabel":"","focus":"参考质量变化下的克隆稳定性","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"抗噪/短参考表现":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"REF_NOISE","displayId":"REF_NOISE","rawId":"REF_NOISE","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"robust","scene":"背景噪声参考","instruction":"参考音频鲁棒性","label":"生成效果","file":"REF_NOISE.wav","audio":"audio/supplemental_subjective/REF_NOISE.mp3","reference":null,"referenceLabel":"","focus":"参考质量变化下的克隆稳定性","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"抗噪/短参考表现":2.0,"自然度":5.0,"音色相似度":5.0,"音质":3.0},"comments":["噪音完全复现"]},{"id":"REF_REVERB","displayId":"REF_REVERB","rawId":"REF_REVERB","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"robust","scene":"轻微混响参考","instruction":"参考音频鲁棒性","label":"生成效果","file":"REF_REVERB.wav","audio":"audio/supplemental_subjective/REF_REVERB.mp3","reference":null,"referenceLabel":"","focus":"参考质量变化下的克隆稳定性","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"抗噪/短参考表现":2.0,"自然度":5.0,"音色相似度":5.0,"音质":3.0},"comments":["混响完全复现，影响音质"]},{"id":"SEED_SAME_A","displayId":"SEED_SAME_A","rawId":"SEED_SAME_A","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"seed","scene":"相同 Seed A","instruction":"seed=2026","label":"生成效果","file":"SEED_SAME_A.wav","audio":"audio/supplemental_subjective/SEED_SAME_A.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"可复现性与合理差异","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"可复现性/差异合理性":5.0,"自然度":5.0,"音色一致性":5.0,"音质":5.0},"comments":[]},{"id":"SEED_SAME_B","displayId":"SEED_SAME_B","rawId":"SEED_SAME_B","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"seed","scene":"相同 Seed B","instruction":"seed=2026","label":"生成效果","file":"SEED_SAME_B.wav","audio":"audio/supplemental_subjective/SEED_SAME_B.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"可复现性与合理差异","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"可复现性/差异合理性":5.0,"自然度":5.0,"音色一致性":5.0,"音质":5.0},"comments":[]},{"id":"SEED_DIFF","displayId":"SEED_DIFF","rawId":"SEED_DIFF","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"seed","scene":"不同 Seed","instruction":"seed=9527","label":"生成效果","file":"SEED_DIFF.wav","audio":"audio/supplemental_subjective/SEED_DIFF.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"可复现性与合理差异","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"可复现性/差异合理性":5.0,"自然度":4.0,"音色一致性":5.0,"音质":5.0},"comments":["韵律不太自然，有迟疑感"]},{"id":"EDIT_INSERT_01","displayId":"EDIT_INSERT_01","rawId":"EDIT_INSERT_01","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"semantic_edit","scene":"插入：三点后加准时","instruction":"在“三点”后面插入“准时”","label":"编辑后","file":"EDIT_INSERT_01.wav","audio":"audio/supplemental_subjective/EDIT_INSERT_01.mp3","reference":null,"referenceLabel":"","focus":"编辑正确性与衔接","avg":3.0,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":1.0,"未编辑区域一致性":5.0,"衔接自然度":1.0,"音色一致性":5.0},"comments":["插入未生效"]},{"id":"EDIT_INSERT_02","displayId":"EDIT_INSERT_02","rawId":"EDIT_INSERT_02","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"semantic_edit","scene":"插入：新产品前加智能","instruction":"在“新产品”前面插入“智能”","label":"编辑后","file":"EDIT_INSERT_02.wav","audio":"audio/supplemental_subjective/EDIT_INSERT_02.mp3","reference":null,"referenceLabel":"","focus":"编辑正确性与衔接","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":4.0,"未编辑区域一致性":4.0,"衔接自然度":4.0,"音色一致性":4.0},"comments":["生效，但音色音质均有变化"]},{"id":"EDIT_DELETE_01","displayId":"EDIT_DELETE_01","rawId":"EDIT_DELETE_01","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"semantic_edit","scene":"删除：下午三点","instruction":"删除“下午三点”","label":"编辑后","file":"EDIT_DELETE_01.wav","audio":"audio/supplemental_subjective/EDIT_DELETE_01.mp3","reference":null,"referenceLabel":"","focus":"编辑正确性与衔接","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":5.0,"未编辑区域一致性":5.0,"衔接自然度":3.0,"音色一致性":5.0},"comments":["删除位置衔接不自然"]},{"id":"EDIT_DELETE_02","displayId":"EDIT_DELETE_02","rawId":"EDIT_DELETE_02","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"semantic_edit","scene":"删除：在会议室","instruction":"删除“在会议室”","label":"编辑后","file":"EDIT_DELETE_02.wav","audio":"audio/supplemental_subjective/EDIT_DELETE_02.mp3","reference":null,"referenceLabel":"","focus":"编辑正确性与衔接","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"内容正确性":4.0,"未编辑区域一致性":5.0,"衔接自然度":3.0,"音色一致性":5.0},"comments":["没删除干净，遗留了室的音，衔接不自然"]},{"id":"EDIT_SPEED_MIN","displayId":"EDIT_SPEED_MIN","rawId":"EDIT_SPEED_MIN","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"语速下限 0.5x","instruction":"adjust the speed to 0.5x","label":"编辑后","file":"EDIT_SPEED_MIN.wav","audio":"audio/supplemental_subjective/EDIT_SPEED_MIN.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":4.0,"目标变化是否听得出来":5.0,"自然度":3.0,"音质":3.0},"comments":["语速变化很明显，但音质变得很差"]},{"id":"EDIT_SPEED_MAX","displayId":"EDIT_SPEED_MAX","rawId":"EDIT_SPEED_MAX","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"语速上限 2.0x","instruction":"adjust the speed to 2.0x","label":"编辑后","file":"EDIT_SPEED_MAX.wav","audio":"audio/supplemental_subjective/EDIT_SPEED_MAX.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":4.0,"目标变化是否听得出来":5.0,"自然度":4.0,"音质":4.0},"comments":["语速快的效果可以"]},{"id":"EDIT_PITCH_MIN","displayId":"EDIT_PITCH_MIN","rawId":"EDIT_PITCH_MIN","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"音高下限 -6","instruction":"shift the pitch by -6 steps","label":"编辑后","file":"EDIT_PITCH_MIN.wav","audio":"audio/supplemental_subjective/EDIT_PITCH_MIN.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":5.0,"目标变化是否听得出来":5.0,"自然度":5.0,"音质":4.0},"comments":[]},{"id":"EDIT_PITCH_MAX","displayId":"EDIT_PITCH_MAX","rawId":"EDIT_PITCH_MAX","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"音高上限 +6","instruction":"shift the pitch by 6 steps","label":"编辑后","file":"EDIT_PITCH_MAX.wav","audio":"audio/supplemental_subjective/EDIT_PITCH_MAX.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":5.0,"目标变化是否听得出来":5.0,"自然度":5.0,"音质":4.0},"comments":[]},{"id":"EDIT_VOLUME_MIN","displayId":"EDIT_VOLUME_MIN","rawId":"EDIT_VOLUME_MIN","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"音量下限 0.3","instruction":"adjust the volume to 0.3","label":"编辑后","file":"EDIT_VOLUME_MIN.wav","audio":"audio/supplemental_subjective/EDIT_VOLUME_MIN.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":5.0,"目标变化是否听得出来":1.0,"自然度":5.0,"音质":4.0},"comments":["音量变化很小，不太听得出来"]},{"id":"EDIT_VOLUME_MAX","displayId":"EDIT_VOLUME_MAX","rawId":"EDIT_VOLUME_MAX","module":"语音编辑能力","pageModule":"补充F · 部署重点主观测试","type":"boundary","scene":"音量上限 2.0","instruction":"adjust the volume to 2.0","label":"编辑后","file":"EDIT_VOLUME_MAX.wav","audio":"audio/supplemental_subjective/EDIT_VOLUME_MAX.mp3","reference":null,"referenceLabel":"","focus":"目标变化是否明显，是否有爆音、破音或不自然","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"没有爆音/破音":5.0,"目标变化是否听得出来":1.0,"自然度":5.0,"音质":4.0},"comments":["音量变化很小，不太听得出来"]},{"id":"DESIGN2BASE_MALE_ANHUI","displayId":"DESIGN2BASE_MALE_ANHUI","rawId":"DESIGN2BASE_MALE_ANHUI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Anhui","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_ANHUI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_ANHUI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_FUJIAN","displayId":"DESIGN2BASE_MALE_FUJIAN","rawId":"DESIGN2BASE_MALE_FUJIAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Fujian","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_FUJIAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_FUJIAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_GANSU","displayId":"DESIGN2BASE_MALE_GANSU","rawId":"DESIGN2BASE_MALE_GANSU","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Gansu","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_GANSU.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_GANSU.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_GUIZHOU","displayId":"DESIGN2BASE_MALE_GUIZHOU","rawId":"DESIGN2BASE_MALE_GUIZHOU","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Guizhou","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_GUIZHOU.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_GUIZHOU.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_HEBEI","displayId":"DESIGN2BASE_MALE_HEBEI","rawId":"DESIGN2BASE_MALE_HEBEI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Hebei","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_HEBEI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_HEBEI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_HENAN","displayId":"DESIGN2BASE_MALE_HENAN","rawId":"DESIGN2BASE_MALE_HENAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Henan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_HENAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_HENAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_HUBEI","displayId":"DESIGN2BASE_MALE_HUBEI","rawId":"DESIGN2BASE_MALE_HUBEI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Hubei","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_HUBEI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_HUBEI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_HUNAN","displayId":"DESIGN2BASE_MALE_HUNAN","rawId":"DESIGN2BASE_MALE_HUNAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Hunan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_HUNAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_HUNAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_JIANGXI","displayId":"DESIGN2BASE_MALE_JIANGXI","rawId":"DESIGN2BASE_MALE_JIANGXI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Jiangxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_JIANGXI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_JIANGXI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_LIAONING","displayId":"DESIGN2BASE_MALE_LIAONING","rawId":"DESIGN2BASE_MALE_LIAONING","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Liaoning","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_LIAONING.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_LIAONING.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_MINNAN","displayId":"DESIGN2BASE_MALE_MINNAN","rawId":"DESIGN2BASE_MALE_MINNAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Minnan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_MINNAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_MINNAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_NINGXIA","displayId":"DESIGN2BASE_MALE_NINGXIA","rawId":"DESIGN2BASE_MALE_NINGXIA","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Ningxia","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_NINGXIA.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_NINGXIA.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_SHAANXI","displayId":"DESIGN2BASE_MALE_SHAANXI","rawId":"DESIGN2BASE_MALE_SHAANXI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Shaanxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_SHAANXI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_SHAANXI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_SHANDONG","displayId":"DESIGN2BASE_MALE_SHANDONG","rawId":"DESIGN2BASE_MALE_SHANDONG","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Shandong","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_SHANDONG.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_SHANDONG.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_SHANGHAI","displayId":"DESIGN2BASE_MALE_SHANGHAI","rawId":"DESIGN2BASE_MALE_SHANGHAI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Shanghai","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_SHANGHAI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_SHANGHAI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_SHANXI","displayId":"DESIGN2BASE_MALE_SHANXI","rawId":"DESIGN2BASE_MALE_SHANXI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Shanxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_SHANXI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_SHANXI.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_SICHUAN","displayId":"DESIGN2BASE_MALE_SICHUAN","rawId":"DESIGN2BASE_MALE_SICHUAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Sichuan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_SICHUAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_SICHUAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_TIANJIN","displayId":"DESIGN2BASE_MALE_TIANJIN","rawId":"DESIGN2BASE_MALE_TIANJIN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Tianjin","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_TIANJIN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_TIANJIN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_WENZHOU","displayId":"DESIGN2BASE_MALE_WENZHOU","rawId":"DESIGN2BASE_MALE_WENZHOU","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Wenzhou","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_WENZHOU.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_WENZHOU.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_WU","displayId":"DESIGN2BASE_MALE_WU","rawId":"DESIGN2BASE_MALE_WU","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Wu","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_WU.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_WU.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_MALE_YUNNAN","displayId":"DESIGN2BASE_MALE_YUNNAN","rawId":"DESIGN2BASE_MALE_YUNNAN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"男声 -> ZH_Yunnan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"跨方言/外语生成","file":"DESIGN2BASE_MALE_YUNNAN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_MALE_YUNNAN.mp3","reference":null,"referenceLabel":"设计源音色（男声）:DESIGNED_MALE_磁性颗粒沙哑男声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_AR","displayId":"DESIGN2BASE_FEMALE_AR","rawId":"DESIGN2BASE_FEMALE_AR","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Arabic","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_AR.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_AR.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_CS","displayId":"DESIGN2BASE_FEMALE_CS","rawId":"DESIGN2BASE_FEMALE_CS","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Czech","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_CS.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_CS.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_DE","displayId":"DESIGN2BASE_FEMALE_DE","rawId":"DESIGN2BASE_FEMALE_DE","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> German","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_DE.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_DE.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_EL","displayId":"DESIGN2BASE_FEMALE_EL","rawId":"DESIGN2BASE_FEMALE_EL","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Greek","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_EL.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_EL.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_EN","displayId":"DESIGN2BASE_FEMALE_EN","rawId":"DESIGN2BASE_FEMALE_EN","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> English","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_EN.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_EN.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_ES","displayId":"DESIGN2BASE_FEMALE_ES","rawId":"DESIGN2BASE_FEMALE_ES","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Spanish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_ES.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_ES.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_FI","displayId":"DESIGN2BASE_FEMALE_FI","rawId":"DESIGN2BASE_FEMALE_FI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Finnish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_FI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_FI.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_FR","displayId":"DESIGN2BASE_FEMALE_FR","rawId":"DESIGN2BASE_FEMALE_FR","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> French","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_FR.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_FR.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_HI","displayId":"DESIGN2BASE_FEMALE_HI","rawId":"DESIGN2BASE_FEMALE_HI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Hindi","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_HI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_HI.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_ID","displayId":"DESIGN2BASE_FEMALE_ID","rawId":"DESIGN2BASE_FEMALE_ID","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Indonesian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_ID.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_ID.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_IT","displayId":"DESIGN2BASE_FEMALE_IT","rawId":"DESIGN2BASE_FEMALE_IT","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Italian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_IT.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_IT.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_JA","displayId":"DESIGN2BASE_FEMALE_JA","rawId":"DESIGN2BASE_FEMALE_JA","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Japanese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_JA.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_JA.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_KO","displayId":"DESIGN2BASE_FEMALE_KO","rawId":"DESIGN2BASE_FEMALE_KO","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Korean","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_KO.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_KO.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_NL","displayId":"DESIGN2BASE_FEMALE_NL","rawId":"DESIGN2BASE_FEMALE_NL","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Dutch","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_NL.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_NL.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_PL","displayId":"DESIGN2BASE_FEMALE_PL","rawId":"DESIGN2BASE_FEMALE_PL","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Polish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_PL.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_PL.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_PT","displayId":"DESIGN2BASE_FEMALE_PT","rawId":"DESIGN2BASE_FEMALE_PT","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Portuguese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_PT.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_PT.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_RO","displayId":"DESIGN2BASE_FEMALE_RO","rawId":"DESIGN2BASE_FEMALE_RO","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Romanian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_RO.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_RO.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_RU","displayId":"DESIGN2BASE_FEMALE_RU","rawId":"DESIGN2BASE_FEMALE_RU","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Russian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_RU.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_RU.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_TH","displayId":"DESIGN2BASE_FEMALE_TH","rawId":"DESIGN2BASE_FEMALE_TH","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Thai","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_TH.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_TH.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_TR","displayId":"DESIGN2BASE_FEMALE_TR","rawId":"DESIGN2BASE_FEMALE_TR","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Turkish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_TR.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_TR.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_UK","displayId":"DESIGN2BASE_FEMALE_UK","rawId":"DESIGN2BASE_FEMALE_UK","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Ukrainian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_UK.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_UK.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_VI","displayId":"DESIGN2BASE_FEMALE_VI","rawId":"DESIGN2BASE_FEMALE_VI","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Vietnamese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_VI.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_VI.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_YUE","displayId":"DESIGN2BASE_FEMALE_YUE","rawId":"DESIGN2BASE_FEMALE_YUE","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Cantonese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_YUE.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_YUE.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN2BASE_FEMALE_ZH","displayId":"DESIGN2BASE_FEMALE_ZH","rawId":"DESIGN2BASE_FEMALE_ZH","module":"跨语种/跨方言能力","pageModule":"新增A · 设计音色跨方言/外语","type":"designed_crosslingual","scene":"女声 -> Chinese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"跨方言/外语生成","file":"DESIGN2BASE_FEMALE_ZH.wav","audio":"audio/designed_crosslingual/DESIGN2BASE_FEMALE_ZH.mp3","reference":null,"referenceLabel":"设计源音色（女声）:DESIGNED_FEMALE_清亮鼻腔共鸣女声.wav","focus":"先听设计源音色，再听跨方言/外语生成；重点看设计音色是否保留、目标语言/方言发音是否自然、是否有错读或口音漂移。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"PARA_CLONE_BREATH","displayId":"PARA_CLONE_BREATH","rawId":"PARA_CLONE_BREATH","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"喘息 · 男声","instruction":"参考音色：男声；目标表达：喘息","label":"克隆生成","file":"PARA_CLONE_BREATH.wav","audio":"audio/clone_expression_tests/PARA_CLONE_BREATH.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":3.0,"音色相似度":5.0,"音质":5.0},"comments":["喘息的呼 完全读字"]},{"id":"PARA_CLONE_COUGH","displayId":"PARA_CLONE_COUGH","rawId":"PARA_CLONE_COUGH","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"咳嗽/清嗓 · 男声","instruction":"参考音色：男声；目标表达：咳嗽/清嗓","label":"克隆生成","file":"PARA_CLONE_COUGH.wav","audio":"audio/clone_expression_tests/PARA_CLONE_COUGH.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"PARA_CLONE_EXCLAIM","displayId":"PARA_CLONE_EXCLAIM","rawId":"PARA_CLONE_EXCLAIM","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"惊呼 · 女声","instruction":"参考音色：女声；目标表达：惊呼","label":"克隆生成","file":"PARA_CLONE_EXCLAIM.wav","audio":"audio/clone_expression_tests/PARA_CLONE_EXCLAIM.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":4.0,"音色相似度":5.0,"音质":5.0},"comments":["情感不匹配，语气词不行"]},{"id":"PARA_CLONE_HESITATE","displayId":"PARA_CLONE_HESITATE","rawId":"PARA_CLONE_HESITATE","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"犹豫 · 女声","instruction":"参考音色：女声；目标表达：犹豫","label":"克隆生成","file":"PARA_CLONE_HESITATE.wav","audio":"audio/clone_expression_tests/PARA_CLONE_HESITATE.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":4.0,"音色相似度":5.0,"音质":5.0},"comments":["犹豫不够真实自然"]},{"id":"PARA_CLONE_LAUGH","displayId":"PARA_CLONE_LAUGH","rawId":"PARA_CLONE_LAUGH","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"笑声 · 女声","instruction":"参考音色：女声；目标表达：笑声","label":"克隆生成","file":"PARA_CLONE_LAUGH.wav","audio":"audio/clone_expression_tests/PARA_CLONE_LAUGH.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":5.0,"音色相似度":5.0,"音质":4.0},"comments":["笑声的音质会略差，其他很自然"]},{"id":"PARA_CLONE_PAUSE","displayId":"PARA_CLONE_PAUSE","rawId":"PARA_CLONE_PAUSE","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"思考停顿 · 女声","instruction":"参考音色：女声；目标表达：思考停顿","label":"克隆生成","file":"PARA_CLONE_PAUSE.wav","audio":"audio/clone_expression_tests/PARA_CLONE_PAUSE.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"PARA_CLONE_SIGH","displayId":"PARA_CLONE_SIGH","rawId":"PARA_CLONE_SIGH","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"叹气 · 男声","instruction":"参考音色：男声；目标表达：叹气","label":"克隆生成","file":"PARA_CLONE_SIGH.wav","audio":"audio/clone_expression_tests/PARA_CLONE_SIGH.mp3","reference":"audio/references/肖战.mp3","referenceLabel":"参考原声:肖战.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"PARA_CLONE_SOB","displayId":"PARA_CLONE_SOB","rawId":"PARA_CLONE_SOB","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"抽泣 · 女声","instruction":"参考音色：女声；目标表达：抽泣","label":"克隆生成","file":"PARA_CLONE_SOB.wav","audio":"audio/clone_expression_tests/PARA_CLONE_SOB.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":["呜 读字，后面情感匹配，但没有抽泣"]},{"id":"EMO_CLONE_ANGER","displayId":"EMO_CLONE_ANGER","rawId":"EMO_CLONE_ANGER","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"愤怒 · 女声","instruction":"参考音色：女声；目标表达：愤怒","label":"克隆生成","file":"EMO_CLONE_ANGER.wav","audio":"audio/clone_expression_tests/EMO_CLONE_ANGER.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":["不像愤怒，更像悲伤"]},{"id":"EMO_CLONE_CALM","displayId":"EMO_CLONE_CALM","rawId":"EMO_CLONE_CALM","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"平静克制 · 女声","instruction":"参考音色：女声；目标表达：平静克制","label":"克隆生成","file":"EMO_CLONE_CALM.wav","audio":"audio/clone_expression_tests/EMO_CLONE_CALM.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":[]},{"id":"EMO_CLONE_FEAR","displayId":"EMO_CLONE_FEAR","rawId":"EMO_CLONE_FEAR","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"恐惧 · 女声","instruction":"参考音色：女声；目标表达：恐惧","label":"克隆生成","file":"EMO_CLONE_FEAR.wav","audio":"audio/clone_expression_tests/EMO_CLONE_FEAR.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":["情感不匹配"]},{"id":"EMO_CLONE_JOY","displayId":"EMO_CLONE_JOY","rawId":"EMO_CLONE_JOY","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"开心 · 女声","instruction":"参考音色：女声；目标表达：开心","label":"克隆生成","file":"EMO_CLONE_JOY.wav","audio":"audio/clone_expression_tests/EMO_CLONE_JOY.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":5.0,"音色相似度":4.0,"音质":4.0},"comments":[]},{"id":"EMO_CLONE_SAD","displayId":"EMO_CLONE_SAD","rawId":"EMO_CLONE_SAD","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"悲伤 · 女声","instruction":"参考音色：女声；目标表达：悲伤","label":"克隆生成","file":"EMO_CLONE_SAD.wav","audio":"audio/clone_expression_tests/EMO_CLONE_SAD.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":[]},{"id":"EMO_CLONE_SURPRISE","displayId":"EMO_CLONE_SURPRISE","rawId":"EMO_CLONE_SURPRISE","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"惊讶 · 女声","instruction":"参考音色：女声；目标表达：惊讶","label":"克隆生成","file":"EMO_CLONE_SURPRISE.wav","audio":"audio/clone_expression_tests/EMO_CLONE_SURPRISE.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":3.75,"tier":"watch","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":3.0,"音色相似度":4.0,"音质":4.0},"comments":["无惊讶情感，语速不均"]},{"id":"EMO_CLONE_TENDER","displayId":"EMO_CLONE_TENDER","rawId":"EMO_CLONE_TENDER","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"温柔 · 女声","instruction":"参考音色：女声；目标表达：温柔","label":"克隆生成","file":"EMO_CLONE_TENDER.wav","audio":"audio/clone_expression_tests/EMO_CLONE_TENDER.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":5.0,"音色相似度":4.0,"音质":4.0},"comments":[]},{"id":"EMO_CLONE_URGENT","displayId":"EMO_CLONE_URGENT","rawId":"EMO_CLONE_URGENT","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"emotion_clone","scene":"紧张急迫 · 女声","instruction":"参考音色：女声；目标表达：紧张急迫","label":"克隆生成","file":"EMO_CLONE_URGENT.wav","audio":"audio/clone_expression_tests/EMO_CLONE_URGENT.mp3","reference":"audio/references/02_迪丽热巴.mp3","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":4.0,"自然度":4.0,"音色相似度":4.0,"音质":4.0},"comments":["语速快，但没有紧迫感"]},{"id":"MULTI_CLONE_FAMILY","displayId":"MULTI_CLONE_FAMILY","rawId":"MULTI_CLONE_FAMILY","module":"多角色对话","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"multi_role_clone","scene":"家庭晚归对话","instruction":"逐角色分句克隆后拼接；模型输入不含角色标签。","label":"分句 06 · 男声","file":"MULTI_CLONE_FAMILY_06_MALE.wav","audio":"audio/clone_expression_tests/dialogue_lines/MULTI_CLONE_FAMILY_06_MALE.mp3","reference":null,"referenceLabel":"","focus":"先听合并音频，再展开分句确认每句角色声线；重点看角色区分、音色相似、拼接衔接和对话节奏。","avg":2.6,"tier":"risk","source":["中文部分1-2人评分评估"],"dimAvg":{"对话节奏":1.0,"拼接自然度":1.0,"角色区分度":4.0,"音色相似度":4.0,"音质":3.0},"comments":["毫无衔接，男女声不在一个环境，且发音机械（模型一次输入文本长度限制，导致需要分句合成在拼接）"]},{"id":"MULTI_CLONE_INTERVIEW","displayId":"MULTI_CLONE_INTERVIEW","rawId":"MULTI_CLONE_INTERVIEW","module":"多角色对话","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"multi_role_clone","scene":"主持人与嘉宾访谈","instruction":"逐角色分句克隆后拼接；模型输入不含角色标签。","label":"分句 06 · 男声","file":"MULTI_CLONE_INTERVIEW_06_MALE.wav","audio":"audio/clone_expression_tests/dialogue_lines/MULTI_CLONE_INTERVIEW_06_MALE.mp3","reference":null,"referenceLabel":"","focus":"先听合并音频，再展开分句确认每句角色声线；重点看角色区分、音色相似、拼接衔接和对话节奏。","avg":4.0,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"对话节奏":3.0,"拼接自然度":3.0,"角色区分度":5.0,"音色相似度":5.0,"音质":4.0},"comments":["这个拼接尚可，但仍不够自然（模型一次输入文本长度限制，导致需要分句合成在拼接）"]},{"id":"DESIGN_DIRECT_MALE_ANHUI","displayId":"DESIGN_DIRECT_MALE_ANHUI","rawId":"DESIGN_DIRECT_MALE_ANHUI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Anhui","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_ANHUI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_ANHUI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_FUJIAN","displayId":"DESIGN_DIRECT_MALE_FUJIAN","rawId":"DESIGN_DIRECT_MALE_FUJIAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Fujian","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_FUJIAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_FUJIAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_GANSU","displayId":"DESIGN_DIRECT_MALE_GANSU","rawId":"DESIGN_DIRECT_MALE_GANSU","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Gansu","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_GANSU.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_GANSU.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_GUIZHOU","displayId":"DESIGN_DIRECT_MALE_GUIZHOU","rawId":"DESIGN_DIRECT_MALE_GUIZHOU","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Guizhou","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_GUIZHOU.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_GUIZHOU.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_HEBEI","displayId":"DESIGN_DIRECT_MALE_HEBEI","rawId":"DESIGN_DIRECT_MALE_HEBEI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Hebei","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_HEBEI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_HEBEI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_HENAN","displayId":"DESIGN_DIRECT_MALE_HENAN","rawId":"DESIGN_DIRECT_MALE_HENAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Henan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_HENAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_HENAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_HUBEI","displayId":"DESIGN_DIRECT_MALE_HUBEI","rawId":"DESIGN_DIRECT_MALE_HUBEI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Hubei","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_HUBEI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_HUBEI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_HUNAN","displayId":"DESIGN_DIRECT_MALE_HUNAN","rawId":"DESIGN_DIRECT_MALE_HUNAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Hunan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_HUNAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_HUNAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_JIANGXI","displayId":"DESIGN_DIRECT_MALE_JIANGXI","rawId":"DESIGN_DIRECT_MALE_JIANGXI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Jiangxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_JIANGXI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_JIANGXI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_LIAONING","displayId":"DESIGN_DIRECT_MALE_LIAONING","rawId":"DESIGN_DIRECT_MALE_LIAONING","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Liaoning","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_LIAONING.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_LIAONING.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_MINNAN","displayId":"DESIGN_DIRECT_MALE_MINNAN","rawId":"DESIGN_DIRECT_MALE_MINNAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Minnan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_MINNAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_MINNAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_NINGXIA","displayId":"DESIGN_DIRECT_MALE_NINGXIA","rawId":"DESIGN_DIRECT_MALE_NINGXIA","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Ningxia","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_NINGXIA.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_NINGXIA.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_SHAANXI","displayId":"DESIGN_DIRECT_MALE_SHAANXI","rawId":"DESIGN_DIRECT_MALE_SHAANXI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Shaanxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_SHAANXI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_SHAANXI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_SHANDONG","displayId":"DESIGN_DIRECT_MALE_SHANDONG","rawId":"DESIGN_DIRECT_MALE_SHANDONG","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Shandong","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_SHANDONG.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_SHANDONG.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_SHANGHAI","displayId":"DESIGN_DIRECT_MALE_SHANGHAI","rawId":"DESIGN_DIRECT_MALE_SHANGHAI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Shanghai","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_SHANGHAI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_SHANGHAI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_SHANXI","displayId":"DESIGN_DIRECT_MALE_SHANXI","rawId":"DESIGN_DIRECT_MALE_SHANXI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Shanxi","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_SHANXI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_SHANXI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_SICHUAN","displayId":"DESIGN_DIRECT_MALE_SICHUAN","rawId":"DESIGN_DIRECT_MALE_SICHUAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Sichuan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_SICHUAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_SICHUAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_TIANJIN","displayId":"DESIGN_DIRECT_MALE_TIANJIN","rawId":"DESIGN_DIRECT_MALE_TIANJIN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Tianjin","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_TIANJIN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_TIANJIN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_WENZHOU","displayId":"DESIGN_DIRECT_MALE_WENZHOU","rawId":"DESIGN_DIRECT_MALE_WENZHOU","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Wenzhou","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_WENZHOU.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_WENZHOU.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_WU","displayId":"DESIGN_DIRECT_MALE_WU","rawId":"DESIGN_DIRECT_MALE_WU","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Wu","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_WU.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_WU.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_MALE_YUNNAN","displayId":"DESIGN_DIRECT_MALE_YUNNAN","rawId":"DESIGN_DIRECT_MALE_YUNNAN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"男声 · ZH_Yunnan","instruction":"生成一个四十五岁左右的男性声音，低沉厚实，带有明显的磁性和细腻颗粒感，略带沙哑与气声，像纪录片主持人，语速适中，沉稳但有感染力。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_MALE_YUNNAN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_MALE_YUNNAN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_AR","displayId":"DESIGN_DIRECT_FEMALE_AR","rawId":"DESIGN_DIRECT_FEMALE_AR","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Arabic","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_AR.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_AR.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":1.0,"tier":"risk","source":["中文部分1-2人评分评估"],"dimAvg":{"发音准确性":1.0,"指令音色匹配":1.0,"自然度":1.0,"语言/方言自然度":1.0,"音质":1.0},"comments":["bug"]},{"id":"DESIGN_DIRECT_FEMALE_CS","displayId":"DESIGN_DIRECT_FEMALE_CS","rawId":"DESIGN_DIRECT_FEMALE_CS","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Czech","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_CS.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_CS.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_DE","displayId":"DESIGN_DIRECT_FEMALE_DE","rawId":"DESIGN_DIRECT_FEMALE_DE","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · German","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_DE.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_DE.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_EL","displayId":"DESIGN_DIRECT_FEMALE_EL","rawId":"DESIGN_DIRECT_FEMALE_EL","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Greek","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_EL.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_EL.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_EN","displayId":"DESIGN_DIRECT_FEMALE_EN","rawId":"DESIGN_DIRECT_FEMALE_EN","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · English","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_EN.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_EN.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_ES","displayId":"DESIGN_DIRECT_FEMALE_ES","rawId":"DESIGN_DIRECT_FEMALE_ES","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Spanish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_ES.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_ES.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_FI","displayId":"DESIGN_DIRECT_FEMALE_FI","rawId":"DESIGN_DIRECT_FEMALE_FI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Finnish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_FI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_FI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_FR","displayId":"DESIGN_DIRECT_FEMALE_FR","rawId":"DESIGN_DIRECT_FEMALE_FR","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · French","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_FR.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_FR.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_HI","displayId":"DESIGN_DIRECT_FEMALE_HI","rawId":"DESIGN_DIRECT_FEMALE_HI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Hindi","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_HI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_HI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_ID","displayId":"DESIGN_DIRECT_FEMALE_ID","rawId":"DESIGN_DIRECT_FEMALE_ID","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Indonesian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_ID.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_ID.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_IT","displayId":"DESIGN_DIRECT_FEMALE_IT","rawId":"DESIGN_DIRECT_FEMALE_IT","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Italian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_IT.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_IT.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_JA","displayId":"DESIGN_DIRECT_FEMALE_JA","rawId":"DESIGN_DIRECT_FEMALE_JA","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Japanese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_JA.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_JA.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_KO","displayId":"DESIGN_DIRECT_FEMALE_KO","rawId":"DESIGN_DIRECT_FEMALE_KO","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Korean","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_KO.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_KO.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_NL","displayId":"DESIGN_DIRECT_FEMALE_NL","rawId":"DESIGN_DIRECT_FEMALE_NL","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Dutch","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_NL.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_NL.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_PL","displayId":"DESIGN_DIRECT_FEMALE_PL","rawId":"DESIGN_DIRECT_FEMALE_PL","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Polish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_PL.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_PL.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_PT","displayId":"DESIGN_DIRECT_FEMALE_PT","rawId":"DESIGN_DIRECT_FEMALE_PT","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Portuguese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_PT.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_PT.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_RO","displayId":"DESIGN_DIRECT_FEMALE_RO","rawId":"DESIGN_DIRECT_FEMALE_RO","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Romanian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_RO.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_RO.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_RU","displayId":"DESIGN_DIRECT_FEMALE_RU","rawId":"DESIGN_DIRECT_FEMALE_RU","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Russian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_RU.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_RU.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_TH","displayId":"DESIGN_DIRECT_FEMALE_TH","rawId":"DESIGN_DIRECT_FEMALE_TH","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Thai","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_TH.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_TH.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":1.0,"tier":"risk","source":["中文部分1-2人评分评估"],"dimAvg":{"发音准确性":1.0,"指令音色匹配":1.0,"自然度":1.0,"语言/方言自然度":1.0,"音质":1.0},"comments":["bug，bad case"]},{"id":"DESIGN_DIRECT_FEMALE_TR","displayId":"DESIGN_DIRECT_FEMALE_TR","rawId":"DESIGN_DIRECT_FEMALE_TR","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Turkish","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_TR.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_TR.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_UK","displayId":"DESIGN_DIRECT_FEMALE_UK","rawId":"DESIGN_DIRECT_FEMALE_UK","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Ukrainian","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_UK.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_UK.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_VI","displayId":"DESIGN_DIRECT_FEMALE_VI","rawId":"DESIGN_DIRECT_FEMALE_VI","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Vietnamese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_VI.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_VI.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_YUE","displayId":"DESIGN_DIRECT_FEMALE_YUE","rawId":"DESIGN_DIRECT_FEMALE_YUE","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Cantonese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_YUE.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_YUE.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"DESIGN_DIRECT_FEMALE_ZH","displayId":"DESIGN_DIRECT_FEMALE_ZH","rawId":"DESIGN_DIRECT_FEMALE_ZH","module":"跨语种/跨方言能力","pageModule":"新增C · A组 Instruct直接设计音色全覆盖","type":"instruct_direct_design","scene":"女声 · Chinese","instruction":"生成一个二十五岁左右的女性声音，清亮甜美，带有独特的轻微鼻腔共鸣和明亮颗粒感，像亲切的旅行节目主持人，微笑感明显，语速自然活泼。","label":"Instruct 直接生成","file":"DESIGN_DIRECT_FEMALE_ZH.wav","audio":"audio/instruct_direct_all_languages/DESIGN_DIRECT_FEMALE_ZH.mp3","reference":null,"referenceLabel":"","focus":"这组没有克隆参考原声；直接听生成音频，重点看音色是否符合指令、语言/方言是否自然、发音是否准确，以及是否出现音色漂移或不稳定。","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]}],"showcase":[{"id":"BASE_01","displayId":"BASE_01","rawId":"BASE_01","module":"音色克隆与基础中文生成","pageModule":"模块1 · 基础能力测试","type":"clone","scene":"纪录片旁白","instruction":"刘亦菲原声","label":"生成效果","file":"BASE_01.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/BASE_01.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/刘亦菲原声.wav","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"发音准确、停顿自然","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":5.0},"comments":[]},{"id":"BASE_02","displayId":"BASE_02","rawId":"BASE_02","module":"音色克隆与基础中文生成","pageModule":"模块1 · 基础能力测试","type":"clone","scene":"产品广告","instruction":"刘亦菲原声","label":"生成效果","file":"BASE_02.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/BASE_02.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/刘亦菲原声.wav","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"清晰准确、略带介绍感","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"自然度":5.0,"音色相似度":5.0,"音质":5.0,"风格相似度":5.0},"comments":[]},{"id":"DESIGN_05","displayId":"DESIGN_05","rawId":"DESIGN_05","module":"指令式声音设计","pageModule":"模块4 · 声音设计 · 属性控制","type":"voice_design","scene":"属性控制","instruction":"生成一个30岁左右的女性声音，温柔知性，语速适中，带一点微笑感。","label":"生成效果","file":"DESIGN_05.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/DESIGN_05.wav","reference":null,"referenceLabel":"","focus":"属性匹配与多属性协调","avg":4.5,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":4.0,"自然度":5.0,"角色/场景风格":5.0,"音质":4.0},"comments":[]},{"id":"PARA_CLONE_LAUGH","displayId":"PARA_CLONE_LAUGH","rawId":"PARA_CLONE_LAUGH","module":"情感与副语言表达","pageModule":"新增B · 克隆音色副语言/情感/多角色","type":"paralinguistic_clone","scene":"笑声 · 女声","instruction":"参考音色：女声；目标表达：笑声","label":"克隆生成","file":"PARA_CLONE_LAUGH.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/clone_expression_tests/PARA_CLONE_LAUGH.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/02_迪丽热巴.wav","referenceLabel":"参考原声:02_迪丽热巴.wav","focus":"先确认参考原声是否缺失，再评估生成音频的音色相似、目标副语言/情感是否听得出来、音质和自然度。","avg":4.75,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"目标表达辨识度":5.0,"自然度":5.0,"音色相似度":5.0,"音质":4.0},"comments":["笑声的音质会略差，其他很自然"]},{"id":"DESIGN_LONG_GAME","displayId":"DESIGN_LONG_GAME","rawId":"DESIGN_LONG_GAME","module":"长文本与稳定性","pageModule":"模块6 · 声音设计 · 场景人设 · 长文本","type":"voice_design","scene":"游戏解说长文本","instruction":"生成一个年轻男性的声音，充满活力和激情，语速快，带有即兴感和现场感，适合游戏直播解说。","label":"生成效果","file":"DESIGN_LONG_GAME.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/DESIGN_LONG_GAME.wav","reference":null,"referenceLabel":"","focus":"长文本风格持续性","avg":4.25,"tier":"good","source":["中文部分1-2人评分评估"],"dimAvg":{"指令匹配度":5.0,"自然度":3.0,"角色/场景风格":5.0,"音质":4.0},"comments":["音色没维持住，后半音色变了"]},{"id":"REF_SHORT","displayId":"REF_SHORT","rawId":"REF_SHORT","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"robust","scene":"短参考","instruction":"参考音频鲁棒性","label":"生成效果","file":"REF_SHORT.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/supplemental_subjective/REF_SHORT.wav","reference":null,"referenceLabel":"","focus":"参考质量变化下的克隆稳定性","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"抗噪/短参考表现":5.0,"自然度":5.0,"音色相似度":5.0,"音质":5.0},"comments":[]},{"id":"DIALECT_SICHUAN__dialect_ref","displayId":"DIALECT_SICHUAN｜方言参考","rawId":"DIALECT_SICHUAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"四川话（成都）","instruction":"方言文本生成","label":"复刻效果","file":"DIALECT_SICHUAN.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/module_03_native_dialects/DIALECT_SICHUAN.wav","reference":null,"referenceLabel":"方言原声参考:DIALECT_SICHUAN_02_四川.wav","focus":"方言声调、地域表达、音色保持","avg":4.9,"tier":"excellent","source":["中文部分1-2人评分评估","方言部分1位非母语者根据参考音频评估"],"dimAvg":{"地域表达风格":5.0,"方言/口音准确度":5.0,"自然度":5.0,"音色保持":5.0,"音质":4.5},"comments":[]},{"id":"DIALECT_SICHUAN__chinese_ref","displayId":"DIALECT_SICHUAN｜中文参考","rawId":"DIALECT_SICHUAN","module":"跨语种/跨方言能力","pageModule":"模块3 · 跨方言复刻（21种方言）","type":"dialect","scene":"四川话（成都）","instruction":"方言文本生成","label":"普通话参考生成效果","file":"DIALECT_SICHUAN.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/module_03_dialects/DIALECT_SICHUAN.wav","reference":null,"referenceLabel":"方言原声参考:DIALECT_SICHUAN_02_四川.wav","focus":"方言声调、地域表达、音色保持","avg":null,"tier":"unrated","source":[],"dimAvg":{},"comments":[]},{"id":"CLONE_EN","displayId":"CLONE_EN","rawId":"CLONE_EN","module":"跨语种/跨方言能力","pageModule":"模块2 · 跨语种克隆（24种语言）","type":"language_clone","scene":"English 英语","instruction":"同一中文参考音色","label":"生成效果","file":"CLONE_EN.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/CLONE_EN.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/刘亦菲原声.wav","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"英文自然度","avg":4.1,"tier":"good","source":["多语种部分1位学习者评估"],"dimAvg":{"发音准确度":5.0,"自然度":4.4,"音色相似度":4.8,"音质":4.4,"风格相似度":1.9},"comments":[]},{"id":"TN_DATE_TIME","displayId":"TN_DATE_TIME","rawId":"TN_DATE_TIME","module":"文本规范化与复杂文本","pageModule":"补充F · 部署重点主观测试","type":"tn","scene":"日期时间","instruction":"文本规范化","label":"生成效果","file":"TN_DATE_TIME.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/supplemental_subjective/TN_DATE_TIME.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/肖战.wav","referenceLabel":"参考原声:肖战.wav","focus":"读法是否符合预期","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"发音清晰度":5.0,"自然度":5.0,"规范化读法准确性":5.0,"韵律停顿":5.0},"comments":[]},{"id":"STAB_01","displayId":"STAB_01","rawId":"STAB_01","module":"长文本与稳定性","pageModule":"补充B · 长文本稳定性","type":"stability","scene":"长篇新闻稿","instruction":"刘亦菲原声克隆","label":"生成效果","file":"STAB_01.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/other_modules/STAB_01.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/刘亦菲原声.wav","referenceLabel":"参考原声:刘亦菲原声.wav","focus":"长篇音色与韵律稳定性","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"拼接/长文本自然度":5.0,"音色稳定性":5.0,"音质":5.0,"韵律连贯性":5.0},"comments":[]},{"id":"SEED_SAME_B","displayId":"SEED_SAME_B","rawId":"SEED_SAME_B","module":"鲁棒性与部署风险","pageModule":"补充F · 部署重点主观测试","type":"seed","scene":"相同 Seed B","instruction":"seed=2026","label":"生成效果","file":"SEED_SAME_B.wav","audio":"02_试听评估包_响度统一-23LUFS/audio/supplemental_subjective/SEED_SAME_B.wav","reference":"02_试听评估包_响度统一-23LUFS/audio/references/肖战.wav","referenceLabel":"参考原声:肖战.wav","focus":"可复现性与合理差异","avg":5.0,"tier":"excellent","source":["中文部分1-2人评分评估"],"dimAvg":{"可复现性/差异合理性":5.0,"自然度":5.0,"音色一致性":5.0,"音质":5.0},"comments":[]}]};
+    const state = { module: "全部", tier: "all", search: "", showcaseOnly: false, queue: [], currentIndex: -1 };
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, s => {
+        if (s === "&") return "&amp;";
+        if (s === "<") return "&lt;";
+        if (s === ">") return "&gt;";
+        if (s === '"') return "&quot;";
+        return "&#39;";
+      });
+    }
+    const scoreText = value => value == null ? "未评分" : Number(value).toFixed(2);
+    const pct = value => value == null ? 0 : Math.max(0, Math.min(100, value / 5 * 100));
+    const tone = sample => sample.tier === "risk" ? "risk" : sample.tier === "watch" ? "watch" : "";
+
+    function init() {
+      $("#reportDate").textContent = DATA.summary.generatedAt;
+      renderTopStats();
+      renderHeroMeters();
+      renderSplitFindings();
+      renderModuleHub();
+      renderShowcase();
+      renderFilters();
+      renderTable();
+      bind();
+      applyFilters();
+    }
+
+    function renderTopStats() {
+      const stats = [
+        ["正式评分数", DATA.summary.mainScoreRows],
+        ["覆盖样本", DATA.summary.mainSampleCount],
+        ["技术模块", DATA.summary.modules],
+        ["可播放音频", DATA.summary.audioCount],
+      ];
+      $("#topStats").innerHTML = stats.map(([label, value]) => `<article class="stat-card"><strong>${esc(value)}</strong><span>${esc(label)}</span></article>`).join("");
+    }
+
+    function renderHeroMeters() {
+      $("#heroMeters").innerHTML = DATA.modules.slice(0, 7).map(m => `
+        <div class="meter">
+          <div class="meter-name">${esc(m.name)}</div>
+          <div class="meter-bar"><span style="--value:${pct(m.avg)}%"></span></div>
+          <div class="meter-score">${scoreText(m.avg)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSplitFindings() {
+      const dialect = DATA.summary.dialect || {};
+      const auto = DATA.summary.auto || {};
+      const dialectDims = dialect.dims || {};
+      $("#splitFindings").innerHTML = `
+        <article class="card">
+          <span class="tag tone-blue">多语种复刻</span>
+          <h3>基础效果尚可、需补充母语者听感</h3>
+          <p>多语种学习者评估覆盖 ${esc(auto.sampleCount || 0)} 个语种样本，MOS 均值 ${scoreText(auto.avg)}，平均 CER ${scoreText(auto.cer)}。整体看音色、发音、音质和自然度可用，但风格相似度和母语听感仍要补人工复核。</p>
+        </article>
+        <article class="card">
+          <span class="tag tone-red">中文参考音做方言</span>
+          <h3>结论是不成立</h3>
+          <p>从听感结论看，用中文参考音无法可靠复刻生成其他方言语音，故未做详细打分，仅做结论展示。</p>
+        </article>
+        <article class="card">
+          <span class="tag">方言参考音复刻</span>
+          <h3>整体一致，但受原声限制</h3>
+          <p>补充评分覆盖 ${esc(dialect.sampleCount || 0)} 个方言样本，均值 ${scoreText(dialect.avg)}；音色保持 ${scoreText(dialectDims["音色保持"])} 较高，方言/口音准确度 ${scoreText(dialectDims["方言/口音准确度"])}，地域表达风格 ${scoreText(dialectDims["地域表达风格"])} 相对最低。评语集中在原声背景、混响、音质会被带出，部分方言地道性受参考材料和文本覆盖影响。</p>
+        </article>
+      `;
+    }
+
+    function renderModuleHub() {
+      $("#moduleTabs").innerHTML = `<div class="hub-label">能力模块</div>` + DATA.modules.map((m, index) => `
+        <button class="hub-tab ${index === 0 ? "active" : ""}" data-panel="${index}" type="button">
+          <span><strong>${esc(m.name)}</strong><span>${esc(m.grade)} / ${scoreText(m.avg)}</span></span>
+          <code>${esc(m.sampleCount)}</code>
+        </button>
+      `).join("");
+      $("#modulePanels").innerHTML = DATA.modules.map((m, index) => `
+        <article class="module-panel ${index === 0 ? "active" : ""}" data-panel="${index}">
+          <div class="module-meta">
+            <span>${esc(m.grade)}</span><span>均分 ${scoreText(m.avg)}</span><span>${esc(m.status || "未标注状态")}</span><span>${m.sampleCount} 个样本</span><span>${m.lowCount} 个低分项</span>
+          </div>
+          <h3>${esc(m.name)}</h3>
+          <p class="body-copy">${esc(m.takeaway)}</p>
+          <div class="insight-grid">
+            <div class="insight"><b>Strength</b><p>${esc(m.strength)}</p></div>
+            <div class="insight"><b>Risk</b><p>${esc(m.risk)}</p></div>
+          </div>
+          <div>
+            ${(m.lowDims || []).map(([k,v]) => `<div class="dim-row"><span>${esc(k)}</span><div class="meter-bar"><span style="--value:${pct(v)}%"></span></div><strong>${scoreText(v)}</strong></div>`).join("")}
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function sampleCard(sample, compact = false) {
+      const dimTags = Object.entries(sample.dimAvg || {}).slice(0, compact ? 3 : 5).map(([k,v]) => `<span>${esc(k)} ${scoreText(v)}</span>`).join("");
+      const source = (sample.source || []).length ? sample.source.join(" / ") : "未进入评分";
+      const comments = (sample.comments || []).slice(0, compact ? 1 : 2).map(c => `<div class="comment">${esc(c)}</div>`).join("");
+      return `
+        <article class="${compact ? "demo-card" : "sample-card"}" data-id="${esc(sample.id)}">
+          <div class="demo-top">
+            <div>
+              <div class="sample-id">${esc(sample.displayId || sample.id)}</div>
+              <h5>${esc(sample.scene || sample.file)}</h5>
+            </div>
+            <div class="score-badge ${tone(sample)}">${scoreText(sample.avg)}</div>
+          </div>
+          <p>${esc(sample.focus || sample.instruction || "")}</p>
+          <div class="tags"><span>${esc(sample.module)}</span><span>${esc(sample.type)}</span><span>${esc(source)}</span>${dimTags}</div>
+          ${comments}
+          <div class="media-row">
+            <button class="button-ghost play" data-id="${esc(sample.id)}" type="button">播放生成音</button>
+            ${sample.reference ? `<button class="button-ghost play-ref" data-id="${esc(sample.id)}" type="button">播放参考音</button>` : ""}
+          </div>
+        </article>
+      `;
+    }
+
+    function renderShowcase() {
+      $("#showcaseRail").innerHTML = DATA.showcase.map(s => sampleCard(s, true)).join("");
+    }
+
+    function renderFilters() {
+      const modules = ["全部", ...DATA.modules.map(m => m.name)];
+      $("#moduleFilters").innerHTML = modules.map((name, index) => `<button class="chip-button ${index === 0 ? "active" : ""}" data-module="${esc(name)}" type="button">${esc(name)}</button>`).join("");
+    }
+
+    function renderTable() {
+      $("#moduleTable tbody").innerHTML = DATA.modules.map(m => `
+        <tr>
+          <td><strong>${esc(m.name)}</strong><br><span class="source-note">${esc(m.status)}</span></td>
+          <td>${esc(m.grade)}</td>
+          <td>${scoreText(m.avg)}</td>
+          <td>${m.sampleCount} 样本 / ${m.scoreCount} 评分</td>
+          <td>${(m.highDims || []).map(([k,v]) => `${esc(k)} ${scoreText(v)}`).join("<br>")}</td>
+          <td>${(m.lowDims || []).map(([k,v]) => `${esc(k)} ${scoreText(v)}`).join("<br>")}</td>
+          <td>${esc(m.takeaway)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function sampleMatches(sample) {
+      if (state.module !== "全部" && sample.module !== state.module) return false;
+      if (state.tier !== "all" && sample.tier !== state.tier) return false;
+      if (state.showcaseOnly && !DATA.showcase.some(s => s.id === sample.id)) return false;
+      const q = state.search.trim().toLowerCase();
+      if (!q) return true;
+      const hay = [sample.id, sample.displayId, sample.rawId, sample.label, sample.module, sample.pageModule, sample.type, sample.scene, sample.instruction, sample.file, sample.focus, ...(sample.comments || [])].join(" ").toLowerCase();
+      return hay.includes(q);
+    }
+
+    function applyFilters() {
+      const list = DATA.samples.filter(sampleMatches);
+      state.queue = list.filter(s => s.audio);
+      $("#visibleHint").textContent = `${list.length} 条 / ${state.queue.length} 条可播放`;
+      $("#queueHint").textContent = `${state.queue.length} 条队列`;
+      $("#sampleList").innerHTML = list.length ? list.map(s => sampleCard(s)).join("") : `<article class="card"><h3>没有匹配样本</h3><p>换一个模块、分数档或关键词再试。</p></article>`;
+    }
+
+    function playSample(id, ref = false) {
+      const sample = DATA.samples.find(s => s.id === id);
+      if (!sample) return;
+      const src = ref ? sample.reference : sample.audio;
+      if (!src) return;
+      $("#globalAudio").src = src;
+      $("#nowTitle").textContent = `${ref ? "参考音" : "生成音"}：${sample.id} · ${sample.scene || sample.file}`;
+      state.currentIndex = state.queue.findIndex(s => s.id === id);
+      document.querySelectorAll(".playing").forEach(el => el.classList.remove("playing"));
+      document.querySelectorAll(`[data-id="${CSS.escape(id)}"]`).forEach(el => el.classList.add("playing"));
+      $("#globalAudio").play().catch(() => {});
+    }
+
+    function move(delta) {
+      if (!state.queue.length) return;
+      if (state.currentIndex < 0) state.currentIndex = 0;
+      else state.currentIndex = (state.currentIndex + delta + state.queue.length) % state.queue.length;
+      playSample(state.queue[state.currentIndex].id, false);
+    }
+
+    function bind() {
+      $(".quick-nav-toggle").addEventListener("click", event => {
+        const nav = $(".quick-nav");
+        nav.classList.toggle("collapsed");
+        event.currentTarget.setAttribute("aria-expanded", String(!nav.classList.contains("collapsed")));
+      });
+      $("#moduleTabs").addEventListener("click", event => {
+        const tab = event.target.closest(".hub-tab");
+        if (!tab) return;
+        $$(".hub-tab").forEach(t => t.classList.toggle("active", t === tab));
+        $$(".module-panel").forEach(panel => panel.classList.toggle("active", panel.dataset.panel === tab.dataset.panel));
+      });
+      document.addEventListener("click", event => {
+        const play = event.target.closest(".play");
+        const ref = event.target.closest(".play-ref");
+        const mod = event.target.closest("[data-module]");
+        const tier = event.target.closest("[data-tier]");
+        if (play) playSample(play.dataset.id, false);
+        if (ref) playSample(ref.dataset.id, true);
+        if (mod) {
+          state.module = mod.dataset.module;
+          $$("[data-module]").forEach(b => b.classList.toggle("active", b.dataset.module === state.module));
+          applyFilters();
+        }
+        if (tier) {
+          state.tier = tier.dataset.tier;
+          $$("[data-tier]").forEach(b => b.classList.toggle("active", b.dataset.tier === state.tier));
+          applyFilters();
+        }
+      });
+      $("#searchInput").addEventListener("input", event => { state.search = event.target.value; applyFilters(); });
+      $("#showcaseOnly").addEventListener("click", event => { state.showcaseOnly = !state.showcaseOnly; event.currentTarget.classList.toggle("active", state.showcaseOnly); applyFilters(); });
+      $("#prevBtn").addEventListener("click", () => move(-1));
+      $("#nextBtn").addEventListener("click", () => move(1));
+    }
+
+    init();
+  </script>
+</body>
+</html>
