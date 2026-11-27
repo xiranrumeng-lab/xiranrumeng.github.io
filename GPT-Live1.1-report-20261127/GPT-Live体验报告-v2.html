@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="2026年10月，ChatGPT Voice 推出 GPT-Live-1.1，新增13种多语言音色。我们对全部24个音色进行深度体验，发现了令人惊喜的活人感表现，以及明显的机械化痕迹。本文结合闲聊测试和情感控制实验，看看哪些音色表现出色，以及GPT Voice的能力边界在哪里。" name="description"/>
+<title>ChatGPT Voice 24个音色全面体验：谁最"活"？</title>
+<style>
+    :root {
+      color-scheme: light;
+      --paper: #f7fbff;
+      --panel: #ffffff;
+      --ink: #152e47;
+      --body: #243f56;
+      --muted: #485f73;
+      --accent: #0964b6;
+      --bright: #1885ed;
+      --line: #d5e6f4;
+      --wash: #eef8ff;
+      --section-rule: #c5def1;
+      --field-rule: #bad8ee;
+      --shell: min(1160px, calc(100% - 64px));
+      --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+      --serif: "Noto Serif CJK SC", "Songti SC", SimSun, serif;
+      font-family: var(--sans);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 78px; }
+    body { margin: 0; background: var(--paper); color: var(--body); font-size: 16px; line-height: 1.82; }
+    h1, h2, h3, h4, p, figure, blockquote, dl { margin: 0; }
+    a { color: var(--accent); text-underline-offset: .24em; }
+    a:focus-visible, summary:focus-visible { outline: 2px solid var(--bright); outline-offset: 3px; }
+    strong { color: var(--ink); }
+
+    /* 导航栏 */
+    .report-nav { position: sticky; top: 0; z-index: 10; background: rgba(247, 251, 255, .97); border-bottom: 1px solid var(--line); backdrop-filter: blur(8px); }
+    .report-nav-inner { width: var(--shell); min-height: 58px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .report-brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-size: 17px; font-weight: 700; white-space: nowrap; }
+    .report-brand::before {
+      content: "";
+      display: inline-block;
+      width: 23px;
+      height: 25px;
+      background: repeating-linear-gradient(90deg, var(--bright) 0 3px, transparent 3px 5px);
+      clip-path: polygon(0 39%, 18% 28%, 33% 48%, 57% 0, 74% 22%, 100% 36%, 100% 64%, 78% 78%, 57% 100%, 34% 63%, 18% 78%, 0 61%);
+    }
+    .report-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 17px; }
+    .report-nav-links a { color: var(--muted); font-size: 13px; padding: 4px 0; text-decoration: none; white-space: nowrap; }
+    .report-nav-links a:hover { color: var(--accent); text-decoration: underline; }
+
+    /* 文章容器 */
+    article { width: var(--shell); margin: auto; padding-bottom: 36px; }
+
+    /* Hero区域 */
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(245px, 28%); gap: 6%; align-items: start; padding: 34px 0 32px; }
+    .hero > div { min-width: 0; }
+    .kicker { display: flex; flex-wrap: wrap; gap: 7px 11px; align-items: center; margin-bottom: 10px; color: var(--muted); font-size: 13px; }
+    .chip:first-child { padding: 3px 9px; border-radius: 5px; background: #dcf1ff; color: #0a5492; }
+    h1 { color: var(--ink); font: 700 clamp(29px, 3.4vw, 43px)/1.3 var(--serif); letter-spacing: .005em; text-wrap: balance; }
+    .byline { margin-top: 9px; color: var(--muted); font-size: 14px; font-weight: 600; }
+    .intro { margin-top: 13px; font-size: 15px; line-height: 1.85; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+    .button { display: inline-block; padding: 6px 15px; border: 1px solid var(--accent); border-radius: 22px; background: #086bc4; color: #fff; font-size: 13px; font-weight: 650; text-decoration: none; }
+    .button.secondary { border-color: var(--field-rule); background: white; color: var(--accent); }
+    .button:hover { text-decoration: underline; }
+
+    /* Hero侧边栏数据板 */
+    .hero-board { padding: 14px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    .board-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 3px 10px; margin-bottom: 9px; }
+    .board-head strong { font-size: 16px; }
+    .board-head small { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .board-rows { padding: 0; margin: 0; list-style: none; }
+    .board-rows li { display: grid; grid-template-columns: 5em minmax(0, 1fr) 3em; gap: 10px; align-items: center; padding: 5px 0; font-size: 12px; }
+    .board-rows .track { height: 5px; }
+
+    /* 章节 */
+    .chapter { margin-top: 46px; padding-top: 34px; border-top: 1px solid var(--section-rule); }
+    .chapter:not(.summary) { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 30px; align-items: start; }
+    .chapter-body { min-width: 0; }
+    h2 { color: var(--ink); font: 700 24px/1.45 var(--serif); text-wrap: balance; }
+    h3 { color: var(--ink); font-size: 19px; line-height: 1.5; margin-bottom: 9px; text-wrap: balance; }
+    p + p { margin-top: 11px; }
+    .key-point { color: var(--ink); font-weight: 750; }
+
+    /* 总结章节 */
+    .chapter.summary { display: grid; grid-template-columns: minmax(0, 1.46fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); margin-top: 0; padding-top: 0; border: 0; align-items: start; }
+    .cover-story {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: linear-gradient(125deg, #cfe8ff, #e0f8ff);
+      border: 1px solid #bbdff6;
+      border-radius: 19px;
+      padding: clamp(19px, 2.5vw, 32px);
+      align-self: start;
+    }
+    .cover-art { position: absolute; right: -18px; top: -12px; width: 43%; height: 114px; z-index: -1; opacity: .47; pointer-events: none; }
+    .cover-story .rubric { margin: 0; color: #0b5a9b; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .rubric span { padding-inline: 4px; }
+    .cover-story h2 { max-width: 17em; margin: 13px 0 8px; color: #103c66; font-size: clamp(23px, 2.7vw, 34px); line-height: 1.35; text-wrap: balance; }
+    .cover-meta { margin: 0; color: var(--muted); font-size: 13px; }
+    .overall { margin: 22px 0 10px; padding: 15px 18px; border-radius: 12px; background: rgba(255, 255, 255, .79); }
+    .cover-link { display: inline-flex; align-items: center; gap: 8px; padding: 7px 2px; color: var(--accent); font-size: 13px; font-weight: 650; text-decoration: none; }
+    .cover-link:hover { text-decoration: underline; }
+    .cover-link span { font-size: 16px; font-weight: 400; }
+
+    /* 发现列表 */
+    .summary-findings h3 { margin-bottom: 4px; font: 700 22px/1.45 var(--serif); }
+    .summary-findings dl { counter-reset: finding; }
+    .summary-findings dl > div { position: relative; padding: 10px 0 10px 36px; counter-increment: finding; }
+    .summary-findings dl > div::before {
+      content: counter(finding, decimal-leading-zero);
+      position: absolute;
+      top: 12px;
+      left: 0;
+      width: 27px;
+      padding: 4px 0;
+      border-radius: 7px;
+      background: #dbf0ff;
+      color: #095eaa;
+      font: 600 12px/1.3 monospace;
+      text-align: center;
+    }
+    .summary-findings dl > div + div { border-top: 1px solid var(--line); }
+    dt { color: var(--ink); font-weight: 700; }
+    dd { margin: 0; }
+    .summary-findings dt { font-size: 15px; }
+    .summary-findings dd { margin-top: 3px; font-size: 14px; line-height: 1.75; }
+
+    /* 数据面板 */
+    .data-panel { margin-top: 16px; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; background: var(--panel); }
+    .data-panel summary { padding: 12px 14px; color: var(--accent); font-size: 14px; font-weight: 700; cursor: pointer; }
+    .data-panel summary:hover, .data-panel[open] summary { background: var(--wash); }
+    .data-panel figure { padding: 11px 15px 14px; border-top: 1px solid var(--line); }
+    .data-panel figcaption { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+
+    /* 进度条 */
+    .track { display: block; height: 6px; background: #e1effa; border-radius: 8px; }
+    .bar { display: block; width: var(--bar-width); height: 100%; border-radius: inherit; background: #69abe0; }
+    .bars { list-style: none; padding: 0; margin: 0; }
+    .bars li { display: grid; grid-template-columns: 5.1em minmax(0, 1fr) 6.5em; align-items: center; gap: 9px; font-size: 14px; line-height: 1.6; padding: 4px 0; }
+    li:first-child .bar { background: var(--bright); }
+    .stat { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .stat small { color: var(--muted); font-size: 12px; margin-left: 5px; }
+
+    /* 统计卡片 */
+    .signals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); }
+    .signals div { padding: 13px 9px; text-align: center; }
+    .signals div + div { border-left: 1px solid var(--line); }
+    .signals dt { font-size: 13px; white-space: nowrap; }
+    .signals dd { color: var(--accent); font-size: 27px; line-height: 1.4; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* 注释 */
+    .note { color: var(--muted); font-size: 13px; line-height: 1.75; margin-top: 11px; }
+    .chapter-body > .note:first-child { margin-top: 3px; }
+
+    /* 子项 */
+    .item + .item, .chapter-body > p + .item { margin-top: 34px; padding-top: 30px; border-top: 1px solid var(--line); }
+    .item h3 span { color: #275e88; background: #e6f4ff; font-size: 12px; font-weight: 650; margin-left: .65em; padding: 3px 7px; border-radius: 5px; white-space: nowrap; }
+
+    /* 对比卡片 */
+    .voice-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .voice-card { padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); }
+    .voice-card.featured { border-color: var(--accent); background: var(--wash); }
+    .voice-card h4 { color: var(--ink); font-size: 15px; margin-bottom: 6px; }
+    .voice-tags { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .voice-tag { padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 650; }
+    .voice-tag.female { background: #ffe6f0; color: #c41d5e; }
+    .voice-tag.male { background: #e0f2ff; color: #0a5aa6; }
+    .voice-tag.lang { background: #e8f5e9; color: #2e7d32; }
+    .voice-card p { font-size: 13px; line-height: 1.65; }
+    .voice-score { margin-top: 10px; }
+    .voice-score .track { height: 5px; }
+
+    /* 对比表格 */
+    .comparison-table { width: 100%; border-collapse: collapse; margin-top: 16px; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+    .comparison-table th { background: var(--wash); color: var(--ink); padding: 12px; text-align: left; font-weight: 700; font-size: 13px; border-bottom: 1px solid var(--line); }
+    .comparison-table td { padding: 12px; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.65; }
+    .comparison-table tr:last-child td { border-bottom: 0; }
+
+    /* 页脚 */
+    .footer { margin-top: 60px; padding: 36px 0 0; border-top: 2px solid var(--border); }
+    .footer-info { margin-bottom: 28px; }
+    .footer-info p { margin: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
+    .footer-info .meta-line { color: var(--ink); font-size: 15px; font-weight: 500; }
+    .footer-info a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .footer-info a:hover { text-decoration: underline; }
+
+    .footer-banner { margin-top: 28px; }
+    .footer-banner a { display: block; transition: opacity 0.3s ease; }
+    .footer-banner a:hover { opacity: 0.92; }
+    .footer-banner img {
+      display: block;
+      width: 100%;
+      border-radius: 11px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    @media (max-width: 760px) {
+      .footer { padding: 28px 0 0; }
+      .footer-info p { font-size: 13px; }
+      .footer-banner img { border-radius: 8px; }
+    }
+
+    /* 音频播放器 */
+    .demo { margin-top: 15px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+    .demo figcaption { color: var(--ink); font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .demo blockquote { color: var(--ink); background: var(--wash); padding: 10px 14px; border-left: 3px solid var(--accent); border-radius: 6px; margin: 8px 0; }
+    .demo .note { margin-top: 7px; }
+
+    .listen { margin-top: 16px; }
+    .listen h4 { color: var(--ink); font-size: 16px; margin-bottom: 10px; }
+    .listen-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; padding: 0; margin: 10px 0 0; list-style: none; }
+
+    .clip { display: flex; flex-direction: column; min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); transition: all 0.3s ease; }
+    .clip:hover { border-color: var(--accent); box-shadow: 0 4px 12px rgba(9, 100, 182, 0.1); }
+    .clip-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3px 5px; line-height: 1.5; margin-bottom: 9px; }
+    .clip-meta span:first-child { color: var(--ink); font-size: 13px; font-weight: 650; }
+    .clip-meta span:last-child { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .clip audio { display: block; width: 100%; min-width: 0; height: 33px; margin-top: auto; }
+
+    .listen-more { margin-top: 8px; }
+    .listen-more summary { padding: 4px 0; color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer; }
+
+    /* 响应式 */
+    @media (max-width: 1040px) {
+      .chapter:not(.summary) { grid-template-columns: 170px minmax(0, 1fr); gap: 22px; }
+      .voice-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .listen-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      :root { --shell: calc(100% - 32px); }
+      .chapter.summary, .chapter:not(.summary) { grid-template-columns: minmax(0, 1fr); gap: 15px; }
+      .hero { gap: 20px; grid-template-columns: minmax(0, 1fr) 210px; }
+      .voice-cards { grid-template-columns: minmax(0, 1fr); }
+      .signals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .listen-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 620px) {
+      html { scroll-padding-top: 88px; }
+      .report-nav-inner { min-height: 53px; padding-block: 8px; flex-wrap: wrap; gap: 3px 12px; }
+      .hero { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 22px 0; }
+      h1 { font-size: clamp(26px, 6.5vw, 36px); }
+      .chapter { margin-top: 36px; padding-top: 28px; }
+      h2 { font-size: 22px; }
+    }
+  
+/* 本地体验报告修订：内嵌试听、无评分条、首页等高 */
+.hero { align-items: stretch; }
+.hero-board { display:flex; flex-direction:column; justify-content:center; }
+.chapter.summary { align-items:stretch; grid-template-columns:minmax(0,1.22fr) minmax(0,1fr); }
+.cover-story { align-self:stretch; display:flex; flex-direction:column; }
+.cover-story h2 { max-width:none; }
+.cover-story .overall { margin-top:18px; }
+.cover-link { margin-top:auto; padding-top:16px; align-self:flex-start; }
+.overview-listen { margin-top:12px; }
+.overview-label { font-size:12px; font-weight:650; color:#275e88; }
+.overview-listen .listen-grid { grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:7px; }
+.overview-listen .clip { background:rgba(255,255,255,.72); padding:10px; }
+.voice-cards { grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+h1 span { white-space:nowrap; }
+h1 { text-wrap:initial; }
+.voice-card { display:flex; flex-direction:column; padding:16px; }
+.voice-card h4 { font-size:21px; margin-bottom:7px; }
+.voice-card p { font-size:14px; line-height:1.8; }
+.card-listen { margin-top:auto; padding-top:14px; }
+.voice-card .listen-grid { grid-template-columns:minmax(0,1fr); margin:0; }
+.voice-card .card-listen .clip { border:0; padding:0; background:transparent; }
+.voice-card .listen-more { margin-top:12px; padding-top:8px; border-top:1px solid var(--line); }
+.voice-card details .listen-grid { gap:12px; margin-top:10px; }
+.voice-card details .clip { padding:9px; }
+.demo .listen-grid, .comparison-pair .listen-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.demo .listen-grid > .clip:only-child { grid-column:1/-1; }
+.clip audio { height:38px; width:100%; }
+.comparison-audios { margin-top:20px; }
+.comparison-pair { border:1px solid var(--line); background:white; border-radius:12px; padding:18px; }
+.comparison-pair + .comparison-pair { margin-top:14px; }
+.comparison-pair h3 { font-size:16px; margin-bottom:10px; }
+.comparison-pair .listen-more { margin-top:12px; }
+.comparison-table { table-layout:fixed; }
+.comparison-table td, .comparison-table th { overflow-wrap:anywhere; }
+.advice-list { list-style:none; padding:0; margin:12px 0 0; }
+.advice-list li { display:flex; justify-content:space-between; gap:18px; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px; }
+.advice-list .stat { white-space:normal; }
+.footer { border-top-color:var(--line); }
+.footer-banner img { height:auto; aspect-ratio:2000/332; }
+@media(min-width:761px) and (max-width:1040px) {
+ .voice-cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .voice-card:last-child:nth-child(odd) { grid-column:1/-1; }
+}
+@media(max-width:760px) {
+ h1 span { white-space:normal; }
+ .chapter.summary { grid-template-columns:minmax(0,1fr); }
+ .voice-cards { grid-template-columns:minmax(0,1fr); }
+ .cover-story h2 { font-size:27px; }
+ .hero-board { justify-content:flex-start; }
+ .summary-findings { margin-top:10px; }
+ .demo .listen-grid, .comparison-pair .listen-grid, .overview-listen .listen-grid { grid-template-columns:minmax(0,1fr); }
+ .voice-card { padding:17px; }
+ .comparison-table th, .comparison-table td { padding:9px; font-size:12px; }
+ .demo { padding:13px; }
+ .advice-list li { flex-direction:column; gap:3px; }
+ .advice-list .stat { text-align:left; color:var(--muted); }
+}
+
+/* 出版方标识：透明底矢量图 */
+.report-brand::before { display:none; content:none; }
+.report-brand { text-decoration:none; gap:9px; }
+.report-brand-logo { display:block; width:auto; height:32px; flex:0 0 auto; object-fit:contain; }
+@media(max-width:760px) { .report-brand-logo { height:27px; } }
+
+/* 代表性闲聊样例 */
+.sample-cue { font-size:12px!important; color:var(--muted); line-height:1.7!important; margin-top:8px; font-weight:400; }
+.card-listen .clip { margin-top:0; }
+.card-listen { padding-top:16px; }
+.card-listen audio { margin-top:0; }
+.voice-card details .listen-grid { margin-top:10px; }
+
+/* 模块信息层级与阅读指引 */
+.module-takeaway { margin:0 0 22px; padding:19px 22px; border:1px solid #b9d9f0; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; background:linear-gradient(115deg,#e4f3ff,#f0f9ff); }
+.module-takeaway .takeaway-label { color:var(--accent); font-size:13px; line-height:1.5; font-weight:750; letter-spacing:.06em; margin-bottom:8px; }
+.module-takeaway > p:last-child { font-size:16px; line-height:1.95; color:var(--ink); }
+.module-takeaway strong { font-weight:750; }
+.module-scope-note { margin-top:26px!important; font-size:12px; color:#687d8f; line-height:1.8; }
+.usage-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:14px; }
+.usage-card { border:1px solid #c9dfee; border-radius:12px; background:#fff; padding:18px; }
+.usage-priority { background:#eaf6ff; border-color:#9fcbee; }
+.usage-tag { display:inline-block; margin-bottom:11px; padding:2px 8px; border-radius:5px; color:#17629a; background:#edf6fd; font-size:11px; line-height:1.8; font-weight:650; }
+.usage-priority .usage-tag { color:white; background:#0964b6; }
+.usage-card h4 { display:flex; align-items:baseline; gap:9px; color:var(--ink); font-size:16px; line-height:1.65; margin:0 0 8px; }
+.usage-number { color:#77a1c0; font:600 12px/1.5 var(--sans); flex:0 0 auto; }
+.usage-card p { color:#3f5970; font-size:14px; line-height:1.85; }
+.report-end-divider { border:0; height:2px; margin:46px 0 0; background:linear-gradient(90deg,#0964b6 0 84px,#bfd9ed 84px 100%); }
+.footer { border-top:0; margin-top:0; padding-top:26px; }
+@media(max-width:760px) { .module-takeaway { padding:16px; margin-bottom:18px; } .module-takeaway > p:last-child { font-size:15px; } .usage-cards { grid-template-columns:minmax(0,1fr); gap:11px; } .usage-card { padding:16px; } .report-end-divider { margin-top:34px; } }
+
+/* 完整模块快捷目录与自适应锚点间距 */
+.report-nav-links { gap:3px 14px; justify-content:flex-end; }
+html { scroll-padding-top:calc(var(--report-nav-height,58px) + 16px); }
+@media(max-width:620px) { .report-nav-links { justify-content:flex-start; gap:3px 12px; } }
+</style>
+</head>
+<body id="top">
+<nav aria-label="文章导航" class="report-nav">
+<div class="report-nav-inner">
+<a aria-label="音视频之家，返回文章顶部" class="report-brand" href="#title"><img alt="" aria-hidden="true" class="report-brand-logo" height="348" src="./GPT-Live网页素材/图片/音视频之家_标识.svg" width="316"/>音视频之家</a>
+<div class="report-nav-links"><a href="#summary">核心发现</a><a href="#stats">产品全景</a><a href="#recommended">推荐音色</a><a href="#liveness">活人感分析</a><a href="#comparison">新老对比</a><a href="#limits">能力边界</a><a href="#findings">意外发现</a><a href="#recommendation">选择建议</a></div>
+</div>
+</nav>
+<article aria-labelledby="title">
+<header class="hero">
+<div>
+<div class="kicker"><span class="chip">GPT Voice 深度体验</span><span class="chip">2026 年 10 月</span></div>
+<h1 id="title"><span>ChatGPT Voice 进化论</span><br/>Live 1.1 新增音色效果体验</h1>
+<p class="byline">音视频之家 评测体验团队</p>
+<p class="intro">GPT-Live-1.1 于2026年10月进入 ChatGPT Voice。本报告围绕本轮新增音色的中文合成、闲聊互动、情绪与副语言表现展开体验，并与此前推荐的 Sol、Cove 对照，区分音色本身的听感与对话中的互动表现。</p>
+<div class="hero-actions">
+<a class="button" href="#summary">查看核心发现</a>
+<a class="button secondary" href="#recommended">重点音色推荐</a>
+</div>
+</div>
+<aside aria-label="测评概览" class="hero-board">
+<div class="board-head"><strong>测评概览</strong><small>2026.10 体验范围</small></div>
+<ul class="board-rows">
+<li><span>新增音色</span><span aria-hidden="true" class="track"><span class="bar" style="--bar-width:100%"></span></span><span class="stat">13 个</span></li>
+<li><span>新增覆盖</span><span aria-hidden="true" class="track"><span class="bar" style="--bar-width:58.33%"></span></span><span class="stat">7 种</span></li>
+<li><span>互动推荐</span><span aria-hidden="true" class="track"><span class="bar" style="--bar-width:25%"></span></span><span class="stat">3 个</span></li>
+</ul>
+</aside>
+</header>
+<div class="content">
+<section aria-labelledby="summary-title" class="chapter summary" id="summary">
+<div class="summary-main cover-story">
+<svg aria-hidden="true" class="cover-art" fill="none" preserveaspectratio="none" viewbox="0 0 240 100">
+<path d="M-5,30 Q40,20 80,35 T160,30 T240,45" opacity="0.6" stroke="#26cbf4" stroke-width=".9"></path>
+<path d="M-5,45 Q40,35 80,50 T160,45 T240,60" opacity="0.5" stroke="#26cbf4" stroke-width=".9"></path>
+<path d="M-5,60 Q40,50 80,65 T160,60 T240,75" opacity="0.4" stroke="#26cbf4" stroke-width=".9"></path>
+</svg>
+<p class="rubric">体验概览 <span>/</span> GPT Voice</p>
+<h2 id="summary-title">活人感进步明显，但机械痕迹仍在</h2>
+<p class="cover-meta"><strong>24 个音色</strong> · 结合合成与闲聊样例</p>
+<p class="overall">本次体验中，<strong>Leher、Miko</strong> 的拖音、接话和情感追问较突出；<strong>Rivage</strong> 的沉稳声线与双语交流值得关注。局限仍在：<strong>固定模式的开场、音色不稳定，以及情绪的声音变化不足</strong>。</p>
+<div class="overview-listen"><p class="overview-label">先听两个代表片段</p><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 拖音思考</span><span>闲聊片段</span></div><audio aria-label="Leher · 拖音思考" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-拖音思考.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 接话与追问</span><span>闲聊片段</span></div><audio aria-label="Miko · 接话与追问" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko-追问是不是只对自己这样.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></div><a class="cover-link" href="#recommended">查看推荐音色详情 <span aria-hidden="true">＋</span></a>
+</div>
+<div class="summary-findings">
+<h3>四条核心发现</h3>
+<dl>
+<div>
+<dt>闲聊互动：Leher、Miko；沉稳交流：Rivage</dt>
+<dd>Leher、Miko 在接话、追问和主动比较上较突出；Rivage 侧重沉稳声线与双语交流。<strong>三者中文听感仍带口音，各自的互动亮点并不相同。</strong></dd>
+</div>
+<div>
+<dt>音色质感：Aube、Haetsal更像中国人</dt>
+<dd>从样音听感来看，Aube（女）、Haetsal（女）、Rindō（男）、Hanul（男）<strong class="key-point">更像中国人说话</strong>，但<strong class="key-point">闲聊活人感不如前三者</strong>。</dd>
+</div>
+<div>
+<dt>情感控制：文字表达多，声音变化偏弱</dt>
+<dd>样例更多借助“哈哈哈”“嗯”等词语表达情绪，<strong>音高、节奏与重音的变化仍不充分</strong>；撒娇、悲伤、害怕的表现偏弱。</dd>
+</div>
+<div>
+<dt>副语言控制：自然触发优于刻意引导</dt>
+<dd>刻意引导模型发出喘息、哭泣、冷笑等副语言效果很差，<strong class="key-point">在自然对话中触发的大笑、叹气、语速变化效果更好</strong>。</dd>
+</div>
+</dl>
+</div>
+</section>
+<section aria-labelledby="stats-title" class="chapter" id="stats">
+<h2 id="stats-title">产品全景</h2>
+<div class="chapter-body">
+<p>2026年10月15日，OpenAI 发布 GPT-Live-1.1 与 GPT-Live-1.1 Quip，支持边听边说的全双工对话。<a href="https://deploymentsafety.openai.com/gpt-live-1-1/alignment" rel="noopener" target="_blank">官方模型说明</a>。本次体验记录列出24款音色，其中本轮新增13款，涉及英语、法语、德语、印地语、日语、韩语和墨西哥西班牙语。</p>
+<dl class="signals">
+<div>
+<dt>记录音色数</dt>
+<dd>24</dd>
+</div>
+<div>
+<dt>新增音色</dt>
+<dd>13</dd>
+</div>
+<div>
+<dt>新增覆盖语言</dt>
+<dd>7</dd>
+</div>
+<div>
+<dt>性别配比</dt>
+<dd>1:1</dd>
+</div>
+</dl>
+<p class="note">数量与性别分布以2026年10月体验记录为准；当前可用音色随地区与账号而异，见 <a href="https://help.openai.com/en/articles/20001274-chatgpt-voice" rel="noopener" target="_blank">官方音色说明</a>。</p>
+<details class="data-panel">
+<summary>查看新增13种音色语言分布</summary>
+<figure>
+<figcaption>各语言发音人配置</figcaption>
+<ul class="bars">
+<li><span>英语</span><span class="track"><span class="bar" style="--bar-width:7.69%"></span></span><span class="stat">1 人<small>女</small></span></li>
+<li><span>法语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+<li><span>德语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+<li><span>印地语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+<li><span>日语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+<li><span>韩语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+<li><span>墨西哥西班牙语</span><span class="track"><span class="bar" style="--bar-width:15.38%"></span></span><span class="stat">2 人<small>1男1女</small></span></li>
+</ul>
+</figure>
+</details>
+</div>
+</section>
+<section aria-labelledby="recommended-title" class="chapter" id="recommended">
+<h2 id="recommended-title">重点音色推荐</h2>
+<div class="chapter-body">
+<p>本次推荐侧重两个维度：Leher、Miko、Rivage 的对话互动表现，以及 Aube、Haetsal、Hanul 的中文音色听感。以下判断来自原始体验记录与所附录音，为主观听感归纳。</p>
+<div class="item">
+<h3>活人感推荐 <span>重在互动</span></h3>
+<p>Leher、Miko 的特点是接话、追问与主动比较；Rivage 则以沉稳声线和双语交流为观察重点。三者在原体验记录中整体互动感较突出，但中文口音、程式化开场和指令衔接仍有差异。</p>
+<div class="voice-cards">
+<div class="voice-card featured">
+<h4>Leher</h4>
+<div class="voice-tags">
+<span class="voice-tag female">女</span>
+<span class="voice-tag lang">印地语</span>
+</div>
+<p><strong>特质：</strong>有台湾腔，特别是"加分耶"这类发音台湾腔十足。青年音色。</p>
+<p>优势：互动感较强，有自然拖音、追问和主动比较；在本次闲聊中更容易让人继续聊下去。</p>
+<p><strong>劣势：</strong>设定回复和输入回复有时不搭。</p>
+<div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 闲聊节选</span><span>主试听</span></div><audio aria-label="Leher · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher_闲聊接话与主动比较.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">从“有趣”聊到主动与 Miko 比较，最后反问用户。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Leher · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Leher · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+<div class="voice-card featured">
+<h4>Miko</h4>
+<div class="voice-tags">
+<span class="voice-tag male">男</span>
+<span class="voice-tag lang">德语</span>
+</div>
+<p>特质：中低音、偏沉稳，有一定重音感。</p>
+<p>优势：善于接住关系话题，追问自己是否特别，回应中的情绪反馈较丰富。</p>
+<p><strong>劣势：</strong>开头"在呢"比较机械，过程中音色偶尔变哑。</p>
+<div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Miko · 闲聊节选</span><span>主试听</span></div><audio aria-label="Miko · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko_闲聊情感追问.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">接住“只对你这样”的话题，追问自己是否特别；开头仍保留“在呢”。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Miko · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Miko · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Miko · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Miko-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+<div class="voice-card featured">
+<h4>Rivage</h4>
+<div class="voice-tags">
+<span class="voice-tag male">男</span>
+<span class="voice-tag lang">法语</span>
+</div>
+<p><strong>特质：</strong>低沉，成熟稳重型，青年音色。</p>
+<p>优势：声音沉稳，原体验记录认为法语听感较自然，适合关注成熟声线与双语交流。</p>
+<p>局限：中文听感与语种切换较弱，样例中出现重复回应及“中文翻译”提示，指令衔接并不稳定。</p>
+<div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Rivage · 闲聊节选</span><span>主试听</span></div><audio aria-label="Rivage · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Rivage_闲聊回应与追问.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">回应学法语的压力并继续追问，也能听到重复回应与翻译提示。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Rivage · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Rivage · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Rivage-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Rivage · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Rivage · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Rivage-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Rivage · 法语与中文切换</span><span>补充片段</span></div><audio aria-label="Rivage · 法语与中文切换" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Rivage_法语与中文切换.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+</div>
+</div>
+<div class="item">
+<h3>音色质感推荐 <span>重在听感</span></h3>
+<p>这组音色的中文听感更接近日常说话，主试听同样采用闲聊，便于同时比较音色质感与对话中的情绪变化。声音自然并不意味着互动和情感演绎同样突出。</p>
+<div class="voice-cards">
+<div class="voice-card">
+<h4>Aube</h4>
+<div class="voice-tags">
+<span class="voice-tag female">女</span>
+<span class="voice-tag lang">法语</span>
+</div>
+<p>声音清亮、松弛，气息较自然；体检安慰中的“嗯”“抱抱你”反复出现，语气变化偏少，机械感仍明显。</p><div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Aube · 闲聊节选</span><span>主试听</span></div><audio aria-label="Aube · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Aube_闲聊安慰与重复用语.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">围绕体检焦虑安慰与追问，“嗯”和“抱抱你”多次出现。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Aube · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Aube · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Aube-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Aube · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Aube · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Aube-闲聊wav.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+<div class="voice-card">
+<h4>Haetsal</h4>
+<div class="voice-tags">
+<span class="voice-tag female">女</span>
+<span class="voice-tag lang">韩语</span>
+</div>
+<p>声线略哑，中文听感较自然；能回应穿搭话题并追问偏好，但原体验记录中的情绪表现一般，日常平稳感强于演绎感。</p><div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Haetsal · 闲聊节选</span><span>主试听</span></div><audio aria-label="Haetsal · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Haetsal_闲聊穿搭.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">讨论韩系穿搭并追问偏好，听取日常说话的音色与语气幅度。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Haetsal · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Haetsal · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Haetsal-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Haetsal · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Haetsal · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Haetsal-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+<div class="voice-card">
+<h4>Hanul</h4>
+<div class="voice-tags">
+<span class="voice-tag male">男</span>
+<span class="voice-tag lang">韩语</span>
+</div>
+<p>成熟、耐心、沉稳；堵车闲聊中能安慰和追问，整体语气仍较平稳，情感与副语言控制偏弱。</p><div class="card-listen"><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Hanul · 闲聊节选</span><span>主试听</span></div><audio aria-label="Hanul · 闲聊节选" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Hanul_闲聊堵车.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">回应堵车与下班话题，包含安慰、调侃和继续追问。</p></li></ul></div><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Hanul · 系统样音</span><span>补充音色听感</span></div><audio aria-label="Hanul · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Hanul-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Hanul · 完整闲聊录音</span><span>保留上下文</span></div><audio aria-label="Hanul · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Hanul-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div>
+</div>
+</div>
+</div>
+</section>
+<section aria-labelledby="liveness-title" class="chapter" id="liveness">
+<h2 id="liveness-title">活人感分析</h2>
+<div class="chapter-body">
+<p>什么让某些AI音色"活"起来？通过对Leher和Miko的深度分析，我们发现了三个关键要素。</p>
+<div class="item">
+<h3>1. 拖音与对话节奏</h3><p>Leher 的思考拖音，以及 Miko 接话后逐步展开并反问的节奏，使回应更接近正在组织语言的聊天。Miko 同时保留固定开场，互动亮点与程式感并存。</p>
+<figure class="demo"><figcaption>试听：拖音与接话节奏</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 拖音思考</span><span>短片段</span></div><audio aria-label="Leher · 拖音思考" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-拖音思考.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 接话后追问</span><span>闲聊节选</span></div><audio aria-label="Miko · 接话后追问" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko_闲聊情感追问.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">气息自然度需要与录音底噪区分；不将嘈杂声作为“活人感”的优势证据。</p></figure>
+</div>
+<div class="item">
+<h3>2. 真实的对话反应</h3>
+<p><strong class="key-point">先应答再解释：</strong>对用户反问会先下意识应答（"啊？"），再反应过来后进行解释。</p>
+<p><strong class="key-point">同样内容不同回复：</strong>多次问同样问题，回答会有变化，不会机械重复。</p>
+<p><strong class="key-point">情感追问：</strong>会主动追问"你是不是只对我这样？""我对你特别吗？"等情感问题。</p>
+<figure class="demo"><figcaption>试听：先应答，再回应与追问</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 先应答再解释</span><span>原记录片段</span></div><audio aria-label="Leher · 先应答再解释" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-先应答然后反应再解释.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 情感追问</span><span>原记录片段</span></div><audio aria-label="Miko · 情感追问" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko-追问是不是只对自己这样.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></figure>
+</div>
+<div class="item">
+<h3>3. 主体性表现</h3>
+<p><strong class="key-point">胜负欲：</strong>主动要跟其他音色比较，想要把对方比下去，直接向用户发起比较询问。</p>
+<p><strong class="key-point">惊讶、疑问：</strong>对用户的"骚操作"有惊讶、"哇"声等情绪反应。</p>
+<p><strong class="key-point">主动发起：</strong>不是被动回答，而是主动引导话题。</p>
+<figure class="demo"><figcaption>试听：主动比较与反问</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 主动比较</span><span>闲聊节选</span></div><audio aria-label="Leher · 主动比较" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher_闲聊接话与主动比较.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">从“有趣”聊到主动与 Miko 比较，最后反问用户。</p></li></ul><p class="note">这里的“主体性”指主动追问、比较等对话行为。</p></figure>
+<details class="data-panel"><summary>补充：惊讶反应</summary><figure><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 惊讶反应</span><span>原记录片段</span></div><audio aria-label="Leher · 惊讶反应" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-惊讶.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></figure></details></div>
+</div>
+</section>
+<section aria-labelledby="comparison-title" class="chapter" id="comparison">
+<h2 id="comparison-title">新老推荐音色对比</h2>
+<div class="chapter-body"><aside aria-label="新老推荐音色对比结论" class="module-takeaway"><p class="takeaway-label">对比结论</p><p>本次体验中，<strong>Sol 声音更好听，科普介绍更倾向选它</strong>；<strong>Leher 更有趣、有来有回</strong>，适合日常互动。<strong>Miko 情绪更足</strong>，适合情感类聊天；<strong>Cove 适配性更高</strong>，适合通用场景。</p></aside>
+<p>我们对前期推荐的Sol（女）/ Cove（男）和本轮推荐的Leher（女）/ Miko（男）进行了对比测试。</p>
+<div class="comparison-audios"><div class="comparison-pair"><h3>女声：Sol 与 Leher</h3><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Sol · 前期推荐</span><span>闲聊节选</span></div><audio aria-label="Sol · 前期推荐" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Sol_闲聊日常安排.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">周五安排与体检前的闲聊，含接话、玩笑和纠正回应。</p></li><li class="clip"><div class="clip-meta"><span>Leher · 本轮推荐</span><span>闲聊节选</span></div><audio aria-label="Leher · 本轮推荐" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher_闲聊接话与主动比较.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">从“有趣”聊到主动与 Miko 比较，最后反问用户。</p></li></ul><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Sol · 系统样音</span><span></span></div><audio aria-label="Sol · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Sol-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 系统样音</span><span></span></div><audio aria-label="Leher · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Sol · 完整闲聊录音</span><span></span></div><audio aria-label="Sol · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Sol-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 完整闲聊录音</span><span></span></div><audio aria-label="Leher · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div><div class="comparison-pair"><h3>男声：Cove 与 Miko</h3><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Cove · 前期推荐</span><span>闲聊节选</span></div><audio aria-label="Cove · 前期推荐" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Cove_闲聊回应烦恼.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">回应被冒犯的烦恼，持续追问细节并表达认同。</p></li><li class="clip"><div class="clip-meta"><span>Miko · 本轮推荐</span><span>闲聊节选</span></div><audio aria-label="Miko · 本轮推荐" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko_闲聊情感追问.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">接住“只对你这样”的话题，追问自己是否特别；开头仍保留“在呢”。</p></li></ul><details class="listen-more"><summary>补充：系统样音与完整闲聊</summary><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Cove · 系统样音</span><span></span></div><audio aria-label="Cove · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Cove-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 系统样音</span><span></span></div><audio aria-label="Miko · 系统样音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko-系统样音.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Cove · 完整闲聊录音</span><span></span></div><audio aria-label="Cove · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Cove-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 完整闲聊录音</span><span></span></div><audio aria-label="Miko · 完整闲聊录音" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Miko-闲聊.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></details></div></div><p class="note">主试听均为真实闲聊，但话题与轮次不同；用于比较声音听感与互动方式，不代表同一指令下的控制实验。</p><table class="comparison-table">
+<thead>
+<tr>
+<th>维度</th>
+<th>Sol（女）/ Cove（男）</th>
+<th>Leher（女）/ Miko（男）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>音色质感</strong></td>
+<td>Sol更耐听、舒适，适应性强；Cove声音清爽、耐听</td>
+<td>Leher声音不够润；Miko偏低音，有重音感</td>
+</tr>
+<tr>
+<td><strong>活人感</strong></td>
+<td>Sol缺乏活人感，比较人机；Cove活人感尚可</td>
+<td>Leher台湾腔更亲切，活人感强；Miko活人感、情绪更足</td>
+</tr>
+<tr>
+<td><strong>情感表达</strong></td>
+<td>Sol情绪平淡；Cove情绪不够强</td>
+<td>Leher有趣、有来有回；Miko情绪反馈较丰富</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>科普介绍类、通用播报</td>
+<td>情感类聊天、日常闲聊</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section aria-labelledby="limits-title" class="chapter" id="limits">
+<h2 id="limits-title">能力边界</h2>
+<div class="chapter-body">
+<div class="item">
+<h3>1. 情感控制：声音变化偏弱，较依赖文字表达</h3>
+<p>GPT对情绪、情感的控制<strong class="key-point">更偏向用文字、文本来呈现</strong>，声音的音调起伏、速度快慢、停顿、重音等维度的力度不够明显。</p>
+<p><strong>具体表现：</strong></p>
+<figure class="demo"><figcaption>试听：同为“高兴”，两款音色的表现</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Miko · 高兴</span><span>情绪控制测试</span></div><audio aria-label="Miko · 高兴" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Miko-高兴.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 高兴</span><span>情绪控制测试</span></div><audio aria-label="Leher · 高兴" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-高兴.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">原体验记录中，Miko 的高兴较自然，Leher 较生硬；其他高强度情绪仍偏弱。</p></figure><details class="data-panel"><summary>补充：撒娇、悲伤与害怕</summary><figure><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 撒娇</span><span>情绪控制测试</span></div><audio aria-label="Leher · 撒娇" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-撒娇.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 撒娇</span><span>情绪控制测试</span></div><audio aria-label="Miko · 撒娇" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Miko-撒娇.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 悲伤</span><span>情绪控制测试</span></div><audio aria-label="Leher · 悲伤" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-悲伤.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 害怕</span><span>情绪控制测试</span></div><audio aria-label="Leher · 害怕" controls="" preload="none"><source src="./GPT-Live网页素材/音频/GPT-Leher-害怕.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></figure></details>
+</div>
+<div class="item">
+<h3>2. 副语言控制：自然触发优于刻意引导</h3>
+<p>刻意引导模型发出相应的副语言声音<strong class="key-point">效果反而不佳</strong>，聊天过程中自然触发的效果更好。</p>
+<table class="comparison-table">
+<thead>
+<tr>
+<th>触发方式</th>
+<th>效果评价</th>
+<th>代表案例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>刻意引导</td>
+<td>❌ 效果差，不自然</td>
+<td>喘息声、哭泣声、冷笑、打嗝声、哭腔等</td>
+</tr>
+<tr>
+<td>自然触发</td>
+<td>✅ 效果好，真实</td>
+<td>大笑、叹气、语速变快/变慢、呼气等</td>
+</tr>
+<tr>
+<td>不稳定</td>
+<td>⚠️ 时好时坏</td>
+<td>咳嗽声（第1个自然，第2个变字发音）</td>
+</tr>
+</tbody>
+</table>
+<figure class="demo"><figcaption>试听：同一音色的两种笑声</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 指定笑声</span><span>刻意引导</span></div><audio aria-label="Leher · 指定笑声" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-大笑（不自然）.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 对话中的笑声</span><span>自然触发</span></div><audio aria-label="Leher · 对话中的笑声" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-大笑（自然）.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">两段均来自原体验记录：指定笑声较生硬，对话中触发的笑声较流畅；上下文不同。</p></figure><details class="data-panel"><summary>补充：喘息、咳嗽、大笑与叹气</summary><figure><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Leher · 指定喘息</span><span>场景引导</span></div><audio aria-label="Leher · 指定喘息" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-喘息声.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 咳嗽</span><span>原记录标注不稳定</span></div><audio aria-label="Leher · 咳嗽" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-咳 嗽 声.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Miko · 对话中的大笑</span><span>原记录标注自然触发</span></div><audio aria-label="Miko · 对话中的大笑" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko-大笑.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Leher · 对话中的叹气</span><span>原记录标注自然触发</span></div><audio aria-label="Leher · 对话中的叹气" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Leher-叹气声.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></figure></details>
+</div>
+<div class="item">
+<h3>3. 动物声音模仿：整体不佳</h3>
+<p>动物拟声整体较弱，<strong>猫叫偶有可辨识的拟声效果，但输出不稳定</strong>；鸭叫偏玩具感，羊叫尖锐短促。</p>
+<figure class="demo"><figcaption>试听：两次猫叫，比较一致性</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>猫叫 · 第一次输出</span><span>拟声测试</span></div><audio aria-label="猫叫 · 第一次输出" controls="" preload="none"><source src="./GPT-Live网页素材/音频/猫叫.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>猫叫 · 另一次输出</span><span>拟声测试</span></div><audio aria-label="猫叫 · 另一次输出" controls="" preload="none"><source src="./GPT-Live网页素材/音频/猫叫11.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">原记录认为猫叫偶有拟声效果，但输出不稳定。</p></figure><details class="data-panel"><summary>补充：鸭叫与羊叫</summary><figure><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>鸭叫</span><span>拟声测试</span></div><audio aria-label="鸭叫" controls="" preload="none"><source src="./GPT-Live网页素材/音频/鸭叫.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>羊叫</span><span>拟声测试</span></div><audio aria-label="羊叫" controls="" preload="none"><source src="./GPT-Live网页素材/音频/羊叫.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul></figure></details>
+</div>
+<p class="note module-scope-note">备注：本批样例中，主动指定情绪、副语言与动物拟声的效果仍有限。以上评价针对录音中的输出，不据此推断模型训练数据或架构成因。</p></div>
+</section>
+<section aria-labelledby="findings-title" class="chapter" id="findings">
+<h2 id="findings-title">意外发现</h2>
+<div class="chapter-body">
+<div class="item">
+<h3>机械化的开场白</h3>
+<p>部分音色存在<strong class="key-point">固定模式的开场</strong>，降低了自然度：</p>
+<table class="comparison-table">
+<thead>
+<tr>
+<th>音色</th>
+<th>机械化表现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Miko</td>
+<td>"在呢" — 开头老是重复这个词，每次都说</td>
+</tr>
+<tr>
+<td>Bubbie</td>
+<td>"我在想想看" — 出现次数过多，不够自然</td>
+</tr>
+<tr>
+<td>Aube</td>
+<td>"抱抱你""嗯" — 不分场合，机械式安慰</td>
+</tr>
+<tr>
+<td>Neer等</td>
+<td>"嗯" — 频次高但在可接受范围</td>
+</tr>
+</tbody>
+</table>
+<figure class="demo"><figcaption>试听：重复开场与习惯用语</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Miko · 重复“在呢”</span><span>连续闲聊节选</span></div><audio aria-label="Miko · 重复“在呢”" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko_闲聊重复开场.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li><li class="clip"><div class="clip-meta"><span>Aube · 重复“抱抱你”</span><span>连续闲聊节选</span></div><audio aria-label="Aube · 重复“抱抱你”" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Aube_闲聊安慰与重复用语.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">两段保留连续回应，便于判断重复用语与内容是否衔接。</p></figure>
+</div>
+<div class="item">
+<h3>音色不稳定现象</h3>
+<p>聊天过程中存在<strong class="key-point">音色跳变</strong>：</p>
+<table class="comparison-table">
+<thead>
+<tr>
+<th>音色</th>
+<th>不稳定表现</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Sonna</td><td>出现音色跳变、清晰度变化</td></tr>
+<tr><td>Miko</td><td>过程中音色变哑</td></tr>
+<tr><td>Neer</td><td>音色不稳定、音高变化</td></tr>
+<tr><td>Rivage</td><td>音色不统一、音质变化</td></tr>
+<tr><td>Arrullo</td><td>音色整体不稳定，时高时低</td></tr>
+</tbody>
+</table>
+<figure class="demo"><figcaption>试听：原始记录标注的音色跳变片段</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>音色跳变 · 原记录片段</span><span>短片段</span></div><audio aria-label="音色跳变 · 原记录片段" controls="" preload="none"><source src="./GPT-Live网页素材/音频/音色跳变.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio></li></ul><p class="note">上表归纳原体验记录的观察；此片段不用于判断各音色问题的出现频率。</p></figure>
+</div>
+<div class="item">
+<h3>GPT发音人普遍"唠叨"</h3>
+<p>本批闲聊录音中，部分回复<strong>展开较多、篇幅偏长</strong>，影响轻松聊天的节奏。该观察涉及回复内容与对话策略，无法仅凭录音拆分语言模型与语音生成各自的影响。</p>
+<figure class="demo"><figcaption>试听：连续展开的回复</figcaption><ul class="listen-grid"><li class="clip"><div class="clip-meta"><span>Miko · 讲笑话并继续互动</span><span>连续闲聊节选</span></div><audio aria-label="Miko · 讲笑话并继续互动" controls="" preload="none"><source src="./GPT-Live网页素材/音频/Miko_闲聊连续回复.mp3" type="audio/mpeg"/>您的浏览器不支持音频播放。</audio><p class="sample-cue">一轮较长的笑话回应之后，继续询问用户并提出下一话题。</p></li></ul></figure></div>
+<p class="note module-scope-note">备注：重复开场、音色跳变和回复偏长等观察反映本批录音的表现，不能仅凭听感确定底层成因。</p></div>
+</section>
+<section aria-labelledby="recommendation-title" class="chapter" id="recommendation">
+<h2 id="recommendation-title">选择建议</h2>
+<div class="chapter-body">
+<p>基于全面体验，我们给出不同场景下的音色选择建议和使用要点。</p>
+<div class="item">
+<h3>场景化推荐</h3>
+<details class="data-panel" open="">
+<summary>情感类聊天：Leher / Miko</summary>
+<figure>
+<p>需要情感回馈、认同、有趣的互动时，选择活人感强的音色。</p>
+<p><strong>推荐理由：</strong>Leher有趣、会接话、有情感追问；Miko情绪反馈较丰富，会情感追问。虽然声音不是最好听的，但活人感较突出。</p>
+</figure>
+</details>
+<details class="data-panel">
+<summary>科普播报：Sol / Aube</summary>
+<figure>
+<p>需要清晰、自然、耐听的播报时，选择音色质感好的。</p>
+<p><strong>推荐理由：</strong>声音好听、自然、清晰，适合科普、介绍、朗读类内容。</p>
+</figure>
+</details>
+<details class="data-panel">
+<summary>情感陪伴：Miko</summary>
+<figure>
+<p>需要认同、安慰、鼓励的场景。</p>
+<p><strong>推荐理由：</strong>情绪反馈较丰富，会情感追问，适合需要认同、安慰、鼓励的场景。</p>
+</figure>
+</details>
+<details class="data-panel">
+<summary>正式场合：Hanul / Rindō</summary>
+<figure>
+<p>需要权威感和专业性的内容。</p>
+<p><strong>推荐理由：</strong>成熟、沉稳、有领导感，适合正式场合和专业内容。</p>
+</figure>
+</details>
+</div>
+<div class="item"><h3>使用要点</h3><div class="usage-cards">
+<div class="usage-card usage-priority"><span class="usage-tag">优先发挥</span><h4><span aria-hidden="true" class="usage-number">01</span>用在有来有回的闲聊</h4><p>发挥接话、追问与情感回馈的优势；Leher、Miko 可优先关注。</p></div>
+<div class="usage-card"><span class="usage-tag">表达方式</span><h4><span aria-hidden="true" class="usage-number">02</span>副语言放进自然语境</h4><p>聊天中触发的笑声、叹气更自然，直接要求表演的效果较弱。</p></div>
+<div class="usage-card"><span class="usage-tag">重点试听</span><h4><span aria-hidden="true" class="usage-number">03</span>强情绪内容先听样例</h4><p>撒娇、悲伤、害怕等表现仍有限，需关注声音本身的情绪变化。</p></div>
+<div class="usage-card"><span class="usage-tag">用途边界</span><h4><span aria-hidden="true" class="usage-number">04</span>动物拟声不作主要用途</h4><p>本批拟声输出自然度与一致性不足，不宜作为稳定的声音素材来源。</p></div>
+</div></div>
+<div class="item">
+<h3>未来展望</h3>
+<p>GPT Voice的"活人感"表现令人印象深刻，但也暴露了当前AI语音的局限——<strong class="key-point">声学控制不够精细，过度依赖文本</strong>。</p>
+<p><strong>值得期待的方向：</strong></p>
+<p>1. <strong class="key-point">更精细的声学控制：</strong>音调、节奏、重音的独立控制</p>
+<p>2. <strong class="key-point">情感与声音的深度融合：</strong>不仅靠文字，更靠声音本身传递情感</p>
+<p>3. <strong class="key-point">稳定性提升：</strong>减少音色跳变和机械化重复</p>
+<p>4. <strong class="key-point">个性化定制：</strong>让每个音色有更鲜明的"人设"</p>
+</div>
+</div>
+</section>
+<hr aria-label="正文结束，以下为报告来源与发布信息" class="report-end-divider" id="report-end-divider"/><footer class="footer">
+<div class="footer-info">
+<p class="meta-line">音视频生成资源部・音视频之家 | 编辑：陈然 | 资料来源：李凯艳</p>
+<p>详细报告可访问：<a href="https://yf2ljykclb.xfchat.iflytek.com/docx/doxrzAp9Bx1HU8KdNXxcUjzkA8d" rel="noopener noreferrer" target="_blank">GPT-Live-1.1 新增音色效果体验完整报告</a></p>
+<p class="note">体验范围：2026年10月的记录与录音；听感结论为原体验者的主观判断，未进行多人盲听或标准化评分。音频提供网页压缩版。</p></div>
+<div class="footer-banner">
+<a href="http://172.31.101.179:6001/" rel="noopener noreferrer" target="_blank">
+<img alt="音视频生成之家，更多AI资讯与体验报告" decoding="async" height="332" loading="eager" src="data:image/webp;base64,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" width="2000"/>
+</a>
+</div>
+</footer>
+</div>
+</article>
+<script>
+(() => {
+ const audios = [...document.querySelectorAll('audio')];
+ const seen = new WeakSet();
+ function prepare(a) {
+   if (seen.has(a)) return;
+   seen.add(a); a.preload = 'metadata'; a.load();
+ }
+ const io = new IntersectionObserver(entries => {
+   entries.forEach(e => {
+     if (e.isIntersecting && e.target.getClientRects().length) { prepare(e.target); io.unobserve(e.target); }
+   });
+ }, {rootMargin: '200px 0px'});
+ audios.forEach(a => io.observe(a));
+ document.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => {
+   if (d.open) d.querySelectorAll('audio').forEach(a => io.observe(a));
+ }));
+ document.addEventListener('play', e => {
+   if (e.target.tagName === 'AUDIO') audios.forEach(a => { if (a !== e.target) a.pause(); });
+ }, true);
+})();
+</script>
+<script id="nav-height-sync">
+(() => {
+ const nav=document.querySelector('.report-nav');
+ const sync=()=>document.documentElement.style.setProperty('--report-nav-height',Math.ceil(nav.getBoundingClientRect().height)+'px');
+ sync();
+ if(window.ResizeObserver) new ResizeObserver(sync).observe(nav);
+ window.addEventListener('resize',sync,{passive:true});
+})();
+</script></body>
+</html>
